@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "200852093381",
+    "project_id": "eventooweb",
+    "storage_bucket": "eventooweb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:200852093381:android:13fa63da49db9d727f73ac",
+        "android_client_info": {
+          "package_name": "io.eventoo.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "200852093381-63pgra3gdsgqjve1kve4utpudg126jm3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgDp2_uc3YIBccELyipkNlyzHki6dsqps"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "200852093381-5v3ien39g0sccqp94e44ohtsuuhd3u6m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "200852093381-7aljv8gndmuubv7mppr3l5hleimt3cg4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.eventoo.mobile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
