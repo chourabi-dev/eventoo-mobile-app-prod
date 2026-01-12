@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/screens/business_cards_contacts/business_card_contacts.dart';
 import 'package:mobile/screens/calendar.dart/calendar.dart';
 import 'package:mobile/screens/chat/chat_discussion_screen.dart';  
 import 'package:mobile/screens/event_registration_flow/event_registration_flow.dart';
@@ -194,6 +195,27 @@ class AppRouter {
           },
         ),
       ),
+
+ 
+      GoRoute(
+        path: '/business-cards',
+        name: 'business-cards',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const BusinessCardsScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.easeInOut;
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            return SlideTransition(position: animation.drive(tween), child: child);
+          },
+        ),
+      ),
+
+
+
+
 
 
       GoRoute(

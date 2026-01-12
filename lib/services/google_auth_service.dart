@@ -28,6 +28,7 @@ class GoogleAuthService {
     return await _auth.signInWithCredential(credential);
   }
 
+ 
   Future<void> signOut() async {
     await _googleSignIn.signOut();
     await _auth.signOut();

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mobile/l10n/app_localizations.dart';
@@ -13,15 +14,18 @@ import 'dart:ui';
 import '../../widgets/animated_button.dart';
 import '../../theme/app_theme.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class ContinueGoogleSignup extends StatefulWidget {
+  final String email;
+  final String fullname;
+  final String photoURL;
+   
+  const ContinueGoogleSignup({super.key, required this.email, required this.fullname, required this.photoURL});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<ContinueGoogleSignup> createState() => _ContinueGoogleSignupState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen>
-    with SingleTickerProviderStateMixin {
+class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -43,8 +47,9 @@ class _SignUpScreenState extends State<SignUpScreen>
   bool _showError = false;
   bool _emailExist = false;
   
+  List<Map<String, dynamic>> _countries = [];
 
- List<Map<String, dynamic>> _countries = [];
+  static const _storage = FlutterSecureStorage();
 
   @override
   void initState() {
@@ -106,19 +111,33 @@ class _SignUpScreenState extends State<SignUpScreen>
       setState(() => _showError = false);
       setState(() => _emailExist = false);
       
+      String fullname = widget.fullname;
+      String email = widget.email;
+
+
+      print(fullname);
       
  
-      String firstname = _firstNameController.text;
-      String lastname = _lastNameController.text;
-      String email = _emailController.text;
-      String phone = _phoneController.text;
-      int countryID = _selectedCountry!;
-      String password  = _passwordController.text;
+     final parts = fullname.trim().split(RegExp(r'\s+'));
 
-      _authService.register(firstname: firstname, lastname: lastname, phone: phone, countryID: countryID, email: email, password: password, sex:_selectedSex).then((res){
+    String firstname = parts.isNotEmpty ? parts.first : "";
+    String lastname  = parts.length > 1 ? parts.sublist(1).join(' ') : "";
+    String phone = _phoneController.text;
+    int countryID = _selectedCountry!; 
+
+ 
+
+
+      
+
+      _authService.continueGoogleSignup(firstname: firstname, lastname: lastname, phone: phone, countryID: countryID, email: email, sex:_selectedSex, photoURL: widget.photoURL).then((res) async{
         // check for success, else show error
         
         dynamic body = jsonDecode(res.body);
+
+        print(body);
+
+
         bool success = body['success'];
 
         setState(() => _isLoading = false);
@@ -134,24 +153,14 @@ class _SignUpScreenState extends State<SignUpScreen>
               setState(() => _showError = true);
             }
 
-        } else {
+        } else { 
 
-          // trigger send email !!
-          _authService.sendVerifyEmail(email).then((res){
-            dynamic body = jsonDecode(res.body);
-            print(body);
+          await _storage.write(key: 'token', value: body['token']);
+          await _storage.write(key: 'user', value: body['user'].toString() ); 
 
-          });
-          
-          
-          // account created !! open session and redirect to home page
-          _authService.login(email: email, password: password).then((res){
-            print("connected after signup");
-            context.go('/profile');
+          print("Token after login: ${ body['token'] }"); 
+          context.go('/profile');
 
-          }).catchError((err){
-            print(err);
-          });
 
         }
 
@@ -255,7 +264,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                           ),
                           const SizedBox(height: 18),
                           Text(
-                            l10n.signUpContinue,
+                            l10n.finishSignUpText,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyLarge
@@ -316,63 +325,9 @@ class _SignUpScreenState extends State<SignUpScreen>
                                           const SizedBox(height: 18),
 
 
-
-
-                                      TextFormField(
-                                        controller: _firstNameController,
-                                        decoration: InputDecoration(
-                                          labelText: l10n.firstName,
-                                          hintText: l10n.enterFirstName,
-                                          prefixIcon: const Icon(Icons.person),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return l10n.enterFirstName;
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: 18),
-
-                                      // Last Name
-                                      TextFormField(
-                                        controller: _lastNameController,
-                                        decoration: InputDecoration(
-                                          labelText: l10n.lastName,
-                                          hintText: l10n.enterLastName,
-                                          prefixIcon: const Icon(Icons.person),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return l10n.enterLastName;
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: 18),
-
-                                      // Email
-                                      TextFormField(
-                                        controller: _emailController,
-                                        keyboardType:
-                                            TextInputType.emailAddress,
-                                        decoration: InputDecoration(
-                                          labelText: l10n.email,
-                                          hintText: l10n.enterYourEmail,
-                                          prefixIcon:
-                                              const Icon(Icons.email_outlined),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return l10n.enterYourEmail;
-                                          }
-                                          if (!value.contains('@')) {
-                                            return l10n.enterValidEmail;
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: 18),
+ 
+                                      
+                                      
 
                                       // Phone
                                       IntlPhoneField(
@@ -395,82 +350,48 @@ class _SignUpScreenState extends State<SignUpScreen>
  
 
                                       Autocomplete<Map<String, dynamic>>(
-  optionsBuilder: (TextEditingValue textEditingValue) {
-    if (textEditingValue.text.isEmpty) {
-      return const Iterable<Map<String, dynamic>>.empty();
-    }
-    return _countries.where((country) =>
-        country['name']
-            .toLowerCase()
-            .contains(textEditingValue.text.toLowerCase()));
-  },
-  displayStringForOption: (option) => option['name'],
-  onSelected: (selection) {
-    setState(() {
-      _selectedCountry = selection['id'];
-    });
+                                        optionsBuilder: (TextEditingValue textEditingValue) {
+                                          if (textEditingValue.text.isEmpty) {
+                                            return const Iterable<Map<String, dynamic>>.empty();
+                                          }
+                                          return _countries.where((country) =>
+                                              country['name']
+                                                  .toLowerCase()
+                                                  .contains(textEditingValue.text.toLowerCase()));
+                                        },
+                                        displayStringForOption: (option) => option['name'],
+                                        onSelected: (selection) {
+                                          setState(() {
+                                            _selectedCountry = selection['id'];
+                                          });
 
-     
-  },
-  fieldViewBuilder: (context, controller, focusNode, onSubmit) {
-    return TextFormField(
-      controller: controller,
-      focusNode: focusNode,
-      decoration: InputDecoration(
-        labelText: l10n.country,
-        prefixIcon: const Icon(Icons.public),
-      ),
-      validator: (_) =>
-          _selectedCountry == null ? l10n.selectCountry : null,
-    );
-  },
-),
-
-                                      const SizedBox(height: 18),
-
-                                      // Password
-                                      TextFormField(
-                                        controller: _passwordController,
-                                        obscureText: !_isPasswordVisible,
-                                        decoration: InputDecoration(
-                                          labelText: l10n.password,
-                                          hintText: l10n.enterYourPassword,
-                                          prefixIcon:
-                                              const Icon(Icons.lock_outline),
-                                          suffixIcon: IconButton(
-                                            icon: Icon(
-                                              _isPasswordVisible
-                                                  ? Icons.visibility_off
-                                                  : Icons.visibility,
+                                          
+                                        },
+                                        fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                                          return TextFormField(
+                                            controller: controller,
+                                            focusNode: focusNode,
+                                            decoration: InputDecoration(
+                                              labelText: l10n.country,
+                                              prefixIcon: const Icon(Icons.public),
                                             ),
-                                            onPressed: () {
-                                              setState(() {
-                                                _isPasswordVisible =
-                                                    !_isPasswordVisible;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return l10n.enterYourPassword;
-                                          }
-                                          if (value.length < 6) {
-                                            return l10n.passwordError;
-                                          }
-                                          return null;
+                                            validator: (_) =>
+                                                _selectedCountry == null ? l10n.selectCountry : null,
+                                          );
                                         },
                                       ),
-                                      const SizedBox(height: 24),
+
+                                      const SizedBox(height: 18),
+ 
 
                                       // Sign Up button
                                       _isLoading
                                           ? const CircularProgressIndicator()
                                           : AnimatedButton(
                                               onPressed: _handleSignUp,
-                                              text: l10n.signUp,
-                                              gradient: AppTheme.accentGradient,
-                                              icon: Icons.arrow_forward_rounded,
+                                              text: l10n.finishSignup,
+                                              gradient: AppTheme.secondaryGradient,
+                                              icon: Icons.check,
                                             ),
 
                                        SizedBox(

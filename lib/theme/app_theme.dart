@@ -11,13 +11,25 @@ class AppTheme {
   
   // Gradients
   static const primaryGradient = LinearGradient(
-    colors: [primaryColor, Color(0xFF8B84FF)],
+    colors: [primaryColor, Color.fromARGB(255, 182, 80, 219)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+
+    static const pinkGradient = LinearGradient(
+    colors: [  Color.fromARGB(255, 17, 133, 222),   Color.fromARGB(255, 17, 62, 222)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
   
   static const secondaryGradient = LinearGradient(
-    colors: [secondaryColor, Color(0xFFFF8FA3)],
+    colors: [
+       // Color(0xFFFF5EDF), // neon pink
+      Color(0xFF00E5FF), // aqua blue
+     Color(0xFF7C4DFF), // electric purple
+      
+    ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

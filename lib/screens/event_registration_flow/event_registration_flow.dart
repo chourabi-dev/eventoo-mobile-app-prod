@@ -133,6 +133,9 @@ class _EventRegistrationFlowState extends State<EventRegistrationFlow> {
             ),
           ),
         );
+
+        context.go("/");
+        
       } else {
         setState(() {
           _isSubmitting = false;

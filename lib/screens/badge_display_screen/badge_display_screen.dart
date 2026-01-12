@@ -51,8 +51,8 @@ class _BadgeDisplayScreenState extends State<BadgeDisplayScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppTheme.backgroundColor,
-              AppTheme.surfaceColor,
+              const Color.fromARGB(255, 50, 0, 76),
+              const Color.fromARGB(255, 0, 85, 106),
             ],
           ),
         ),
@@ -68,7 +68,7 @@ class _BadgeDisplayScreenState extends State<BadgeDisplayScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: Row(
                       children: [
-                        const Icon(Icons.brightness_low, color: Colors.white70),
+                        const Icon(Icons.zoom_out, color: Colors.white70),
                         Expanded(
                           child: Slider(
                             value: _scale,
@@ -79,7 +79,7 @@ class _BadgeDisplayScreenState extends State<BadgeDisplayScreen> {
                             onChanged: (v) => setState(() => _scale = v),
                           ),
                         ),
-                        const Icon(Icons.brightness_high, color: Colors.white70),
+                        const Icon(Icons.zoom_in, color: Colors.white70),
                       ],
                     ),
                   ),
@@ -95,7 +95,7 @@ class _BadgeDisplayScreenState extends State<BadgeDisplayScreen> {
                   const SizedBox(height: 30),
 
                   Text(
-                    'Pinch to zoom • Screenshot to save',
+                    'Screenshot to save',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.6),
                       fontSize: 14,

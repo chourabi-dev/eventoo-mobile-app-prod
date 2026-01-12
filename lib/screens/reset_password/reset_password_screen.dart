@@ -39,6 +39,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         print(body);
 
         if( body['success'] == true ){
+            
+            
             setState(() => _isLoading = false);
                 Navigator.push(
                 context,
@@ -46,6 +48,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     builder: (_) => VerifyCodeScreen(email: _emailController.text),
                 ),
             );
+
+            
         }else{
             setState(() => _isLoading = false);
         }

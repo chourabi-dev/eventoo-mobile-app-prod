@@ -182,7 +182,8 @@ class _RegistrationSuccessPageState extends State<RegistrationSuccessPage>
                 child: OutlinedButton(
                   onPressed: () {
                     // Go back to events list
-                    context.go('/profile');
+                    context.go("/");
+                    
                   },
                   style: OutlinedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 16),

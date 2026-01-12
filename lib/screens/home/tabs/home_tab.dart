@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
+import 'package:mobile/models/event.dart';
 import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/services/event_service.dart';
 import 'package:mobile/theme/app_theme.dart';
@@ -21,42 +22,15 @@ class _HomeTabState extends State<HomeTab> {
 
   dynamic _event;
   bool _loading = true;
+
+
+  
   EventService _eventService = EventService();
   List<dynamic> chatNotifications  = [];
+  List<Event> _myEvents  = [];
+   
 
-
-
-
-  final List<ModuleData> modules = [
-     ModuleData(
-      title: (AppLocalizations l10n) => l10n.calendar,
-      icon: Icons.calendar_today_rounded,
-      gradient: AppTheme.secondaryGradient,
-      color: AppTheme.secondaryColor,
-    ),
-    
-    ModuleData(
-      title: (AppLocalizations l10n) => l10n.participants,
-      icon: Icons.people_rounded,
-      gradient: AppTheme.accentGradient,
-      color: AppTheme.accentColor,
-    ),
-    ModuleData(
-      title: (AppLocalizations l10n) => l10n.exposers,
-      icon: Icons.store,
-      gradient: AppTheme.expositionGardien,
-      color: const Color.fromARGB(255, 205, 154, 78),
-    ),
-    
-
-    ModuleData(
-      title: (AppLocalizations l10n) => l10n.networking,
-      icon: Icons.business_center_rounded,
-      gradient: AppTheme.primaryGradient,
-      color: AppTheme.primaryColor,
-    ),
-    
-  ];
+  List<ModuleData> modules = [ ];
 
 
 
@@ -106,6 +80,12 @@ class _HomeTabState extends State<HomeTab> {
         _loading= true;
       });
 
+      /*_eventService.getUserEventRegistrations().then((res){
+        setState(() {
+          _myEvents = [];
+        });
+      });*/
+
       _eventService.getCurrentConnectedEventDetails().then((res){
 
         dynamic body = jsonDecode(res.body);
@@ -125,16 +105,91 @@ class _HomeTabState extends State<HomeTab> {
   }
 
 
+
+
+
+  List<ModuleData> buildModules(dynamic _eventData, AppLocalizations l10n) {
+    print(_eventData['event']['show_participants_list_in_app']);
+    bool showParticipantList = false;
+
+    if( _eventData['event']['show_participants_list_in_app'] == null ){
+      showParticipantList = false;
+    }else{
+      if( _eventData['event']['show_participants_list_in_app'] == 1 ){
+        showParticipantList = true;
+      }
+    }
+
+  final List<ModuleData> modules = [
+    ModuleData(
+      title: (l10n) => l10n.calendar,
+      icon: Icons.calendar_today_rounded,
+      gradient: AppTheme.secondaryGradient,
+      color: AppTheme.secondaryColor,
+      route: '/event-calendar', // <-- add route here
+    ),
+    // Participants module only if allowed
+    if ( showParticipantList == true)
+      ModuleData(
+        title: (l10n) => l10n.participants,
+        icon: Icons.people_rounded,
+        gradient: AppTheme.accentGradient,
+        color: AppTheme.accentColor,
+        route: '/participants',
+      ),
+    ModuleData(
+      title: (l10n) => l10n.exposers,
+      icon: Icons.store,
+      gradient: AppTheme.expositionGardien,
+      color: const Color.fromARGB(255, 205, 154, 78),
+      route: '/exposition',
+    ),
+    ModuleData(
+      title: (l10n) => l10n.networking,
+      icon: Icons.business_center_rounded,
+      gradient: AppTheme.primaryGradient,
+      color: AppTheme.primaryColor,
+      route: '/networking',
+    ),
+
+
+    ModuleData(
+      title: (l10n) => l10n.businessCardExchange,
+      icon: Icons.contact_emergency,
+      gradient: AppTheme.pinkGradient,
+      color: Color.fromARGB(255, 117, 193, 251),
+      route: '/business-cards',
+    ),
+
+    ModuleData(
+      title: (l10n) => l10n.myContacts,
+      icon: Icons.contacts,
+      gradient: AppTheme.pinkGradient,
+      color: AppTheme.primaryColor,
+      route: '/my-contacts',
+    ),
  
 
 
+
+  ];
+
+  return modules;
+}
+
+
+
+ 
+ 
   @override
   Widget build(BuildContext context) {
+
+    
     
     final l10n = AppLocalizations.of(context);
 
-
-
+    final modules = _event != null ? buildModules(_event, l10n) : [];
+     
     return 
     _loading == true ?
     Center(
@@ -167,7 +222,12 @@ class _HomeTabState extends State<HomeTab> {
                     
                     IconButton(onPressed: (){
                       context.go("/");
-                    }, icon: Icon(Icons.logout,color: Colors.red,)),
+                      /*showEventSelectorModal(context: context, events: _myEvents, onSelected: (e){
+                        print(e!.id);
+
+                      });*/
+                       
+                    }, icon: Icon(Icons.arrow_circle_left,color: Colors.blue.shade300, size: 30,)),
                     
 
                     GestureDetector(
@@ -305,24 +365,11 @@ class _HomeTabState extends State<HomeTab> {
                         child: ModuleCard(
                           
                           data: modules[index],
-                          onTap: (){ 
-                            if( index == 0 ){
-                              context.push('/event-calendar');
+                          onTap: () {
+                            final route = modules[index].route;
+                            if (route != null) {
+                              context.push(route);
                             }
-
-                            if( index == 1 ){
-                              context.push('/participants');
-                            }
-
-                            if( index == 2 ){
-                              context.push('/exposition');
-                            }
-
-                            if( index == 3 ){
-                              context.push('/networking');
-                            }
-                            
- 
                           },
                         ),
                       );

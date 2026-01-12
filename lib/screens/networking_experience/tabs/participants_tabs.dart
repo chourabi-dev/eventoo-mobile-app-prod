@@ -1150,6 +1150,8 @@ class ParticipantActionsSheet extends StatelessWidget {
 
 
     return Container(
+
+      width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),

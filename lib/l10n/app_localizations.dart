@@ -66,7 +66,7 @@ class AppLocalizations {
       "view_event_details":"View event details",
       "back_to_events":"Back to events",
       "logout_label":"Logout",
-      "sex": "Sex",
+      "sex": "Civility",
       "male": "Male",
       "female": "Female",
       "selectSex": "Please select your sex",
@@ -134,6 +134,8 @@ class AppLocalizations {
       "scan_badge_label":"Scan Badge", 
       "scan_instructions_label":"Align QR code within the frame", 
       "sign_in_with_google":"Sign in with Google",
+      "sign_up_with_google":"Sign up with Google",
+
       "my_contacts_label":"My contacts", 
       "remarque_label":"Notice",
 
@@ -185,12 +187,23 @@ class AppLocalizations {
       "business_card_exchange":"Business cards",
       "no_incoming_business_cards":"No incoming business cards requests",
       "no_utgoing_business_cards":"no outgoing business cards",
-       
+      "call_label":"Call",
 
+      "email_equired_validation_title":"Email verification required",
+      "email_equired_validation_content":"You must verify your email address before you can start using the app.\n Please check your inbox and confirm your email.",
+      "email_equired_validation_button":"Resend verification email",  
+      "refresh_label":"Refresh",
 
+      "finish_signup":"Finish",
 
+      "finish_signup_text":"Finish sign up by filling the missing informations",
+      "all_rooms_label":"All Rooms",
+      "google_sign_in_faild_no_account":"This email is not registred in our system. try creating account first.",
+      "google_sign_in_faild":"Something went wrong trying to sign in using googlge services. please try again.",
 
+      "or_text_separator":"OR",
 
+ 
 
     },
     'fr': {
@@ -247,12 +260,12 @@ class AppLocalizations {
       "view_event_details":"Voir les détails de l'événement",
       "back_to_events":"Retour aux événements",
       "logout_label":"Déconnexion",
-      "sex": "Sexe",
+      "sex": "Civilité",
       "male": "Homme",
       "female": "Femme",
       "selectSex": "Veuillez choisir votre sexe",
       "more_events":"Plus d'événement",
-      "calendar_label":"Calendrier",
+      "calendar_label":"Agenda",
       "live_label":"En direct",
       "programs_label":"Programme(s)",
       "description_label":"Description",
@@ -282,7 +295,7 @@ class AppLocalizations {
       "back_to_login":"Retour à la connexion",
 
       "verify_code_label":"Vérifier le code",
-      "verify_code_description":"Saisissez le code à 6 chiffres envoyé au",
+      "verify_code_description":"Saisissez le code à 6 chiffres envoyé à",
       "verify_code_btn":"Vérifier le code",
 
       "reset_password":"Réinitialiser le mot de passe",
@@ -311,7 +324,9 @@ class AppLocalizations {
       "participant_not_found_label":"Erreur lors du chargement du participant",
       "scan_badge_label":"Scanner le badge",
       "scan_instructions_label":"Aligner le code QR dans le cadre",
-      "sign_in_with_google":"Continuer avec Google",
+      "sign_in_with_google":"Se connecter avec Google",
+      "sign_up_with_google":"Inscrivez-vous avec Google",
+      
       "my_contacts_label":"Mes contacts",
       "remarque_label":"Remarque",
        
@@ -347,28 +362,35 @@ class AppLocalizations {
       "accept_label": "Accepter",
       "accepted_label": "Acceptée",
       "rejected_label": "Refusée",
-      "pending_label": "En attente",
-
+      "pending_label": "En attente", 
       "incoming_label": "Reçues",
       "outgoing_label": "Envoyées",
-      "processing_label": "En cours",
-
-
+      "processing_label": "En cours", 
       "invitation_accepted_label": "Invitation acceptée",
       "invitation_rejected_label": "Invitation refusée",
       "invitation_escheduled_label": "Invitation replanifiée",
-      "replanification_label": "Replanification", 
-
+      "replanification_label": "Replanification",  
       "today_label":"Aujourd’hui",
       "tomorrow_label":"Demain",
-
-
       "business_card_exchange":"Cartes de visite",
+      "no_incoming_business_cards":"Aucune demande de cartes de visite entrantes",
+      "no_utgoing_business_cards":"Aucune carte de visite sortante",
+      "call_label":"Appelez", 
+      "email_equired_validation_title":"Vérification de l'adresse e-mail requise",
+      "email_equired_validation_content":"Vous devez vérifier votre adresse e-mail avant de pouvoir utiliser l'application.\nVeuillez consulter votre boîte de réception et confirmer votre adresse e-mail.",
+      "email_equired_validation_button":"Renvoyer l'e-mail de vérification",
+      "refresh_label":"Actualiser", 
+      "finish_signup":"Terminer l'inscription", 
+      "finish_signup_text":"Finalisez votre inscription en complétant les informations manquantes.",
+      "all_rooms_label":"Toutes les salles",
 
-"no_incoming_business_cards":"Aucune demande de cartes de visite entrantes",
-
-"no_utgoing_business_cards":"Aucune carte de visite sortante",
+      "google_sign_in_faild_no_account": "Cette adresse e-mail n’est pas enregistrée dans notre système. Veuillez d’abord créer un compte.",
+      "google_sign_in_faild": "Une erreur est survenue lors de la tentative de connexion avec les services Google. Veuillez réessayer.",
       
+      "or_text_separator":"OU",
+
+      
+
   
 
 
@@ -523,6 +545,10 @@ class AppLocalizations {
 
 
   String get signInWihGoogle => translate('sign_in_with_google');
+  String get signUpWihGoogle => translate('sign_up_with_google');
+  
+
+  
   String get myContacts => translate('my_contacts_label');
   String get remarqueLabel => translate('remarque_label');
 
@@ -588,6 +614,33 @@ class AppLocalizations {
   String get businessCardExchange => translate('business_card_exchange');
   String get noIncomingBusinessCards => translate('no_incoming_business_cards');
   String get noOutgoingBusinessCards => translate('no_utgoing_business_cards');
+  String get callLabel => translate('call_label');
+
+
+  String get emailRequiredValidationTitle => translate('email_equired_validation_title');
+  String get emailRequiredValidationContent => translate('email_equired_validation_content');
+  String get emailRequiredValidationButton => translate('email_equired_validation_button');
+
+
+  String get refreshLabel => translate('refresh_label');
+  String get finishSignup => translate('finish_signup');
+
+
+  String get finishSignUpText => translate('finish_signup_text');
+  String get allRoomsLabel => translate('all_rooms_label');
+  
+  String get googleSignInFaildNoAccount => translate('google_sign_in_faild_no_account');
+  String get googleSignInFaild => translate('google_sign_in_faild');
+  
+  String get orTextSeparator => translate('or_text_separator');
+  
+  
+  
+  
+  
+  
+  
+  
 
 
 

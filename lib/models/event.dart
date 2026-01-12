@@ -5,6 +5,7 @@ class Event {
   final String startDate;
   final String endDate;
   final String imageUrl;
+  final String logoURL; 
   final int category;
 
   Event({
@@ -14,7 +15,8 @@ class Event {
     required this.startDate,
     required this.endDate,
     required this.imageUrl,
-    required this.category,
+    required this.category, 
+    required this.logoURL,
   });
 
   // Convert Event to JSON
@@ -27,6 +29,7 @@ class Event {
       'endDate': endDate,
       'imageUrl': imageUrl,
       'category': category,
+      'logoURL': logoURL
     };
   }
 
@@ -40,6 +43,7 @@ class Event {
       endDate: json['endDate'] as String,
       imageUrl: json['imageUrl'] as String,
       category: json['category'] as int,
+      logoURL: json['logoURL'] as String,
     );
   }
 
@@ -51,6 +55,8 @@ class Event {
     String? startDate,
     String? endDate,
     String? imageUrl,
+    String? logoURL,
+     
     int? category,
   }) {
     return Event(
@@ -61,6 +67,7 @@ class Event {
       endDate: endDate ?? this.endDate,
       imageUrl: imageUrl ?? this.imageUrl,
       category: category ?? this.category,
+      logoURL: logoURL ?? this.logoURL
     );
   }
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/screens/profile/my_profile.dart';
@@ -106,6 +107,8 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
 }
 
   _handleSignInWithGoogle() async{
+    final l10n = AppLocalizations.of(context);
+
     setState(() {
       _isLoading = true;
       _showError = false;
@@ -139,8 +142,8 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
   
         }else{
            ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Google login failed'),
+             SnackBar(
+              content: Text(l10n.googleSignInFaildNoAccount),
               backgroundColor: Colors.red,
             ),
           );
@@ -152,14 +155,14 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
     } catch (e) {
       
       setState(() {
-      _isLoading = false; 
-    });
+        _isLoading = false; 
+      });
 
       await GoogleAuthService().signOut();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Google login failed'),
+         SnackBar(
+          content: Text(l10n.googleSignInFaild),
           backgroundColor: Colors.red,
         ),
       );
@@ -168,6 +171,8 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
       setState(() => _isLoading = false);
     }
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -375,7 +380,7 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                                               onPressed: _handleSignIn,
                                               text: l10n.signIn,
                                               gradient: AppTheme.accentGradient,
-                                              icon: Icons.arrow_forward_rounded,
+                                              
                                             ),
 
                                               SizedBox(height: 15,),
@@ -384,8 +389,10 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                                                   onPressed: _handleSignInWithGoogle,
                                                   text: l10n.signInWihGoogle,
                                                   gradient: AppTheme.primaryGradient,
-                                                  icon: Icons.arrow_forward_rounded,
+                                                  icon: FontAwesomeIcons.google,
                                                 ),
+ 
+
                                               ],
                                             ),
                                           ),

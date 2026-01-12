@@ -17,6 +17,7 @@ import 'package:mobile/services/general_service.dart';
 import 'package:mobile/theme/app_theme.dart';
 import 'package:mobile/widgets/event_card.dart';
 import 'package:mobile/widgets/language_switcher.dart';
+import 'package:mobile/widgets/my_events_slider.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({super.key});
@@ -47,6 +48,13 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
   List<Event> _myEvents = [];
 
   List<dynamic> _myContacts = [];
+  List<dynamic> _businessCards = [];
+  
+  bool? emailValid;
+
+  bool _clickedOnSendValidationEmailButton = false;
+
+  
 
   
 
@@ -85,8 +93,16 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
 
         if( body['success'] ){
           getUserInfo(); 
+        }else{
+          setState(() {
+            _isLoading = false;
+          }); 
         }
 
+      }).catchError((err){
+        setState(() {
+          _isLoading = false;
+        });
       });
 
   }
@@ -126,6 +142,9 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
   }
 
   Future<void> getUserInfo() async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
 
       final res = await _authService.getUserInfo(); 
@@ -133,6 +152,8 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
 
       print("user info"); 
       print(body); 
+
+
       final user = body['user'];
       final fullName = '${user['firstName'] ?? ''} ${user['lastName'] ?? ''}'.trim();
 
@@ -141,8 +162,10 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
         _email = user['email'] ?? '';
         _phone = user['phone'] ?? '';
         _countryFlag = user['country_flag'] ?? '';
-        _avatar = user['photo'] ?? '';
+        _avatar = user['photo'] ?? ''; 
+        emailValid = user['emailValid'];
         _isLoading = false;
+
       }); 
       _animationController.forward();
     } catch (err) { 
@@ -163,6 +186,8 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
     _eventService.getUserEventRegistrations().then((res){
       dynamic body = jsonDecode(res.body);
       List<dynamic> tmp = body['data'];
+
+      print(tmp);
 
       setState(() {
         _myEvents = (body['data'] as List)
@@ -242,6 +267,127 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
 }
 
 
+Widget emailVerificationRequired(BuildContext context, VoidCallback onResend) {
+  final l10n = AppLocalizations.of(context);
+
+
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+
+          // Icon
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.mark_email_unread_outlined,
+              size: 50,
+              color: Colors.orange,
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Title
+          Text(
+            l10n.emailRequiredValidationTitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          // Description
+          Text(
+            l10n.emailRequiredValidationContent,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.black54,
+            ),
+          ),
+
+          const SizedBox(height: 30),
+
+          // Action button
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: 
+            
+            _clickedOnSendValidationEmailButton == false ?
+            
+            ElevatedButton(
+              onPressed: onResend,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child:  
+              
+              Text(
+                l10n.emailRequiredValidationButton,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+             
+            )
+            :
+            Container(
+                child: Center(child: Icon(Icons.check,color: Colors.green,size: 30,),),
+              )
+          ),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                child: Text( l10n.refreshLabel ),
+                onPressed: (){
+                  setState(() {
+                    emailValid = null;
+
+                  });
+                  
+                  getUserInfo();
+                }
+              ),
+              SizedBox(width: 35,),
+              TextButton(
+            child: Text( l10n.logout, style: TextStyle(color: Colors.red), ),
+            onPressed: () async{
+              final storage = FlutterSecureStorage();
+                      await storage.deleteAll();
+                     
+                     context.go('/');
+            }
+          )
+              
+            ],
+          )
+ 
+        ],
+      ),
+    ),
+  );
+}
+
+ 
+
 
 
    Future<void> getMyContacts() async {
@@ -249,10 +395,19 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
     try {
 
       final res = await _eventService.myContacts(); 
+      final res2 = await _eventService.myBusinessCardsContacts(); 
+      
+
+      
       final body = jsonDecode(res.body);
+      final body2 = jsonDecode(res2.body);
+      
+
+      
 
       setState(() {
         _myContacts = body['contacts'] ?? [];
+        _businessCards = body2['contacts'] ?? [];
       });
       
  
@@ -266,6 +421,206 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
   }
 
 
+Future<void> finishLogin(int eventId) async {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const Center(
+      child: CircularProgressIndicator(),
+    ),
+  );
+
+
+  _eventService.authToEvent(eventID: eventId).then((res) async{
+
+    dynamic response = jsonDecode(res.body);
+    dynamic participantID = response['participantID'];
+    bool success = response['success'];
+    
+    print("Connectiing ...");
+   
+
+    if( success == true){
+      if (participantID != null) { 
+         
+          print("WELCOME BACk");
+          print(participantID);
+
+        final storage = const FlutterSecureStorage();
+        await storage.write(key: 'participantId', value: participantID.toString());
+
+        if (context.mounted) context.go('/home'); 
+      } 
+    }else{
+       if (context.mounted) Navigator.of(context).pop();
+    }
+ 
+
+  }).catchError((err){ 
+    print(err);
+    if (context.mounted) Navigator.of(context).pop();
+  });
+
+   
+}
+
+
+
+
+  Widget _buildDrawer(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+  return Drawer(
+    child: SafeArea(
+      child: Column(
+        children: [
+           
+          _buildDrawerItem(
+            context,
+            icon: Icons.home_rounded,
+            title: l10n.homeLabel,
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          _buildDrawerItem(
+            context,
+            icon: Icons.event_rounded,
+            title: l10n.joinedEvents,
+            onTap: () {
+              context.push("/my-events");
+            },
+          ),
+          _buildDrawerItem(
+            context,
+            icon: Icons.notifications_rounded,
+            title: l10n.myContacts,
+            onTap: () {
+              context.push("/my-contacts");
+            },
+          ),
+          _buildDrawerItem(
+            context,
+            icon: Icons.credit_card_outlined,
+            title: l10n.businessCardExchange,
+            onTap: () {
+              context.push('/business-cards');
+            },
+          ),
+          const Spacer(),
+          const Divider(),
+          _buildDrawerItem(
+            context,
+            icon: Icons.logout_sharp,
+            title: l10n.logout,
+            iconColor: Colors.red,
+            textColor: Colors.red,
+            onTap: () async {
+              final storage = FlutterSecureStorage();
+              await storage.deleteAll(); 
+              context.go('/');
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildDrawerHeader() {
+  return Container(
+    height: 140,
+    width: double.infinity,
+    padding: const EdgeInsets.all(20),
+    decoration: const BoxDecoration(
+      gradient: AppTheme.primaryGradient,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        CircleAvatar(
+          radius: 28,
+          backgroundColor: Colors.white,
+          child: Icon(Icons.person, size: 30),
+        ),
+        SizedBox(height: 12),
+        Text(
+          'Welcome',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          'Taher',
+          style: TextStyle(color: Colors.white70),
+        ),
+      ],
+    ),
+  );
+}
+
+
+Widget _buildDrawerItem(
+  BuildContext context, {
+  required IconData icon,
+  required String title,
+  Color iconColor = Colors.black87,
+  Color textColor = Colors.black87,
+  required VoidCallback onTap,
+}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () {
+        Navigator.pop(context);
+        onTap();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: Colors.transparent,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: iconColor, size: 22),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.black38,
+              size: 22,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+
 
 
 
@@ -276,29 +631,84 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: CustomScrollView(
+      drawer: _buildDrawer(context),
+      
+      body: emailValid == null ?
+       Center(
+        child: CircularProgressIndicator(),
+       ):
+
+      // if true or false
+      
+      emailValid == true ?
+
+
+       CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
           _buildModernAppBar(context, size),
           SliverToBoxAdapter(child: SizedBox(height: 24)),
-          _buildStatsSection(l10n),
+
+          SliverToBoxAdapter(
+            child: _myEvents.length != 0 ?  Container(
+                height: 600,
+                child:   PremiumEventSlider(events: _myEvents, onContinue: (id){
+
+                  print(id);
+
+                  finishLogin(int.parse(id));
+
+                },)
+                
+                
+                ,
+               ):Container(),
+
+          ),
+         
+          /*_buildStatsSection(l10n),
           SliverToBoxAdapter(child: SizedBox(height: 32)),
-          _buildQuickActions(l10n),
-          SliverToBoxAdapter(child: SizedBox(height: 32)),
+         _buildQuickActions(l10n),
+          SliverToBoxAdapter(child: SizedBox(height: 32)),*/
           _buildEventsSection(l10n),
         ],
-      ),
+      ):
+      
+      emailVerificationRequired(context, (){
+        
+        print("SENDING EMAIL TO:");
+        print(_email);
+
+        _authService.sendVerifyEmail(_email).then((res){
+          dynamic body = jsonDecode(res.body);
+          print(body);
+
+        });
+        
+        setState(() {
+          _clickedOnSendValidationEmailButton = true;
+        });
+      })
+
+
     );
   }
 
   Widget _buildModernAppBar(BuildContext context, Size size) {
     return SliverAppBar(
-      expandedHeight: 360,
+      expandedHeight: 280,
       pinned: true,
       stretch: true,
       backgroundColor: Colors.white,
       elevation: 0,
-      
+      leading:Builder(
+  builder: (context) => IconButton(
+    icon: const Icon(Icons.menu, color: Colors.white),
+    onPressed: () {
+      Scaffold.of(context).openDrawer();
+    },
+  ),
+),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 8),
@@ -333,7 +743,7 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
               right: -100,
               child: Container(
                 width: 300,
-                height: 300,
+                height: 200,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white.withOpacity(0.1),
@@ -360,7 +770,7 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
             // Profile content
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -526,6 +936,10 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
           maxLines: 1, // <-- restrict to single line
         ),
       ),
+      SizedBox(width: 6), 
+      Icon(Icons.check_circle, size: 14, color: Colors.blue),
+      
+
     ],
   ),
 )
@@ -588,8 +1002,14 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
               },
               child:  _buildStatCard( '${ _myContacts.length}'  , l10n!.myContacts, Icons.people_outline),
             ) ),
+            
            SizedBox(width: 16),
-            Expanded(child: _buildStatCard('128', l10n!.businessCardExchange, Icons.contacts_outlined)),
+            Expanded(child: GestureDetector(
+              onTap: (){
+                context.push('/business-cards');
+              },
+              child: _buildStatCard('${ _businessCards.length}', l10n!.businessCardExchange, Icons.contacts_outlined,
+            ))),
           ],
         ),
       ),
@@ -668,6 +1088,10 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
                     },
                   ),
                 ),
+
+              
+
+
                 /*SizedBox(width: 12),
                 Expanded(
                   child: _buildActionButton(

@@ -370,14 +370,12 @@ class _QRScannerScreenState extends State<QRScannerScreen>
             icon: Icons.email,
             label: 'Email',
             value: participant['data']['email'] ?? 'N/A',
-          ),
-          const SizedBox(height: 12),
+          ), 
           _buildInfoCard(
             icon: Icons.phone,
             label: 'Phone',
             value: participant['data']['phone'] ?? 'N/A',
-          ),
-          const SizedBox(height: 12),
+          ), 
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -442,6 +440,10 @@ class _QRScannerScreenState extends State<QRScannerScreen>
               ),
             ],
           ),
+       
+       
+       const SizedBox(height: 25),
+       
         ],
       ),
     );
@@ -453,6 +455,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
     required String value,
   }) {
     return Container(
+      margin: EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.05),
@@ -485,6 +488,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
               ],
             ),
           ),
+          
         ],
       ),
     );

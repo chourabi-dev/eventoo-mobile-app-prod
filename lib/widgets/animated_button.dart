@@ -103,7 +103,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
                           widget.text,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.5,
                           ),

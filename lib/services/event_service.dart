@@ -989,8 +989,28 @@ class EventService {
       );
     }
 
+
+    Future<Response> myBusinessCardsContacts( ) async {
+      String? participantID = await _storage.read(key: 'participantId');
+
+      final lang = MyApp.currentLanguage;   
+      
+      final url = Uri.parse('${_env.endpoint}/api/networking/my-business-cards-contacts');
+      String? token = await _storage.read(key: 'token');
+      
+      return get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          'Accept-Language': lang
+        }
+      );
+    }
+
     
 
+ 
  
     
 

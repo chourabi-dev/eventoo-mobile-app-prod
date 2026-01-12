@@ -142,7 +142,7 @@ class _ProfileTabState extends State<ProfileTab> {
         
         Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 80),
             // Profile Photo
             Stack(
               children: [

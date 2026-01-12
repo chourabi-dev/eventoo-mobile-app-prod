@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
@@ -12,6 +11,7 @@ import 'package:mobile/widgets/calendar_livechat.dart';
 import 'package:mobile/widgets/youtube_player.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:intl/intl.dart';
 
 class EventResponse {
   final bool success;
@@ -99,6 +99,9 @@ class Program {
   final bool isLive;
   final List<dynamic> moderators;
 
+  // Add room reference
+  Room? room;
+
   Program({
     required this.id,
     required this.title,
@@ -117,6 +120,7 @@ class Program {
     required this.exposers,
     required this.isLive,
     required this.moderators,
+    this.room,
   });
 
   factory Program.fromJson(Map<String, dynamic> json) {
@@ -155,10 +159,13 @@ class Program {
     final date = DateTime.parse(startDate);
     return '${date.day}/${date.month}/${date.year}';
   }
+
+  DateTime get startDateTime => DateTime.parse(startDate);
+  DateTime get endDateTime => DateTime.parse(endDate);
 }
 
 // ============================================================================
-// EVENT CALENDAR SCREEN (Shows all rooms)
+// EVENT CALENDAR SCREEN WITH FILTERS
 // ============================================================================
 class EventCalendarScreen extends StatefulWidget {
   const EventCalendarScreen({super.key});
@@ -168,66 +175,106 @@ class EventCalendarScreen extends StatefulWidget {
 }
 
 class _EventCalendarScreenState extends State<EventCalendarScreen> {
-
-  String? participantID; 
-  List<dynamic> rooms = [];
+  String? participantID;
+  List<Room> rooms = [];
   EventService _eventService = EventService();
   final storage = const FlutterSecureStorage();
   bool _loading = true;
 
+  // Filter states
+  DateTime? selectedDay;
+  int? selectedRoomId;
+  List<DateTime> availableDays = [];
+  List<Program> allPrograms = [];
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    getCalandar();
-
+    getCalendar();
   }
 
-  void getCalandar() async {
-   participantID = await storage.read(key: 'participantId');
-   if( participantID != null ){
-    print(participantID);
+  void getCalendar() async {
+    participantID = await storage.read(key: 'participantId');
+    if (participantID != null) {
+      print(participantID);
 
-    // FETCH CALENDAR
-    setState(() {
-      _loading = true;
-    });
-
-
-    _eventService.getCalendarDetails(participantID!).then((res){
-      
-
-      print(res.body);
-
-      dynamic body = jsonDecode(res.body);
- 
-      EventData data = EventData.fromJson(body['data']);
- 
       setState(() {
-        _loading = false;
-        rooms = data.rooms;
+        _loading = true;
       });
 
-    }).catchError((err){
-      print(err);
-      context.pop();
-    });
+      _eventService.getCalendarDetails(participantID!).then((res) {
+        print(res.body);
 
-   }
+        dynamic body = jsonDecode(res.body);
+        EventData data = EventData.fromJson(body['data']);
 
+        // Flatten all programs and attach room reference
+        List<Program> programs = [];
+        Set<String> daysSet = {};
+
+        for (var room in data.rooms) {
+          for (var program in room.programs) {
+            program.room = room;
+            programs.add(program);
+            
+            // Extract unique days
+            final programDate = DateTime.parse(program.startDate);
+            final dayOnly = DateTime(programDate.year, programDate.month, programDate.day);
+            daysSet.add(dayOnly.toIso8601String());
+          }
+        }
+
+        // Sort days
+        List<DateTime> days = daysSet
+            .map((dateStr) => DateTime.parse(dateStr))
+            .toList()
+          ..sort();
+
+        setState(() {
+          _loading = false;
+          rooms = data.rooms;
+          allPrograms = programs;
+          availableDays = days;
+          
+          // Set default to first day if available
+          if (days.isNotEmpty) {
+            selectedDay = days.first;
+          }
+        });
+      }).catchError((err) {
+        print(err);
+        context.pop();
+      });
+    }
   }
 
+  List<Program> getFilteredPrograms() {
+    return allPrograms.where((program) {
+      // Filter by day
+      if (selectedDay != null) {
+        final programDate = DateTime.parse(program.startDate);
+        final programDay = DateTime(programDate.year, programDate.month, programDate.day);
+        final filterDay = DateTime(selectedDay!.year, selectedDay!.month, selectedDay!.day);
+        
+        if (programDay != filterDay) {
+          return false;
+        }
+      }
 
+      // Filter by room
+      if (selectedRoomId != null && program.room?.id != selectedRoomId) {
+        return false;
+      }
 
-
-
-
+      return true;
+    }).toList()
+      ..sort((a, b) => a.startDateTime.compareTo(b.startDateTime));
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-
-
+    final filteredPrograms = getFilteredPrograms();
 
     return Scaffold(
       appBar: AppBar(
@@ -236,397 +283,235 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: 
+      body: _loading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
+            padding: EdgeInsets.only(top: 15),
         
-        _loading == true ?
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF0F0F1E), Color(0xFF1A1A2E)],
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Day Filter
+                  _buildDayFilter(),
+                  const SizedBox(height: 16),
 
-        Center(
-          child: CircularProgressIndicator() ,
-        )
-        :
-      
-      Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0F0F1E), Color(0xFF1A1A2E)],
-          ),
-        ),
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: rooms.length,
-          itemBuilder: (context, index) {
-            return RoomCard(room: rooms[index]);
-          },
-        ),
-      ),
-    );
-  }
-}
- 
+                  // Room Filter
+                  _buildRoomFilter(l10n),
+                  const SizedBox(height: 16),
 
-
-
-// ============================================================================
-// ROOM CARD WIDGET
-// ============================================================================
-
-class RoomCard extends StatelessWidget {
-  final Room room;
-
-  const RoomCard({super.key, required this.room});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withOpacity(0.1),
-                  Colors.white.withOpacity(0.05),
+                  // Programs List
+                  Expanded(
+                    child: filteredPrograms.isEmpty
+                        ? Center(
+                            child: Text(
+                              l10n.programs,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.5),
+                                fontSize: 16,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: filteredPrograms.length,
+                            itemBuilder: (context, index) {
+                              return ProgramCard(program: filteredPrograms[index]);
+                            },
+                          ),
+                  ),
                 ],
               ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: room.hasLiveProgram
-                    ? Colors.red.withOpacity(0.5)
-                    : Colors.white.withOpacity(0.2),
-                width: 2,
-              ),
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => RoomDetailScreen(room: room),
-                    ),
-                  );
-                },
-                borderRadius: BorderRadius.circular(20),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      // Room Image
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          '${room.photoUrl}', 
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(Icons.meeting_room, color: Colors.white),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
+    );
+  }
 
-                      // Room Info
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    room.label,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                if (room.hasLiveProgram)
-                                  Container(
-                                    padding:  EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children:  [
-                                        Icon(Icons.circle, color: Colors.white, size: 8),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          l10n.liveLabel ,
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              room.type,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white.withOpacity(0.7),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: room.keywords.take(3).map((keyword) {
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF6C63FF).withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    keyword,
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '${room.programs.length} ${l10n.programs}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.white.withOpacity(0.6),
-                              ),
-                            ),
-                          ],
-                        ),
+  Widget _buildDayFilter() {
+    return Container(
+      height: 80,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: availableDays.length,
+        itemBuilder: (context, index) {
+          final day = availableDays[index];
+          final isSelected = selectedDay != null &&
+              day.year == selectedDay!.year &&
+              day.month == selectedDay!.month &&
+              day.day == selectedDay!.day;
+
+          // Get localized day name using the device's locale
+          final locale = Localizations.localeOf(context);
+          final dayName = DateFormat.E(locale.toString()).format(day).substring(0, 3).toUpperCase();
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedDay = day;
+              });
+            },
+            child: Container(
+              width: 70,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                gradient: isSelected
+                    ? const LinearGradient(
+                        colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                      )
+                    : LinearGradient(
+                        colors: [
+                          Colors.white.withOpacity(0.1),
+                          Colors.white.withOpacity(0.05),
+                        ],
                       ),
-                      const Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ],
-                  ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected
+                      ? const Color(0xFF6C63FF)
+                      : Colors.white.withOpacity(0.2),
+                  width: 2,
                 ),
               ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    dayName,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${day.day}',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
-}
 
-// ============================================================================
-// ROOM DETAIL SCREEN (Shows all programs in a room)
-// ============================================================================
-
-class RoomDetailScreen extends StatelessWidget {
-  final Room room;
-
-  const RoomDetailScreen({super.key, required this.room});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0F0F1E), Color(0xFF1A1A2E)],
-          ),
-        ),
-        child: CustomScrollView(
-          slivers: [
-            // App Bar with Room Image
-            SliverAppBar(
-              expandedHeight: 200,
-              pinned: true,
-              backgroundColor: Colors.transparent,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.network( 
-                      room.photoUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withOpacity(0.7),
-                          ],
-                        ),
+  Widget _buildRoomFilter(AppLocalizations l10n) {
+    return Container(
+      height: 50,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          // "All Rooms" chip
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedRoomId = null;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                gradient: selectedRoomId == null
+                    ? const LinearGradient(
+                        colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                      )
+                    : LinearGradient(
+                        colors: [
+                          Colors.white.withOpacity(0.1),
+                          Colors.white.withOpacity(0.05),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                title: Text(room.label),
-              ),
-            ),
-
-            // Room Info
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        room.type,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      room.description,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white.withOpacity(0.8),
-                        height: 1.5,
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: room.keywords.map((keyword) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.3),
-                            ),
-                          ),
-                          child: Text(
-                            keyword,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 24),
-                     Text(
-                      l10n.programs ,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(
+                  color: selectedRoomId == null
+                      ? const Color(0xFF6C63FF)
+                      : Colors.white.withOpacity(0.2),
+                  width: 2,
                 ),
               ),
-            ),
-
-            // Programs List
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return ProgramCard(program: room.programs[index]);
-                },
-                childCount: room.programs.length,
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: room.hasLiveProgram
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => LiveProgramScreen(program: room.liveProgram!),
+              child: Center(
+                child: Text(
+                  l10n.allRoomsLabel ,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: selectedRoomId == null
+                        ? Colors.white
+                        : Colors.white.withOpacity(0.7),
                   ),
-                );
+                ),
+              ),
+            ),
+          ),
+
+          // Room chips
+          ...rooms.map((room) {
+            final isSelected = selectedRoomId == room.id;
+
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedRoomId = room.id;
+                });
               },
-              backgroundColor: Colors.red,
-              icon: const Icon(Icons.play_circle_filled),
-              label:  Text(l10n.watchLive),
-            )
-          : null,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  gradient: isSelected
+                      ? const LinearGradient(
+                          colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                        )
+                      : LinearGradient(
+                          colors: [
+                            Colors.white.withOpacity(0.1),
+                            Colors.white.withOpacity(0.05),
+                          ],
+                        ),
+                  borderRadius: BorderRadius.circular(25),
+                  border: Border.all(
+                    color: isSelected
+                        ? const Color(0xFF6C63FF)
+                        : Colors.white.withOpacity(0.2),
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    room.label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ],
+      ),
     );
   }
 }
 
 // ============================================================================
-// PROGRAM CARD WIDGET
+// PROGRAM CARD WIDGET (Updated with Room Info)
 // ============================================================================
 
 class ProgramCard extends StatelessWidget {
@@ -639,7 +524,7 @@ class ProgramCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.only(bottom: 16),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: BackdropFilter(
@@ -676,18 +561,29 @@ class ProgramCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Room badge and Live indicator
                       Row(
                         children: [
-                          Expanded(
-                            child: Text(
-                              program.title,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                          if (program.room != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF6C63FF).withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                program.room!.label,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
+                          const Spacer(),
                           if (program.isLive)
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -700,12 +596,12 @@ class ProgramCard extends StatelessWidget {
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
-                                children:  [
-                                  Icon(Icons.circle, color: Colors.white, size: 8),
-                                  SizedBox(width: 4),
+                                children: [
+                                  const Icon(Icons.circle, color: Colors.white, size: 8),
+                                  const SizedBox(width: 4),
                                   Text(
-                                    l10n.liveLabel ,
-                                    style: TextStyle(
+                                    l10n.liveLabel,
+                                    style: const TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -716,23 +612,22 @@ class ProgramCard extends StatelessWidget {
                             ),
                         ],
                       ),
+                      const SizedBox(height: 12),
+
+                      // Program title
+                      Text(
+                        program.title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                       const SizedBox(height: 8),
+
+                      // Time
                       Row(
                         children: [
-                          Icon(
-                            Icons.calendar_today,
-                            size: 14,
-                            color: Colors.white.withOpacity(0.7),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            program.formattedDate,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.white.withOpacity(0.7),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
                           Icon(
                             Icons.access_time,
                             size: 14,
@@ -749,6 +644,8 @@ class ProgramCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
+
+                      // Description
                       Text(
                         program.description,
                         style: TextStyle(
@@ -759,6 +656,8 @@ class ProgramCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 12),
+
+                      // Tags
                       Wrap(
                         spacing: 6,
                         runSpacing: 6,
@@ -782,6 +681,10 @@ class ProgramCard extends StatelessWidget {
                           );
                         }).toList(),
                       ),
+
+                      // All Entities (Participants, Moderators, Sponsors, Exposers)
+                      const SizedBox(height: 12),
+                      _buildAllEntitiesStack(program),
                     ],
                   ),
                 ),
@@ -792,26 +695,231 @@ class ProgramCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildParticipantsStack(List<dynamic> participants) {
+    final displayCount = participants.length > 4 ? 4 : participants.length;
+    final remaining = participants.length - displayCount;
+
+    return SizedBox(
+      height: 40,
+      child: Stack(
+        children: [
+          // Display up to 4 participants
+          ...List.generate(displayCount, (index) {
+            final participant = participants[index];
+            final String? photoUrl = participant['photo_url'];
+            final String name = participant['name'] ?? '?';
+
+            return Positioned(
+              left: index * 28.0,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                  ),
+                  border: Border.all(
+                    color: const Color(0xFF1A1A2E),
+                    width: 2,
+                  ),
+                  image: photoUrl != null && photoUrl.isNotEmpty
+                      ? DecorationImage(
+                          image: NetworkImage(photoUrl),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+                child: photoUrl == null || photoUrl.isEmpty
+                    ? Center(
+                        child: Text(
+                          name[0].toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    : null,
+              ),
+            );
+          }),
+          // Show "+X" if there are more participants
+          if (remaining > 0)
+            Positioned(
+              left: displayCount * 28.0,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF6C63FF),
+                  border: Border.all(
+                    color: const Color(0xFF1A1A2E),
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    '+$remaining',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAllEntitiesStack(Program program) {
+    // Combine all entities
+    List<Map<String, dynamic>> allEntities = [];
+    
+    // Add participants
+    for (var participant in program.participants) {
+      allEntities.add({
+        'photo_url': participant['photo_url'],
+        'name': participant['name'] ?? '?',
+        'type': 'participant',
+      });
+    }
+    
+    // Add moderators
+    for (var moderator in program.moderators) {
+      allEntities.add({
+        'photo_url': moderator['photo_url'],
+        'name': moderator['name'] ?? '?',
+        'type': 'moderator',
+      });
+    }
+    
+    // Add sponsors
+    for (var sponsor in program.sponsors) {
+      allEntities.add({
+        'photo_url': sponsor['photo_url'],
+        'name': sponsor['name'] ?? '?',
+        'type': 'sponsor',
+      });
+    }
+    
+    // Add exposers
+    for (var exposer in program.exposers) {
+      allEntities.add({
+        'photo_url': exposer['photo_url'],
+        'name': exposer['name'] ?? '?',
+        'type': 'exposer',
+      });
+    }
+
+    if (allEntities.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final displayCount = allEntities.length > 5 ? 5 : allEntities.length;
+    final remaining = allEntities.length - displayCount;
+
+    return SizedBox(
+      height: 40,
+      child: Stack(
+        children: [
+          // Display up to 5 entities
+          ...List.generate(displayCount, (index) {
+            final entity = allEntities[index];
+            final String? photoUrl = entity['photo_url'];
+            final String name = entity['name'] ?? '?';
+
+            return Positioned(
+              left: index * 28.0,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                  ),
+                  border: Border.all(
+                    color: const Color(0xFF1A1A2E),
+                    width: 2,
+                  ),
+                  image: photoUrl != null && photoUrl.isNotEmpty
+                      ? DecorationImage(
+                          image: NetworkImage(photoUrl),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+                child: photoUrl == null || photoUrl.isEmpty
+                    ? Center(
+                        child: Text(
+                          name[0].toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    : null,
+              ),
+            );
+          }),
+          // Show "+X" if there are more entities
+          if (remaining > 0)
+            Positioned(
+              left: displayCount * 28.0,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF6C63FF),
+                  border: Border.all(
+                    color: const Color(0xFF1A1A2E),
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    '+$remaining',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 // ============================================================================
-// LIVE PROGRAM SCREEN
+// LIVE PROGRAM SCREEN (Keep as is)
 // ============================================================================
- 
 
 class LiveProgramScreen extends StatelessWidget {
   final Program program;
 
   const LiveProgramScreen({super.key, required this.program});
 
-
   Widget universalLivePlayer(String iframeHtml) {
     try {
-        final controller = WebViewController()
-    ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..setBackgroundColor(Colors.black)
-    ..loadHtmlString(
-      '''
+      final controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setBackgroundColor(Colors.black)
+        ..loadHtmlString(
+          '''
 <!DOCTYPE html>
 <html>
   <head>
@@ -835,24 +943,20 @@ class LiveProgramScreen extends StatelessWidget {
   </body>
 </html>
 ''',
-    );
+        );
 
-  return SizedBox(
-    height: 220,
-    child: WebViewWidget(controller: controller),
-  );
+      return SizedBox(
+        height: 220,
+        child: WebViewWidget(controller: controller),
+      );
     } catch (e) {
-      return Container();  
+      return Container();
     }
-}
-
- 
-
+  }
 
   @override
   Widget build(BuildContext context) {
-     final l10n = AppLocalizations.of(context);
-
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -861,6 +965,7 @@ class LiveProgramScreen extends StatelessWidget {
         elevation: 0,
       ),
       body: Container(
+        
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -872,22 +977,46 @@ class LiveProgramScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Live Video Player (Placeholder)
-             
-             program.liveLinkUrl.isNotEmpty ?
-             Container( 
-              color: Colors.black,
-              height: 250,
-              width: MediaQuery.of(context).size.width,
-              child:  YoutubeFramePlayer(videoUrl: program.liveLinkUrl, base:"https://www.youtube-nocookie.com")
-               ): Container(),
-                
+              // Live Video Player
+              program.liveLinkUrl.isNotEmpty
+                  ? Container(
+                      color: Colors.black,
+                      height: 250,
+                      width: MediaQuery.of(context).size.width,
+                      child: YoutubeFramePlayer(
+                          videoUrl: program.liveLinkUrl,
+                          base: "https://www.youtube-nocookie.com"))
+                  : Container(),
 
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Room badge
+                    if (program.room != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          program.room!.label,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+
                     Text(
                       program.title,
                       style: const TextStyle(
@@ -940,20 +1069,14 @@ class LiveProgramScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
-
-                    // Chat Section (if enabled)
-               
-
                     Text(
-                      l10n.description ,
-                      style: TextStyle(
+                      l10n.description,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-
-                    
                     const SizedBox(height: 8),
                     Text(
                       program.description,
@@ -965,11 +1088,12 @@ class LiveProgramScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-
                     if (program.canChat == 1) ...[
                       Container(
                         height: 500,
-                        child: CalendarLiveChat(programID: program.id,) 
+                        child: CalendarLiveChat(
+                          programID: program.id,
+                        ),
                       )
                     ],
 
@@ -985,9 +1109,9 @@ class LiveProgramScreen extends StatelessWidget {
 
                     // Sponsors
                     if (program.sponsors.isNotEmpty) ...[
-                       Text(
+                      Text(
                         l10n.sponsors,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -1000,9 +1124,9 @@ class LiveProgramScreen extends StatelessWidget {
 
                     // Participants
                     if (program.participants.isNotEmpty) ...[
-                       Text(
+                      Text(
                         l10n.participants,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -1017,7 +1141,7 @@ class LiveProgramScreen extends StatelessWidget {
                     if (program.moderators.isNotEmpty) ...[
                       Text(
                         l10n.moderators,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -1032,7 +1156,7 @@ class LiveProgramScreen extends StatelessWidget {
                     if (program.exposers.isNotEmpty) ...[
                       Text(
                         l10n.exposers,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -1044,8 +1168,6 @@ class LiveProgramScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
-              
             ],
           ),
         ),
@@ -1053,70 +1175,66 @@ class LiveProgramScreen extends StatelessWidget {
     );
   }
 
- Widget _buildEntityRow(List<dynamic> data) {
-  print(data);
+  Widget _buildEntityRow(List<dynamic> data) {
+    print(data);
 
-  return Wrap(
-    spacing: 12,
-    runSpacing: 12,
-    children: data.map((item) {
-      final String name = item['name'] ?? '...';
-      final String? photoUrl = item['photo_url'];
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: data.map((item) {
+        final String name = item['name'] ?? '...';
+        final String? photoUrl = item['photo_url'];
 
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                ),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 2,
+                ),
+                image: photoUrl != null && photoUrl.isNotEmpty
+                    ? DecorationImage(
+                        image: NetworkImage('$photoUrl'),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
               ),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 2,
-              ),
-              image: photoUrl != null && photoUrl.isNotEmpty
-                  ? DecorationImage(
-                    
-                      image: NetworkImage('${photoUrl}'),
-                      fit: BoxFit.cover,
+              child: photoUrl == null || photoUrl.isEmpty
+                  ? Center(
+                      child: Text(
+                        name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                     )
                   : null,
             ),
-            child: photoUrl == null || photoUrl.isEmpty
-                ? Center(
-                    child: Text(
-                      name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  )
-                : null,
-          ),
-          const SizedBox(width: 6),
-          SizedBox(
-            width: 120,
-            child: Text(
-              name,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Colors.white
+            const SizedBox(width: 15),
+            Expanded( 
+              child: Text(
+                name,
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white),
               ),
             ),
-          ),
-        ],
-      );
-    }).toList(),
-  );
-}
-
+          ],
+        );
+      }).toList(),
+    );
+  }
 }

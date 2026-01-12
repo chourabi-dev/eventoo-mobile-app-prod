@@ -133,41 +133,77 @@ class _MeetingsScreenState extends State<MeetingsScreen>
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: 
-        Text(
-          l10n.myMeetings,
-          style: TextStyle(
-            color: Color(0xFF1A1A1A),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          /*IconButton(
-            icon: const Icon(Icons.filter_list, color: Color(0xFF1A1A1A)),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 8),*/
-        ],
-      ),
-      body: _isLoading
+     
+     
+      body: 
+      
+          _isLoading
           ? _buildLoadingState()
           : RefreshIndicator(
               onRefresh: _loadMeetings,
               color: const Color(0xFF6366F1),
-              child: ListView.builder(
+              child: 
+              
+              Column(
+                children: [
+                  Padding(
+                  padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 50, bottom: 35),
+                  child:  Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF6366F1).withOpacity(0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.inbox,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                             l10n.myMeetings,
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF1A1A1A),
+                                fontFamily: 'Poppins',
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                ),
+                Expanded(
+                  child: ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: _meetingsData.planning.length,
-                itemBuilder: (context, index) {
+                itemBuilder: (context, index) { 
                   return _buildDaySection(
                     _meetingsData.planning[index],
                     index,
                   );
                 },
               ),
+                )
+                ],
+              )
+              
+
+
             ),
     );
   }
@@ -223,7 +259,7 @@ class _MeetingsScreenState extends State<MeetingsScreen>
         children: [
           _buildDateHeader(dayPlanning.date),
           const SizedBox(height: 12),
-          ...dayPlanning.meetings.asMap().entries.map((entry) {
+          ...dayPlanning.meetings.asMap().entries.where((m)=> m.value.status =="accepted" ).map((entry) {
             return _buildMeetingCard(
               entry.value,
               entry.key,
@@ -683,25 +719,4 @@ class _MeetingsScreenState extends State<MeetingsScreen>
     );
   }
 }
-
-// Example usage in your app
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Meetings App',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        fontFamily: 'SF Pro Display',
-      ),
-      home: const MeetingsScreen(),
-    );
-  }
-}
+ 

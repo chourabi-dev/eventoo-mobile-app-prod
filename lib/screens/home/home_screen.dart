@@ -277,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-
+    
     return Scaffold(
       extendBody: true,
       body: _tabs.elementAt(_selectedIndex),
@@ -299,11 +299,13 @@ class ModuleData {
   final IconData icon;
   final Gradient gradient;
   final Color color;
+  final String route;
+  
 
   ModuleData({
     required this.title,
     required this.icon,
     required this.gradient,
-    required this.color,
+    required this.color, required this.route,
   });
 }

@@ -360,7 +360,8 @@ void showErrorDialog(BuildContext context, String message) {
 
       eventService.networkingSendInvitation(widget.participant.id, int.parse(_selectedDate!.id) ,  _selectedTime!, int.parse(_selectedLocation!.id)  ).then((res){
         dynamic body = jsonDecode(res.body);
-
+        print(body);
+        
         if( body['success'] == true ){
            Navigator.pop(context);
            

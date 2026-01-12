@@ -194,60 +194,76 @@ class _ChatScreenState extends State<ChatScreen> {
   /// ----------------------------
   /// SEND MESSAGE
   /// ----------------------------
+  
 
   void _sendMessage() {
-    
-    final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+  final text = _messageController.text.trim();
+  if (text.isEmpty) return;
 
-    final payload = {
-      'sender_id': _currentUserId,
-      'receiver_id': widget.participant,
-      'content': text,
-    };
+  final tempId = DateTime.now().millisecondsSinceEpoch.toString();
 
-    _socket.emit('send_message', payload);
+  final optimisticMessage = ChatMessage(
+    id: tempId,
+    senderId: _currentUserId!,
+    receiverId: widget.participant.toString(),
+    content: text,
+    type: "text",
+    createdAt: DateTime.now(),
+  );
 
-    // send message to server db
-    eventService.sendDirectMessage(widget.participant, text).then((res){
+  // 1️⃣ Optimistically add message to UI
+  setState(() {
+    _messages.add(optimisticMessage);
+  });
 
-      dynamic body  = jsonDecode(res.body);
-      if( body['success'] == false ){
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${ body['message'] }'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
+  _messageController.clear();
+  _scrollToBottom();
 
-      print(body);
-    }).catchError((e){
-       ScaffoldMessenger.of(context).showSnackBar(
+  // 2️⃣ Emit socket event
+  final payload = {
+    'sender_id': _currentUserId,
+    'receiver_id': widget.participant,
+    'content': text,
+  };
+
+  _socket.emit('send_message', payload);
+
+  // 3️⃣ Persist message to server
+  eventService
+      .sendDirectMessage(widget.participant, text)
+      .then((res) {
+    final body = jsonDecode(res.body);
+
+    if (body['success'] == false) {
+      // ❌ Rollback: remove last inserted message
+      setState(() {
+        _messages.removeWhere((m) => m.id == tempId);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Message not sent :( "),
-          duration: Duration(seconds: 2),
+          content: Text(body['message'] ?? "Message not sent"),
+          duration: const Duration(seconds: 2),
         ),
       );
-      print("JSON decode error: $e");
-      
-    });
-
-
+    }
+  }).catchError((e) {
+    // ❌ Network / server error → rollback
     setState(() {
-      _messages.add(ChatMessage(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        senderId: _currentUserId!,
-        receiverId: widget.participant.toString(),
-        content: text,
-        type: "text",
-        createdAt: DateTime.now(),
-      ));
+      _messages.removeWhere((m) => m.id == tempId);
     });
- 
-    _messageController.clear();
-    _scrollToBottom();
-  }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Message not sent :("),
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    debugPrint("Send message error: $e");
+  });
+}
+
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {

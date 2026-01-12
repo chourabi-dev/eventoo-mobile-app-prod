@@ -40,6 +40,41 @@ class AuthService {
   }
 
 
+
+  Future<dynamic> continueGoogleSignup({
+    required String firstname,
+    required String lastname,
+    required String phone,
+    required int countryID, 
+    required String email, 
+    required String? sex,
+    required String? photoURL
+    
+
+    
+  }) async {
+    final url = Uri.parse('${_env.endpoint}/api/auth/signup/google');
+
+    return await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({ 
+        'email': email, 
+        "firstName": firstname,
+        "lastName": lastname,
+        "phone": phone, 
+        "country": countryID,
+        "sexe": sex,
+        "photoURL": photoURL
+      }),
+    );
+
+  }
+  
+
+
   Future<dynamic> updateInfo({
     required String firstname,
     required String lastname,
@@ -214,6 +249,22 @@ class AuthService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       }, 
+    ); 
+  }
+
+
+
+  Future<http.Response> sendVerifyEmail( String email ) async {
+ 
+    final url = Uri.parse('https://eventoo.io/api/auth-eventoo-user/verify-eventoo-user-email'); 
+    return  http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json', 
+      }, 
+      body: jsonEncode({
+        'email': email
+      }),
     ); 
   }
 
