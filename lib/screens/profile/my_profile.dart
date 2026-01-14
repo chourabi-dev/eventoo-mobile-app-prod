@@ -475,14 +475,14 @@ Future<void> finishLogin(int eventId) async {
       child: Column(
         children: [
            
-          _buildDrawerItem(
+          /*_buildDrawerItem(
             context,
             icon: Icons.home_rounded,
             title: l10n.homeLabel,
             onTap: () {
-              Navigator.pop(context);
+              Navigator.of(context).pop();
             },
-          ),
+          ),*/
           _buildDrawerItem(
             context,
             icon: Icons.event_rounded,
