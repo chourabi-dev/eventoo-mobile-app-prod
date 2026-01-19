@@ -329,7 +329,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                             value: _selectedSex,
                                             decoration: InputDecoration(
                                               labelText: l10n.sex,           // <-- add in localization
-                                              prefixIcon: const Icon(Icons.transgender),
+                                              prefixIcon: const Icon(FontAwesomeIcons.mars),
                                             ),
                                             items: [
                                               DropdownMenuItem(value: "male", child: Text(l10n.male)),

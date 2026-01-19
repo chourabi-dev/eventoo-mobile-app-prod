@@ -126,8 +126,8 @@ class _BadgeDisplayScreenState extends State<BadgeDisplayScreen> {
         : null;
 
     return Container(
-      width: 350,
-      height: 600,
+      width: MediaQuery.of(context).size.width,
+      height: 550,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -277,7 +277,7 @@ class _BadgeDisplayScreenState extends State<BadgeDisplayScreen> {
         uppercase ? text.toUpperCase() : text,
         textAlign: TextAlign.center,
         style: TextStyle(
-          fontSize: size,
+          fontSize: size - 10,
           fontWeight: bold ? FontWeight.bold : FontWeight.normal,
           color: Colors.black87,
         ),

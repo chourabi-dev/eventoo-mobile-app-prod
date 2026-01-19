@@ -16,6 +16,10 @@ class ProfileTab extends StatefulWidget {
 }
 
 class _ProfileTabState extends State<ProfileTab> {
+  // Theme colors
+  static const Color mainBackgroundColor = Color.fromRGBO(235, 232, 222, 1);
+  static const Color primaryColor = Color.fromRGBO(199, 18, 94, 1);
+
   UserProfile profile = UserProfile(
     photoUrl: 'https://i.pravatar.cc/300?img=33',
     fullName: 'John Anderson',
@@ -128,12 +132,14 @@ class _ProfileTabState extends State<ProfileTab> {
 
 
     return Scaffold(
-      
+      backgroundColor: mainBackgroundColor,
       body: 
 
         loading == true ?
           Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+              color: primaryColor,
+            ),
           )
         :
         
@@ -150,12 +156,12 @@ class _ProfileTabState extends State<ProfileTab> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFF6C63FF),
+                      color: primaryColor,
                       width: 4,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF6C63FF).withOpacity(0.3),
+                        color: primaryColor.withOpacity(0.3),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -175,7 +181,7 @@ class _ProfileTabState extends State<ProfileTab> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF6C63FF),
+                        color: primaryColor,
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 3),
                       ),
@@ -214,18 +220,11 @@ class _ProfileTabState extends State<ProfileTab> {
   child: Container(
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
-      gradient: const LinearGradient(
-        colors: [
-          Color(0xFF2196F3),
-          Color(0xFF21CBF3),
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
+      color: primaryColor,
       borderRadius: BorderRadius.circular(30),
       boxShadow: [
         BoxShadow(
-          color: Colors.blue.withOpacity(0.4),
+          color: primaryColor.withOpacity(0.4),
           blurRadius: 12,
           offset: const Offset(0, 6),
         ),
@@ -305,7 +304,7 @@ class _ProfileTabState extends State<ProfileTab> {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF6C63FF),
+              color: primaryColor,
             ),
           ),
           const SizedBox(height: 16),
@@ -324,10 +323,10 @@ class _ProfileTabState extends State<ProfileTab> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF6C63FF).withOpacity(0.1),
+              color: primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: const Color(0xFF6C63FF), size: 20),
+            child: Icon(icon, color: primaryColor, size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -378,6 +377,9 @@ class EditProfileSheet extends StatefulWidget {
 }
 
 class _EditProfileSheetState extends State<EditProfileSheet> {
+  // Theme colors
+  static const Color primaryColor = Color.fromRGBO(199, 18, 94, 1);
+
   late TextEditingController _nameController;  
   late TextEditingController _phoneController;  
   
@@ -501,7 +503,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C63FF),
+                        backgroundColor: primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -526,13 +528,13 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: const Color(0xFF6C63FF)),
+        prefixIcon: Icon(icon, color: primaryColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 2),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
         ),
       ),
     );

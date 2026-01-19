@@ -210,7 +210,11 @@ class AppLocalizations {
       "delete_my_account":"Delete my account",
       "delete_account_warning":"This action is permanent. Deleting your account will remove all your data and cannot be undone.",
       "company_label": "Company",
-      "function_label": "Occupation"
+      "function_label": "Occupation",
+      "my_events_subtitle":"In which I am registered",
+      "more_events_subtitle":"Which I am not yet \nregistered for",
+      
+      
    
 
  
@@ -408,7 +412,11 @@ class AppLocalizations {
       
       
       "company_label": "Entreprise",
-      "function_label": "Fonction"
+      "function_label": "Fonction",
+      "my_events_subtitle":"Dans lesquels je suis inscrit",
+      "more_events_subtitle":"Dans lesquels je ne \nsuis pas encore inscrit",
+
+
  
       
 
@@ -658,39 +666,21 @@ class AppLocalizations {
   String get allRoomsLabel => translate('all_rooms_label');
   
   String get googleSignInFaildNoAccount => translate('google_sign_in_faild_no_account');
-  String get googleSignInFaild => translate('google_sign_in_faild');
-  
-  String get orTextSeparator => translate('or_text_separator');
-
-
-  String get myEventsLabel => translate('my_events_label');
-
+  String get googleSignInFaild => translate('google_sign_in_faild'); 
+  String get orTextSeparator => translate('or_text_separator'); 
+  String get myEventsLabel => translate('my_events_label'); 
   String get noEventsLabel => translate('no_events_label');
-  String get noEventsContent => translate('no_events_content');
-
-
+  String get noEventsContent => translate('no_events_content'); 
   String get deleteMyAccount => translate('delete_my_account');
   String get deleteAccountWarning => translate('delete_account_warning');
   
+
+  String get myEventsSubTitleDans => translate('my_events_subtitle');
+  String get moreEventsSubtitle => translate('more_events_subtitle');
   
 
   
-  
-  
-
-
-
-
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
+    
 
 
 

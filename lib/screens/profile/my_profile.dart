@@ -730,15 +730,30 @@ Widget _buildDrawerItem(
             child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${l10n.myEventsLabel} (${_myEvents.length})' ,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${l10n.myEventsLabel} (${_myEvents.length})' ,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Text(
+                      '${l10n.myEventsSubTitleDans}' ,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              
+              )
+
             ],
           ),
           )),
@@ -774,14 +789,33 @@ Widget _buildDrawerItem(
             child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${l10n.moreEvents} (${_events.length})' ,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+               
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${l10n.moreEvents} (${_events.length})' ,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                    Text(
+                      '${l10n.moreEventsSubtitle}' ,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
+ 
               TextButton(
                 onPressed: () => context.push('/events'),
                 child: Text(
@@ -1067,7 +1101,7 @@ Widget _buildDrawerItem(
                     child: Text(
                       _fullname,
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.textColor,
                         letterSpacing: 0.5,
@@ -1109,24 +1143,7 @@ Widget _buildDrawerItem(
               ),
               
               // Role
-              if (_role.isNotEmpty) ...[
-                SizedBox(height: 6),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    _role,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppTheme.textColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
+              
               
               // Company
               if (_company.isNotEmpty) ...[
@@ -1148,6 +1165,26 @@ Widget _buildDrawerItem(
                 ),
               ],
               
+              SizedBox(height: 12),
+
+              if (_role.isNotEmpty) ...[
+                SizedBox(height: 6),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    _role,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppTheme.textColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
               SizedBox(height: 12),
               
               // Edit Profile Button

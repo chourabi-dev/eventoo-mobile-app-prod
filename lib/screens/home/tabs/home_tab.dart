@@ -425,7 +425,7 @@ class _HomeTabState extends State<HomeTab> {
                             ),
                             
                             const SizedBox(height: 4),
-                            /*ShaderMask(
+                            ShaderMask(
                               shaderCallback: (bounds) =>
                                   AppTheme.primaryGradient.createShader(bounds),
                               child: Container(
@@ -436,13 +436,13 @@ class _HomeTabState extends State<HomeTab> {
                                 _event != null ?( _event['event']['name'] ?? "oups" ) : "...",
                                 style: Theme.of(context).textTheme.displayMedium?.copyWith(
                                   color: Colors.white,
-                                  fontSize: 26,
+                                  fontSize: 13,
                                 ),
                                 overflow: TextOverflow.fade,
                               )
                               
                               ,)
-                            ),*/
+                            ),
                           ],
                         ),
                         
