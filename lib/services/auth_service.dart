@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mobile/main.dart';
 import 'package:mobile/services/config.dart';
 
 class AuthService {
@@ -17,7 +18,11 @@ class AuthService {
     required int countryID, 
     required String email,
     required String password,
-    required String? sex
+    required String? sex,
+
+    required String company,
+    required String role
+    
   }) async {
     final url = Uri.parse('${_env.endpoint}/api/auth/signup');
 
@@ -33,7 +38,9 @@ class AuthService {
         "lastName": lastname,
         "phone": phone, 
         "country": countryID,
-        "sexe": sex
+        "sexe": sex,
+        "company": company,
+        "role": role
       }),
     );
 
@@ -48,7 +55,11 @@ class AuthService {
     required int countryID, 
     required String email, 
     required String? sex,
-    required String? photoURL
+    required String? photoURL,
+
+    required String company,
+    required String role
+
     
 
     
@@ -67,7 +78,9 @@ class AuthService {
         "phone": phone, 
         "country": countryID,
         "sexe": sex,
-        "photoURL": photoURL
+        "photoURL": photoURL,
+        "company": company,
+        "role": role
       }),
     );
 
@@ -80,8 +93,15 @@ class AuthService {
     required String lastname,
     required String phone,
     required int countryID,
-    required String sexe
+    required String sexe,
+    required String company,
+    required String role,
+    
   }) async {
+
+
+    print(lastname);
+
     final url = Uri.parse('${_env.endpoint}/api/auth/update-info');
 
     String? token = await _storage.read(key: 'token');  
@@ -96,7 +116,9 @@ class AuthService {
         "lastName": lastname,
         "phone": phone, 
         "country": countryID,
-        "sexe": sexe
+        "sexe": sexe,
+        "company": company,
+        "role": role
       }),
     );
 
@@ -176,6 +198,27 @@ class AuthService {
   }
 
 
+    Future<http.Response> deleteEventooAccount(String password) async {
+    final url = Uri.parse('${_env.endpoint}/api/auth/delete-my-account'); 
+    final lang = MyApp.currentLanguage;
+
+    String? token = await _storage.read(key: 'token');  
+    return http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        'Accept-Language': lang,
+      },
+      body: jsonEncode({
+        'password': password
+      }),
+    );
+  }
+
+
+
+
 
    Future<AuthResponse> loginWithGoogle({
     required String email
@@ -186,6 +229,7 @@ class AuthService {
       url,
       headers: {
         'Content-Type': 'application/json',
+        
       },
       body: jsonEncode({
         'email': email,

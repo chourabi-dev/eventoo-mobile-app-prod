@@ -9,6 +9,7 @@ import 'package:mobile/screens/networking_experience/tabs/participants_tabs.dart
 import 'package:mobile/screens/networking_experience/widgets/date_planifier.dart';
 import 'package:mobile/screens/networking_experience/widgets/invitation_re_planifier.dart';
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
 
 class NetworkingInvitationsTab extends StatefulWidget {
   const NetworkingInvitationsTab({Key? key}) : super(key: key);
@@ -163,21 +164,13 @@ class _NetworkingInvitationsTabState extends State<NetworkingInvitationsTab>
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppTheme.mainBackgroundColor,
+      
       body: Stack(
         children: [
           // Background gradient
           Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFFF8F9FA),
-                  const Color(0xFFE9ECEF).withOpacity(0.5),
-                ],
-              ),
-            ),
+            
           ),
           SafeArea(
             child: Column(
@@ -191,19 +184,19 @@ class _NetworkingInvitationsTabState extends State<NetworkingInvitationsTab>
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                colors: [Color.fromRGBO(199, 18, 94, 1), Color.fromRGBO(107, 22, 81, 1)],
                               ),
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF6366F1).withOpacity(0.3),
+                                  color: Color.fromRGBO(199, 18, 94, 1).withOpacity(0.3),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
                             child: const Icon(
-                              Icons.inbox,
+                              Icons.group,
                               color: Colors.white,
                               size: 28,
                             ),
@@ -230,7 +223,7 @@ class _NetworkingInvitationsTabState extends State<NetworkingInvitationsTab>
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppTheme.mainDeepBackgroundColor,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
@@ -246,7 +239,7 @@ class _NetworkingInvitationsTabState extends State<NetworkingInvitationsTab>
                       indicator: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          colors: [Color.fromRGBO(199, 18, 94, 1), Color.fromRGBO(107, 22, 81, 1)],
                         ),
                       ),
                       dividerColor: Colors.transparent,
@@ -448,7 +441,7 @@ class InvitationCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.mainDeepBackgroundColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -474,15 +467,9 @@ class InvitationCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          colors: [Color.fromRGBO(199, 18, 94, 1), Color.fromRGBO(107, 22, 81, 1)],
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF6366F1).withOpacity(0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+                        
                       ),
                       padding: const EdgeInsets.all(3),
                       child: Container(
@@ -573,7 +560,7 @@ class InvitationCard extends StatelessWidget {
             key: const ValueKey('status'),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: AppTheme.mainDeepBackgroundColor,
               border: Border(
                 top: BorderSide(color: Colors.grey[200]!),
               ),
@@ -596,7 +583,7 @@ if (invitation.type == InvitationType.incoming)
             key: const ValueKey('actions'),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: AppTheme.mainDeepBackgroundColor,
               border: Border(
                 top: BorderSide(color: Colors.grey[200]!),
               ),
@@ -637,7 +624,7 @@ if (invitation.type == InvitationType.incoming)
             key: const ValueKey('status'),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+             color: AppTheme.mainDeepBackgroundColor,
               border: Border(
                 top: BorderSide(color: Colors.grey[200]!),
               ),
@@ -667,6 +654,7 @@ if (invitation.type == InvitationType.incoming)
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
     decoration: BoxDecoration(
+      
       color: color.withOpacity(0.12),
       borderRadius: BorderRadius.circular(20),
     ),

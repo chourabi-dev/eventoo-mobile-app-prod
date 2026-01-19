@@ -2,14 +2,40 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // Color palette
-  static const primaryColor = Color.fromARGB(255, 99, 156, 255);
+  static const mainBackgroundColor = Color.fromRGBO(235, 232, 222, 1);
+  static const mainDeepBackgroundColor = Color.fromRGBO(225, 218, 203, 1);
+  
+
+  static const primaryColor = Color.fromRGBO(199, 18, 94, 1);
+  static const deepColor = Color.fromARGB(255, 8, 30, 67);
+  
   static const secondaryColor = Color.fromARGB(255, 101, 181, 255);
-  static const accentColor = Color(0xFF4ECDC4);
+  static const accentColor = Color.fromRGBO(199, 18, 94, 1);
+  static const accentBackgroundColor = Color.fromRGBO(155, 20, 88, 1);
+ 
+  
+  static const textColor = Color.fromRGBO(22 , 22, 53, 1);
+  
   static const backgroundColor = Color(0xFFF5F5F5); // light background
   static const surfaceColor = Color(0xFFFFFFFF); // cards and surfaces
   static const cardColor = Color(0xFFF0F0F0);
   
   // Gradients
+  static const primaryButtonGradient = LinearGradient(
+    colors: [ Color.fromRGBO(199, 18, 94, 1), Color.fromRGBO(107, 22, 81, 1)],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
+
+
+  static const secondaryButtonGradient = LinearGradient(
+    colors: [ Color.fromRGBO(225, 218, 203, 1), Color.fromRGBO(225, 218, 203, 1) ],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
+  
+
+
   static const primaryGradient = LinearGradient(
     colors: [primaryColor, Color.fromARGB(255, 182, 80, 219)],
     begin: Alignment.topLeft,
@@ -42,6 +68,13 @@ class AppTheme {
   
   static const expositionGardien = LinearGradient(
     colors: [Color.fromARGB(255, 205, 192, 78), Color.fromARGB(255, 235, 100, 67)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
+
+    static const participantGardien = LinearGradient(
+    colors: [Color.fromARGB(255, 43, 25, 85), Color.fromARGB(255, 57, 36, 112)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

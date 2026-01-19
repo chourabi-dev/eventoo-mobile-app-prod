@@ -19,6 +19,7 @@ class AppLocalizations {
       'pick_event': 'Pick an Event',
       'sign_in': 'Sign In',
       'sign_up': 'Sign Up',
+      'sign_up_label':"Sign Up",
       'sign_in_continue': 'Sign in to continue',
       'sign_up_continue': 'Sign up to continue',
       'email': 'Email',
@@ -202,6 +203,15 @@ class AppLocalizations {
       "google_sign_in_faild":"Something went wrong trying to sign in using googlge services. please try again.",
 
       "or_text_separator":"OR",
+      "my_events_label":"My events",
+
+      "no_events_content":"You haven't registered for any events yet.",
+      "no_events_label":"No events yet",
+      "delete_my_account":"Delete my account",
+      "delete_account_warning":"This action is permanent. Deleting your account will remove all your data and cannot be undone.",
+      "company_label": "Company",
+      "function_label": "Occupation"
+   
 
  
 
@@ -212,7 +222,8 @@ class AppLocalizations {
       'discover_events': 'Découvrez des événements incroyables',
       'pick_event': 'Choisir un Événement',
       'sign_in': 'Se Connecter',
-      'sign_up': "S'inscrire",
+      'sign_up': "S’inscrire avec e-mail",
+      'sign_up_label': "S’inscrire",
       'sign_in_continue': 'Connectez-vous pour continuer',
       'sign_up_continue': "Inscrivez-vous pour continuer",
       'email': 'Email',
@@ -388,7 +399,17 @@ class AppLocalizations {
       "google_sign_in_faild": "Une erreur est survenue lors de la tentative de connexion avec les services Google. Veuillez réessayer.",
       
       "or_text_separator":"OU",
+      "my_events_label":"Mes événements",
 
+      "no_events_content":"Vous n'êtes inscrit à aucun événement pour le moment.",
+      "no_events_label":"Aucun événement pour le moment",
+      "delete_my_account":"Supprimer mon compte",
+      "delete_account_warning":"Cette action est définitive. La suppression de votre compte entraînera la perte de toutes vos données et ne pourra pas être annulée.",
+      
+      
+      "company_label": "Entreprise",
+      "function_label": "Fonction"
+ 
       
 
   
@@ -407,7 +428,14 @@ class AppLocalizations {
   String get discoverEvents => translate('discover_events');
   String get pickEvent => translate('pick_event');
   String get signIn => translate('sign_in');
+  
+  String get companyLabel => translate('company_label');
+  String get functionLabel => translate('function_label');
+  
+
+  
   String get signUp => translate('sign_up');
+  String get signUpLabel => translate('sign_up_label');
   String get signInContinue => translate('sign_in_continue');
   String get signUpContinue => translate('sign_up_continue');
   String get email => translate('email');
@@ -633,6 +661,28 @@ class AppLocalizations {
   String get googleSignInFaild => translate('google_sign_in_faild');
   
   String get orTextSeparator => translate('or_text_separator');
+
+
+  String get myEventsLabel => translate('my_events_label');
+
+  String get noEventsLabel => translate('no_events_label');
+  String get noEventsContent => translate('no_events_content');
+
+
+  String get deleteMyAccount => translate('delete_my_account');
+  String get deleteAccountWarning => translate('delete_account_warning');
+  
+  
+
+  
+  
+  
+
+
+
+
+
+  
   
   
   

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/models/business_card_model.dart'; 
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
 
 class BusinessCardExchangeTab extends StatefulWidget {
   const BusinessCardExchangeTab({Key? key}) : super(key: key);
@@ -134,7 +135,8 @@ class _BusinessCardExchangeTabState extends State<BusinessCardExchangeTab>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppTheme.mainBackgroundColor,
+      
       body: Stack(
         children: [
           // Background gradient
@@ -165,12 +167,14 @@ class _BusinessCardExchangeTabState extends State<BusinessCardExchangeTab>
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                colors: [Color.fromRGBO(199, 18, 94, 1), Color.fromRGBO(107, 22, 81, 1)],
                               ),
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF6366F1).withOpacity(0.3),
+                                  color: const Color.fromRGBO(199, 18, 94, 1).withOpacity(0.3),
+
+                                  
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -206,7 +210,7 @@ class _BusinessCardExchangeTabState extends State<BusinessCardExchangeTab>
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppTheme.mainDeepBackgroundColor,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
@@ -222,7 +226,7 @@ class _BusinessCardExchangeTabState extends State<BusinessCardExchangeTab>
                       indicator: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          colors: [Color.fromRGBO(199, 18, 94, 1), Color.fromRGBO(107, 22, 81, 1)],
                         ),
                       ),
                       dividerColor: Colors.transparent,
@@ -431,7 +435,7 @@ class BusinessCardRequestCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.mainDeepBackgroundColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -457,15 +461,9 @@ class BusinessCardRequestCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          colors: [Color.fromRGBO(199, 18, 94, 1), Color.fromRGBO(107, 22, 81, 1)],
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF6366F1).withOpacity(0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+                         
                       ),
                       padding: const EdgeInsets.all(3),
                       child: Container(
@@ -563,7 +561,7 @@ class BusinessCardRequestCard extends StatelessWidget {
                   key: const ValueKey('status'),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
+                    color: AppTheme.mainDeepBackgroundColor,
                     border: Border(
                       top: BorderSide(color: Colors.grey[200]!),
                     ),
@@ -581,7 +579,7 @@ class BusinessCardRequestCard extends StatelessWidget {
                           key: const ValueKey('actions'),
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.grey[50],
+                            color: AppTheme.mainDeepBackgroundColor,
                             border: Border(
                               top: BorderSide(color: Colors.grey[200]!),
                             ),
@@ -614,7 +612,7 @@ class BusinessCardRequestCard extends StatelessWidget {
                           key: const ValueKey('status'),
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.grey[50],
+                            color: AppTheme.mainDeepBackgroundColor,
                             border: Border(
                               top: BorderSide(color: Colors.grey[200]!),
                             ),

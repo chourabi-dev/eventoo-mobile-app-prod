@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
-import 'package:mobile/services/auth_service.dart'; 
+import 'package:mobile/services/auth_service.dart';
+import 'package:mobile/theme/app_theme.dart';
+import 'package:mobile/widgets/animated_button.dart'; 
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -71,12 +73,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
 
     return Scaffold(
+      backgroundColor: AppTheme.mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: SafeArea(
+        
         child: SingleChildScrollView(
+          
           padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
@@ -89,13 +94,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
-                    ),
+                    color: Color.fromRGBO(199, 18, 89, 1),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF6C63FF).withOpacity(0.3),
+                        color: const Color.fromRGBO(199, 18, 89, 0.3),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -115,6 +118,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(22, 22, 53, 1)
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -136,23 +140,56 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    labelText: l10n.email,
-                    hintText: l10n.enterYourEmail,
-                    prefixIcon: const Icon(
-                      Icons.email_outlined,
-                      color: Color(0xFF6C63FF),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF6C63FF),
-                        width: 2,
-                      ),
-                    ),
-                  ),
+                                            labelText: l10n.email,
+                                            hintText: l10n.enterYourEmail,
+
+                                            labelStyle: const TextStyle(color: Color.fromRGBO(156, 156, 152, 1)), 
+                                            hintStyle: const TextStyle(color: Color.fromRGBO(156, 156, 152, 1)), 
+                                            filled: true,
+                                            fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
+
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4), // radius
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1), // focus color
+                                                width: 1.5,
+                                              ),
+                                            ),
+
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+
+                                          ),
+                                          
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return l10n.enterYourEmail;
@@ -165,19 +202,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
                 const SizedBox(height: 32),
                 
-                // Submit Button
-                SizedBox(
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _submitEmail,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6C63FF),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 3,
-                    ),
-                    child: _isLoading
+        /**_isLoading
                         ? const SizedBox(
                             width: 24,
                             height: 24,
@@ -192,9 +217,34 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
-                          ),
+                          ), */
+
+
+                // Submit Button
+
+                  _isLoading == true ?
+
+                  Container(
+                    height: 50,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                              color: AppTheme.accentColor,
+                              strokeWidth: 2,
+                            ),
+                    ),
+                  )
+                            
+                  :
+
+                  AnimatedButton(
+                    gradient: AppTheme.primaryButtonGradient,
+                    onPressed: _isLoading ? (){} : _submitEmail,
+                    text: l10n.sendValidationCode,
                   ),
-                ),
+
+
+
+
                 const SizedBox(height: 24),
                 
                 // Back to login
@@ -203,7 +253,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child:  Text(
                     l10n.backTologin,
                     style: TextStyle(
-                      color: Color(0xFF6C63FF),
+                      color: AppTheme.accentColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -338,6 +388,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
 
 
     return Scaffold(
+      backgroundColor: AppTheme.mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -355,18 +406,16 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                    color: Color.fromRGBO(199, 18, 89, 1),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromRGBO(199, 18, 89, 0.3),
+                        blurRadius: 20,
+                        spreadRadius: 5,
+                      ),
+                    ],
                   ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF6C63FF).withOpacity(0.3),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
                 child: const Icon(
                   Icons.shield_outlined,
                   size: 50,
@@ -381,6 +430,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(22, 22, 53, 1)
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -486,7 +536,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
               const SizedBox(height: 32),
               
               // Verify Button
-              SizedBox(
+              /*SizedBox(
                 height: 56,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _verifyCode,
@@ -514,8 +564,32 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
                           ),
                         ),
                 ),
-              ),
+              ),*/
               const SizedBox(height: 24),
+
+
+              _isLoading == true ?
+
+                  Container(
+                    height: 50,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                              color: AppTheme.accentColor,
+                              strokeWidth: 2,
+                            ),
+                    ),
+                  )
+                            
+                  :
+
+                  AnimatedButton(
+                    gradient: AppTheme.primaryButtonGradient,
+                    onPressed: _isLoading ? (){} : _verifyCode,
+                    text: l10n.verifyCodebtn,
+                  ),
+
+
+
 
 
               
@@ -626,6 +700,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
 
     return Scaffold(
+       backgroundColor: AppTheme.mainBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -645,13 +720,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
-                    ),
+                    color: Color.fromRGBO(199, 18, 89, 1),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF6C63FF).withOpacity(0.3),
+                        color: const Color.fromRGBO(199, 18, 89, 0.3),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -671,6 +744,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(22, 22, 53, 1)
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -694,10 +768,52 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.newPassword,
                     hintText: l10n.newPassword,
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: Color(0xFF6C63FF),
-                    ),
+                    labelStyle: const TextStyle(color: Color.fromRGBO(156, 156, 152, 1)), 
+                                            hintStyle: const TextStyle(color: Color.fromRGBO(156, 156, 152, 1)), 
+                                            filled: true,
+                                            fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
+
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4), // radius
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1), // focus color
+                                                width: 1.5,
+                                              ),
+                                            ),
+
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+
+                     
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isPasswordVisible
@@ -710,16 +826,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         });
                       },
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF6C63FF),
-                        width: 2,
-                      ),
-                    ),
+                    
+                    
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -740,10 +848,52 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.confirmNewPassword,
                     hintText: l10n.confirmNewPassword,
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: Color(0xFF6C63FF),
+                    
+                    labelStyle: const TextStyle(color: Color.fromRGBO(156, 156, 152, 1)), 
+                    hintStyle: const TextStyle(color: Color.fromRGBO(156, 156, 152, 1)), 
+                    filled: true,
+                    fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
+
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4), // radius
+                      borderSide: const BorderSide(
+                        color: Colors.grey,
+                        width: 0,
+                      ),
                     ),
+
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(
+                        color: Colors.grey,
+                        width: 0,
+                      ),
+                    ),
+
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(
+                        color: Color.fromRGBO(199, 18, 94, 1), // focus color
+                        width: 1.5,
+                      ),
+                    ),
+
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(
+                        color: Colors.redAccent,
+                        width: 1.2,
+                      ),
+                    ),
+
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(
+                        color: Colors.red,
+                        width: 1.5,
+                      ),
+                    ),
+
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isConfirmPasswordVisible
@@ -756,16 +906,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         });
                       },
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF6C63FF),
-                        width: 2,
-                      ),
-                    ),
+                     
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -780,7 +921,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 const SizedBox(height: 32),
                 
                 // Reset Button
-                SizedBox(
+                /*SizedBox(
                   height: 56,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _resetPassword,
@@ -808,7 +949,34 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             ),
                           ),
                   ),
-                ),
+                ),*/
+
+
+                _isLoading == true ?
+
+                  Container(
+                    height: 50,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                              color: AppTheme.accentColor,
+                              strokeWidth: 2,
+                            ),
+                    ),
+                  )
+                            
+                  :
+
+                  AnimatedButton(
+                    gradient: AppTheme.primaryButtonGradient,
+                    onPressed: _isLoading ? (){} : _resetPassword,
+                    text: l10n.resetPasswordBtn,
+                  ),
+
+
+
+
+
+
               ],
             ),
           ),
@@ -844,7 +1012,9 @@ class _PasswordResetSuccessScreenState extends State<PasswordResetSuccessScreen>
 
 
     return Scaffold(
+      backgroundColor: AppTheme.mainBackgroundColor,
       body: SafeArea(
+        
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -894,7 +1064,8 @@ class _PasswordResetSuccessScreenState extends State<PasswordResetSuccessScreen>
               // Back to Login Button
               SizedBox(
                 height: 56,
-                child: ElevatedButton(
+                child: 
+                /*ElevatedButton(
                   onPressed: () {
                     context.go('/');
                   },
@@ -912,7 +1083,12 @@ class _PasswordResetSuccessScreenState extends State<PasswordResetSuccessScreen>
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                ),*/
+                AnimatedButton(onPressed: () {
+                    context.go('/');
+                  }, text: l10n.resetSuccessBackToLogin, gradient: AppTheme.primaryButtonGradient)
+
+
               ),
             ],
           ),

@@ -60,6 +60,9 @@ class _StandDetailScreenState extends State<StandDetailScreen>
         slivers: [
           // App Bar with Cover Photo
           SliverAppBar(
+            iconTheme: IconThemeData(
+              color: Colors.white
+            ),
             expandedHeight: 250,
             pinned: true,
             backgroundColor: const Color.fromARGB(255, 189, 186, 248),

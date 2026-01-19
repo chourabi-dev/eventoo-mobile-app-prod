@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mobile/l10n/app_localizations.dart';
@@ -31,6 +32,11 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+
+  final _companyController = TextEditingController();
+  final _functionController = TextEditingController();
+
+  
   final _passwordController = TextEditingController();
   int? _selectedCountry;
   String? _selectedSex; 
@@ -124,13 +130,16 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
     String lastname  = parts.length > 1 ? parts.sublist(1).join(' ') : "";
     String phone = _phoneController.text;
     int countryID = _selectedCountry!; 
+    
+    String company = _companyController.text;
+    String function = _functionController.text;
 
  
 
 
       
 
-      _authService.continueGoogleSignup(firstname: firstname, lastname: lastname, phone: phone, countryID: countryID, email: email, sex:_selectedSex, photoURL: widget.photoURL).then((res) async{
+      _authService.continueGoogleSignup(firstname: firstname, lastname: lastname, phone: phone, countryID: countryID, email: email, sex:_selectedSex, photoURL: widget.photoURL, company: company, role: function).then((res) async{
         // check for success, else show error
         
         dynamic body = jsonDecode(res.body);
@@ -185,6 +194,7 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
+      backgroundColor: AppTheme.mainBackgroundColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -196,17 +206,7 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
         actions: const [LanguageSwitcher()],
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.backgroundColor,
-              AppTheme.surfaceColor,
-              AppTheme.cardColor,
-            ],
-          ),
-        ),
+        
         child: Stack(
           children: [
             // Decorative circles
@@ -260,7 +260,7 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
                           // Logo
                           SizedBox(
                             height: 50,
-                            child: Image.asset("assets/white-logo.png"),
+                            child: Image.asset("assets/eventoo.png"),
                           ),
                           const SizedBox(height: 18),
                           Text(
@@ -276,26 +276,11 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
                           const SizedBox(height: 25),
 
                           // Form container
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
+                          ClipRRect( 
                             child: BackdropFilter(
                               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                               child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Colors.white.withOpacity(0.1),
-                                      Colors.white.withOpacity(0.05),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(30),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.2),
-                                    width: 1.5,
-                                  ),
-                                ),
+                                 
                                 padding: const EdgeInsets.all(0),
                                 child: Form(
                                   key: _formKey,
@@ -309,6 +294,44 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
                                             decoration: InputDecoration(
                                               labelText: l10n.sex, 
                                               prefixIcon: const Icon(Icons.transgender),
+                                              fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
+                                           border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0), // radius
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                             enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1), // focus color
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
                                             ),
                                             items: [
                                               DropdownMenuItem(value: "male", child: Text(l10n.male)),
@@ -335,7 +358,44 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
                                         decoration: InputDecoration(
                                           labelText: l10n.phone,
                                           hintText: l10n.enterYourPhone,
-                                          border: const OutlineInputBorder(),
+                                          fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
+                                           border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0), // radius
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                             enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1), // focus color
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
                                         ),
                                         initialCountryCode: 'TN',
                                         validator: (phone) {
@@ -346,7 +406,79 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
                                         },
                                       ),
 
-                                      //const SizedBox(height: 18),
+                                      
+
+                                      TextFormField(
+                                        controller: _companyController,
+                                        decoration: InputDecoration(
+                                          labelText:  l10n.companyLabel, 
+                                          prefixIcon:  Icon(FontAwesomeIcons.building ),
+                                          fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
+                                           border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0), // radius
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                             enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1), // focus color
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                           
+                                            
+                                        ),
+                                         
+                                      ),
+                                      const SizedBox(height: 18),
+                                      
+
+                                      // role
+                                      TextFormField(
+                                        controller: _functionController,
+                                        decoration: InputDecoration(
+                                          labelText: l10n.functionLabel, 
+                                          prefixIcon: const Icon(Icons.check),
+                                          fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
+                                           border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0), // radius
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                             enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1), // focus color
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                             
+                                            
+                                        ),
+                                        
+                                      ),
+                                      const SizedBox(height: 18),
+                                      
+
  
 
                                       Autocomplete<Map<String, dynamic>>(
@@ -374,6 +506,44 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
                                             decoration: InputDecoration(
                                               labelText: l10n.country,
                                               prefixIcon: const Icon(Icons.public),
+                                              fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
+                                           border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0), // radius
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                             enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1), // focus color
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
                                             ),
                                             validator: (_) =>
                                                 _selectedCountry == null ? l10n.selectCountry : null,
@@ -390,7 +560,7 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
                                           : AnimatedButton(
                                               onPressed: _handleSignUp,
                                               text: l10n.finishSignup,
-                                              gradient: AppTheme.secondaryGradient,
+                                              gradient: AppTheme.primaryButtonGradient,
                                               icon: Icons.check,
                                             ),
 

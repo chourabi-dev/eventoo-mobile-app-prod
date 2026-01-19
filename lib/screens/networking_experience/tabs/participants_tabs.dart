@@ -15,6 +15,8 @@ import 'dart:convert';
 import 'package:mobile/screens/chat_screen/chat_screen.dart';
 import 'package:mobile/screens/networking_experience/widgets/date_planifier.dart';
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
+import 'package:mobile/widgets/user_avatar.dart';
 
 
 
@@ -334,6 +336,7 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
 
 
     return Scaffold(
+      backgroundColor: AppTheme.mainBackgroundColor,
       appBar: AppBar(
         title: const Text('Networking Experience'), 
         actions: [
@@ -364,9 +367,10 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
         children: [
           // Basic Filters
           Container(
+            margin: EdgeInsets.only(top:15, left: 15, right: 15),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppTheme.mainDeepBackgroundColor,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
@@ -386,15 +390,39 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
                           hintText: l10n.searchParticipantsLabel,
                           prefixIcon: const Icon(Icons.search, size: 20),
                           filled: true,
-                          fillColor: Colors.grey[100],
+                          fillColor: AppTheme.mainDeepBackgroundColor,
+
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(4),
+                            borderSide: const BorderSide(color: Colors.grey, width: 0),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(4),
+                            borderSide: const BorderSide(color: Colors.grey, width: 0),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(4),
+                            borderSide: const BorderSide(
+                              color: Color.fromRGBO(199, 18, 94, 1),
+                              width: 1.5,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: Colors.redAccent,
+                              width: 1.2,
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: Colors.red,
+                              width: 1.5,
+                            ),
+                          ),
+                          
+                          
                         ),
                       ),
                     ),
@@ -429,6 +457,38 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
                             decoration:  InputDecoration(
                               labelText: l10n.country ,
                               prefixIcon: Icon(Icons.public),
+                              fillColor: AppTheme.mainDeepBackgroundColor,
+
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(4),
+                            borderSide: const BorderSide(color: Colors.grey, width: 0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(4),
+                            borderSide: const BorderSide(color: Colors.grey, width: 0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(4),
+                            borderSide: const BorderSide(
+                              color: Color.fromRGBO(199, 18, 94, 1),
+                              width: 1.5,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: Colors.redAccent,
+                              width: 1.2,
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: Colors.red,
+                              width: 1.5,
+                            ),
+                          ),
+                          
                             ),
                           );
                         },
@@ -441,8 +501,11 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppTheme.mainDeepBackgroundColor,
+                    borderRadius: BorderRadius.circular(4), 
+                    border: BoxBorder.all( 
+                      color: const Color.fromARGB(255, 198, 198, 198)
+                    ), 
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -554,6 +617,7 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
 
       showModalBottomSheet(
         context: context,
+        //showDragHandle: true,
         backgroundColor: Colors.transparent,
         builder: (context) => ParticipantActionsSheet(
           participant: participant,
@@ -664,7 +728,7 @@ class ParticipantCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.mainDeepBackgroundColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -688,15 +752,9 @@ class ParticipantCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                      colors: [AppTheme.accentColor, AppTheme.accentColor],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF6366F1).withOpacity(0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                     
                   ),
                   padding: const EdgeInsets.all(3),
                   child: Container(
@@ -704,11 +762,13 @@ class ParticipantCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 3),
                     ),
-                    child: CircleAvatar(
+                    child: UserAvatar(fullName: participant.fullName, imageUrl: participant.photoUrl,)
+                    
+                    /*CircleAvatar(
                       radius: 32,
                       backgroundImage: NetworkImage(participant.photoUrl),
                       backgroundColor: Colors.grey[300],
-                    ),
+                    ),*/
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -727,20 +787,14 @@ class ParticipantCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF6366F1).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
+                         
+                         
                         child: Text(
                           participant.profileLabel,
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF6366F1),
+                            color: AppTheme.textColor,
                             fontFamily: 'Inter',
                           ),
                         ),
@@ -797,14 +851,16 @@ class ParticipantCard extends StatelessWidget {
                 ),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF6366F1).withOpacity(0.1),
+                  decoration: BoxDecoration( 
                     shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppTheme.accentColor,
+                    )
                   ),
                   child: const Icon(
                     Icons.arrow_forward_ios,
                     size: 14,
-                    color: Color(0xFF6366F1),
+                    color: AppTheme.accentColor
                   ),
                 ),
               ],
@@ -1150,30 +1206,23 @@ class ParticipantActionsSheet extends StatelessWidget {
 
 
     return Container(
-
+      //height: 800,
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.mainBackgroundColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
+          
           const SizedBox(height: 20),
           // Participant Info
-          CircleAvatar(
+          UserAvatar(fullName: participant.fullName, imageUrl: participant.photoUrl,radius: 55,),
+          /*CircleAvatar(
             radius: 40,
             backgroundImage: NetworkImage(participant.photoUrl),
-          ),
+          ),*/
           const SizedBox(height: 12),
           Text(
             participant.fullName,

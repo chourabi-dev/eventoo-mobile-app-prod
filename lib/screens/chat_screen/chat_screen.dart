@@ -7,6 +7,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/services/config.dart';
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
+import 'package:mobile/widgets/user_avatar.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:http/http.dart' as http;
 
@@ -294,7 +296,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppTheme.mainBackgroundColor,
       appBar: _buildAppBar(),
       body: Column(
         children: [
@@ -308,17 +310,13 @@ class _ChatScreenState extends State<ChatScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.mainBackgroundColor,
       foregroundColor: Colors.black,
       title:
       targetDATA != null?
        Row(
         children: [
-          CircleAvatar(
-            backgroundColor: Colors.grey.shade300,
-            radius: 18,
-            backgroundImage: NetworkImage(targetDATA['photoURL']),
-          ),
+          UserAvatar(fullName: targetDATA['fullname'] ?? "...", imageUrl: targetDATA['photoURL'],),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,6 +336,34 @@ class _ChatScreenState extends State<ChatScreen> {
       ): Container(child: Text("..."),)
     );
   }
+
+  String formatMessengerDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    final isSameDay =
+        now.year == date.year &&
+        now.month == date.month &&
+        now.day == date.day;
+
+    if (isSameDay) {
+      return "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
+    }
+
+    if (difference.inDays == 1) {
+      return "Yesterday";
+    }
+
+    if (difference.inDays < 7) {
+      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      return days[date.weekday - 1];
+    }
+
+    return "${date.day.toString().padLeft(2, '0')}/"
+        "${date.month.toString().padLeft(2, '0')}/"
+        "${date.year}";
+  }
+  
 
   Widget _buildMessages() {
     if (_isLoading) {
@@ -359,25 +385,43 @@ class _ChatScreenState extends State<ChatScreen> {
         return Align(
           alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            constraints:
-                BoxConstraints(maxWidth: MediaQuery.of(context).size.width * .7),
-            decoration: BoxDecoration(
-              color: isMe ? const Color(0xFF6C63FF) : Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 6,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+           
+            constraints:  BoxConstraints(maxWidth: MediaQuery.of(context).size.width * .7),
+            child: Column(
+              crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+
+                  // time
+
+                  Container(child: Text(formatMessengerDate(msg.createdAt)),   ),
+ 
+                  Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                  color: isMe ? Color.fromRGBO(235, 255, 233, 1) : Color.fromRGBO(238, 237, 235, 1),
+                  borderRadius: BorderRadius.circular(4),
+                  boxShadow: [
+                    BoxShadow(
+                      color:  Colors.black.withOpacity(0.15),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+ 
             child: Text(
               msg.content,
-              style: TextStyle(color: isMe ? Colors.white : Colors.black87),
+              style: TextStyle(color: Colors.black, fontSize: 18),
             ),
           ),
+
+
+
+
+              ],
+            ),
+          )
         );
       },
     );
@@ -390,8 +434,9 @@ class _ChatScreenState extends State<ChatScreen> {
     
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      margin: EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey.shade300,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -408,14 +453,22 @@ class _ChatScreenState extends State<ChatScreen> {
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => _sendMessage(),
               decoration: InputDecoration(
-                hintText: l10n.typeAMessage,
-                filled: true,
-                fillColor: const Color(0xFFF1F2F6),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
-                ),
+              hintText: l10n.typeAMessage,
+              filled: false,
+              fillColor: const Color(0xFFF1F2F6),
+
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              focusedErrorBorder: InputBorder.none,
+
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 14,
               ),
+            ),
+
             ),
           ),
           const SizedBox(width: 12),
@@ -424,10 +477,8 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Container(
               width: 48,
               height: 48,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color.fromARGB(255, 99, 169, 255), Color.fromARGB(255, 132, 218, 255)],
-                ),
+              decoration:  BoxDecoration(
+                color: Colors.green.shade300,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.send, color: Colors.white),

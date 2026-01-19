@@ -7,6 +7,8 @@ import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/models/discussion_model.dart';
 import 'package:mobile/screens/chat_screen/chat_screen.dart';
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
+import 'package:mobile/widgets/user_avatar.dart';
 
 class DiscussionsScreen extends StatefulWidget {
   const DiscussionsScreen({Key? key}) : super(key: key);
@@ -93,8 +95,9 @@ void listenToChat() {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
+      backgroundColor: AppTheme.mainBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.mainBackgroundColor,
         elevation: 0,
         title: Text(
           l10n.chatsLabel,
@@ -120,7 +123,7 @@ void listenToChat() {
                       prefixIcon:
                           const Icon(Icons.search, color: Colors.grey),
                       filled: true,
-                      fillColor: Colors.grey[200],
+                      fillColor: AppTheme.mainDeepBackgroundColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
@@ -179,6 +182,7 @@ class DiscussionTile extends StatelessWidget {
         "${date.month.toString().padLeft(2, '0')}/"
         "${date.year}";
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -193,14 +197,32 @@ class DiscussionTile extends StatelessWidget {
         );
       },
       child: Container(
+        margin: EdgeInsets.only(left: 15, right: 15, bottom: 8),
+        
+
+        decoration: BoxDecoration(
+          color: AppTheme.mainDeepBackgroundColor,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 8,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
-            CircleAvatar(
+           /* CircleAvatar(
               radius: 28,
               backgroundImage: NetworkImage(discussion.photoUrl),
               backgroundColor: Colors.grey[300],
-            ),
+            ),*/
+
+            UserAvatar(imageUrl: discussion.photoUrl , fullName: '${discussion.firstname} ${discussion.lastname}' , radius: 35,),
+
             const SizedBox(width: 12),
             Expanded(
               child: Column(

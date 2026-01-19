@@ -5,6 +5,7 @@ class AnimatedButton extends StatefulWidget {
   final String text;
   final Gradient gradient;
   final IconData? icon;
+  final Color? textColor; 
   final double height;
   final double width;
 
@@ -15,7 +16,7 @@ class AnimatedButton extends StatefulWidget {
     required this.gradient,
     this.icon,
     this.height = 60,
-    this.width = double.infinity,
+    this.width = double.infinity, this.textColor,
   });
 
   @override
@@ -96,13 +97,13 @@ class _AnimatedButtonState extends State<AnimatedButton>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (widget.icon != null) ...[
-                          Icon(widget.icon, color: Colors.white, size: 24),
+                          Icon(widget.icon, color: widget.textColor == null ? Colors.white : widget.textColor, size: 24),
                           const SizedBox(width: 12),
                         ],
                         Text(
                           widget.text,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style:  TextStyle(
+                            color: widget.textColor == null ? Colors.white : widget.textColor,
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.5,

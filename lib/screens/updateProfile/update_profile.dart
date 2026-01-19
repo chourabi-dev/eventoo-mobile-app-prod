@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/services/auth_service.dart';
@@ -26,6 +27,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+
+  final _companyController = TextEditingController();
+  final _functionController = TextEditingController();
+
+
   final _passwordController = TextEditingController();
   int? _selectedCountry;
   
@@ -99,6 +105,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
       _lastNameController.text= user['lastName'] ; 
       _phoneController.text= user['phone'] ; 
       
+      _companyController.text= user['company'] ; 
+      _functionController.text= user['role'] ; 
+      
+
+      
+      
       
       setState(() {
         _selectedCountry= user['country_id'] ;   
@@ -152,11 +164,20 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
       String phone = _phoneController.text;
       int countryID = _selectedCountry!; 
 
-      _authService.updateInfo(firstname: firstname, lastname: lastname, phone: phone, countryID: countryID, sexe: _selectedSex! ).then((res){
+      String company = _companyController.text;
+      String function = _functionController.text;
+      
+ 
+
+      _authService.updateInfo(firstname: firstname, lastname: lastname, phone: phone, countryID: countryID, sexe: _selectedSex! , company: company, role: function ).then((res){
         // check for success, else show error
         
         dynamic body = jsonDecode(res.body);
         bool success = body['success'];
+
+
+        print("UPDATE RESPONSE:");
+        print(body);
 
         setState(() => _isLoading = false);
 
@@ -357,6 +378,41 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                         },
                                       ),
                                       const SizedBox(height: 16),
+
+
+                                      
+
+                                      // company
+                                      TextFormField(
+                                        controller: _companyController,
+                                        decoration: InputDecoration(
+                                          labelText:  l10n.companyLabel, 
+                                          prefixIcon:  Icon(FontAwesomeIcons.building ),
+                                           
+                                           
+                                            
+                                        ),
+                                         
+                                      ),
+                                      const SizedBox(height: 18),
+                                      
+
+                                      // role
+                                      TextFormField(
+                                        controller: _functionController,
+                                        decoration: InputDecoration(
+                                          labelText: l10n.functionLabel, 
+                                          prefixIcon: const Icon(Icons.check),
+                                           
+                                             
+                                            
+                                        ),
+                                        
+                                      ),
+                                      const SizedBox(height: 18),
+                                      
+
+
  
                                       // Phone
                                       TextFormField(

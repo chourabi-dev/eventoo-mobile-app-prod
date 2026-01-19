@@ -5,15 +5,18 @@ import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/models/advanced_filter_feild.dart';
 import 'package:mobile/models/participant_model.dart';
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
 import 'package:mobile/widgets/participant_card.dart';
 
 // Miami Retro Light Theme Color Palette
+//Color.fromRGBO(199, 18, 94, 1), Color.fromRGBO(107, 22, 81, 1)
+
 class MiamiColors {
-  static const hotPink = Color.fromARGB(255, 84, 200, 246);
-  static const electricBlue = Color(0xFF00B4D8);
+  static const hotPink = Color.fromRGBO(199, 18, 94, 1);
+  static const electricBlue = Color.fromRGBO(199, 18, 94, 1);
   static const sunsetOrange = Color(0xFFFF8C42);
-  static const neonPurple = Color(0xFF9D4EDD);
-  static const mintGreen = Color(0xFF06FFA5);
+  static const neonPurple = Color.fromRGBO(199, 18, 94, 1);
+  static const mintGreen = Color.fromRGBO(199, 18, 94, 1);
   static const softCream = Color(0xFFFFFBF5);
   static const lightPeach = Color(0xFFFFF0E6);
   static const paleBlue = Color(0xFFE3F5FF);
@@ -246,11 +249,11 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: MiamiColors.softCream,
+      backgroundColor: AppTheme.mainBackgroundColor,
       extendBodyBehindAppBar: true,
       appBar: _buildAppBar(),
       body: Container(
-        decoration: const BoxDecoration(gradient: MiamiColors.gradient),
+        //decoration: const BoxDecoration(gradient: MiamiColors.gradient),
         child: Stack(
           children: [
             // Animated background elements
@@ -278,7 +281,7 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
     final l10n = AppLocalizations.of(context);
 
     return AppBar(
-      backgroundColor: Colors.white.withOpacity(0.95),
+      backgroundColor: AppTheme.mainDeepBackgroundColor,
       elevation: 0,
       title: ShaderMask(
         shaderCallback: (bounds) => LinearGradient(
@@ -399,7 +402,7 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
             children: [
               // Search bar
               Container(
-                decoration: BoxDecoration(
+                /*decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
@@ -418,7 +421,7 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
                       offset: const Offset(0, 12),
                     ),
                   ],
-                ),
+                ),*/
                 child: TextField(
                   controller: _nameController,
                   style: const TextStyle(
@@ -502,11 +505,11 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.mainDeepBackgroundColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: Colors.grey.shade200,
-            width: 2,
+            color: Colors.transparent, 
+            width: 0
           ),
           boxShadow: [
             BoxShadow(

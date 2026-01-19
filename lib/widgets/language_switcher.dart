@@ -24,7 +24,7 @@ class LanguageSwitcher extends StatelessWidget {
       icon: Container(
         padding: const EdgeInsets.all(6),
         decoration: const BoxDecoration( 
-          color: Colors.white,
+          color: Color.fromRGBO(225, 218, 203, 1),
           shape: BoxShape.circle,
         ),
         child: Text(

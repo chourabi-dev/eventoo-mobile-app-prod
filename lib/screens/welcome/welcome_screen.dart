@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -167,15 +168,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
             child: Container(
               height: MediaQuery.of(context).size.height,
               decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFFFF0FF),
-                    Color(0xFFFFFFFF),
-                    Color(0xFFEFF5FF),
-                  ],
-                ),
+                color: AppTheme.mainBackgroundColor
+                
               ),
               child: Stack(
                 children: [
@@ -202,9 +196,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
                                 SizedBox(
                                   width: 250,
                                   child: Image.asset(
-                                    "assets/white-logo.png",
+                                    "assets/main-logo.png",
                                   ),
-                                ),
+                                ), 
+                                
 
                                 const SizedBox(height: 80),
 
@@ -217,13 +212,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
                                       sigmaY: 10,
                                     ),
                                     child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.3),
-                                        borderRadius: BorderRadius.circular(30),
-                                        border: Border.all(
-                                          color: Colors.white.withOpacity(0.2),
-                                        ),
-                                      ),
+                                      
                                       padding: const EdgeInsets.all(30),
                                       child: Column(
                                         children: [
@@ -231,35 +220,36 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
                                             onPressed: () =>
                                                 context.push('/signin'),
                                             text: l10n.signIn,
-                                            gradient:
-                                                AppTheme.accentGradient,
-                                            icon: Icons.login_rounded,
+                                            gradient: AppTheme.primaryButtonGradient,
+                                           
                                           ),
 
                                           SizedBox( height: 18, ),
 
                                           AuthSeparator( text: l10n.orTextSeparator,),
 
-                                        SizedBox( height: 18, ),
+                                          SizedBox( height: 18, ),
 
 
-                                         AnimatedButton(
+                                          AnimatedButton(
                                             onPressed: () =>
                                             context.push('/signup'),
                                             text: l10n.signUp,
                                             gradient:
-                                            AppTheme.secondaryGradient,
-                                            icon: Icons.create_sharp,
+                                            AppTheme.secondaryButtonGradient,
+                                            textColor: Colors.grey.shade600,
                                           ),
-                                          SizedBox( height: 18, ),
 
 
+                                          SizedBox( height: 18, ), 
+
+
+                                          if( Platform.isAndroid )
                                           _googleSignupScreen == true? 
                                           Container(
                                             child: CircularProgressIndicator(),
                                           ):
-                                           
-
+                                            
                                           AnimatedButton(
                                             onPressed: (){
                                             setState(() {
@@ -269,8 +259,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
                                             _handleSignInWithGoogle(); 
                                           },
                                             text: l10n.signUpWihGoogle,
-                                            gradient: AppTheme.secondaryGradient,
-                                            icon: FontAwesomeIcons.google,
+                                            gradient: AppTheme.secondaryButtonGradient,
+                                            //icon: FontAwesomeIcons.google,
+                                            textColor: Colors.grey.shade600,
                                           ),
  
                                           
@@ -295,7 +286,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
                     left: 0,
                     right: 0,
                     child: Center(
-                      child: Text("PowredBy", style: TextStyle(fontSize: 10),)
+                      child: Text("PowredBy", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),)
                     )
                   ),
                   Positioned(

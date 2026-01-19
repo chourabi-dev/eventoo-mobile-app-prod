@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               _buildOptionButton(
                 icon: Icons.badge_rounded,
                 title: l10n.showBadge,
-                gradient: AppTheme.primaryGradient,
+                gradient: AppTheme.primaryButtonGradient,
                 onTap: () {
                   Navigator.pop(context);
                   _showMyBadge();
@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               _buildOptionButton(
                 icon: Icons.qr_code_scanner_rounded,
                 title: l10n.scanQRBadge,
-                gradient: AppTheme.accentGradient,
+                gradient: AppTheme.secondaryButtonGradient,
                 onTap: () {
                   Navigator.pop(context);
                   _openQRScanner();
@@ -279,6 +279,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final l10n = AppLocalizations.of(context);
     
     return Scaffold(
+      backgroundColor:  AppTheme.mainBackgroundColor,
       extendBody: true,
       body: _tabs.elementAt(_selectedIndex),
       bottomNavigationBar: CustomBottomNav(
@@ -300,12 +301,13 @@ class ModuleData {
   final Gradient gradient;
   final Color color;
   final String route;
+  final String backgroundIMAGE;
   
 
   ModuleData({
     required this.title,
     required this.icon,
     required this.gradient,
-    required this.color, required this.route,
+    required this.color, required this.route, required this.backgroundIMAGE,
   });
 }

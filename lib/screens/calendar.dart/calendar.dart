@@ -165,7 +165,55 @@ class Program {
 }
 
 // ============================================================================
-// EVENT CALENDAR SCREEN WITH FILTERS
+// FAVORITES MANAGER (using FlutterSecureStorage)
+// ============================================================================
+class FavoritesManager {
+  static final FavoritesManager _instance = FavoritesManager._internal();
+  factory FavoritesManager() => _instance;
+  FavoritesManager._internal();
+
+  final storage = const FlutterSecureStorage();
+  static const String _favoritesKey = 'favorite_programs';
+
+  // Get favorite program IDs
+  Future<Set<int>> getFavorites() async {
+    try {
+      final favoritesJson = await storage.read(key: _favoritesKey);
+      if (favoritesJson == null) return {};
+      
+      final List<dynamic> favoritesList = jsonDecode(favoritesJson);
+      return favoritesList.map((id) => id as int).toSet();
+    } catch (e) {
+      print('Error loading favorites: $e');
+      return {};
+    }
+  }
+
+  // Add or remove favorite
+  Future<void> toggleFavorite(int programId) async {
+    final favorites = await getFavorites();
+    
+    if (favorites.contains(programId)) {
+      favorites.remove(programId);
+    } else {
+      favorites.add(programId);
+    }
+    
+    await storage.write(
+      key: _favoritesKey,
+      value: jsonEncode(favorites.toList()),
+    );
+  }
+
+  // Check if program is favorite
+  Future<bool> isFavorite(int programId) async {
+    final favorites = await getFavorites();
+    return favorites.contains(programId);
+  }
+}
+
+// ============================================================================
+// EVENT CALENDAR SCREEN WITH FILTERS AND FAVORITES
 // ============================================================================
 class EventCalendarScreen extends StatefulWidget {
   const EventCalendarScreen({super.key});
@@ -187,10 +235,27 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
   List<DateTime> availableDays = [];
   List<Program> allPrograms = [];
 
+  // Favorites
+  Set<int> favoriteProgramIds = {};
+  final FavoritesManager _favoritesManager = FavoritesManager();
+
   @override
   void initState() {
     super.initState();
     getCalendar();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    final favorites = await _favoritesManager.getFavorites();
+    setState(() {
+      favoriteProgramIds = favorites;
+    });
+  }
+
+  Future<void> _toggleFavorite(int programId) async {
+    await _favoritesManager.toggleFavorite(programId);
+    await _loadFavorites();
   }
 
   void getCalendar() async {
@@ -271,30 +336,86 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
       ..sort((a, b) => a.startDateTime.compareTo(b.startDateTime));
   }
 
+  void _navigateToFavorites() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FavoritesScreen(
+          allPrograms: allPrograms,
+          favoriteProgramIds: favoriteProgramIds,
+          onFavoriteToggle: _toggleFavorite,
+        ),
+      ),
+    ).then((_) => _loadFavorites());
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final filteredPrograms = getFilteredPrograms();
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A14),
       appBar: AppBar(
-        title: Text(l10n.calendar),
+        title: Text(
+          l10n.calendar,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFF0F0F1E),
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          // Favorites Icon Button
+          IconButton(
+            icon: Stack(
+              children: [
+                const Icon(Icons.favorite, color: Colors.white, size: 28),
+                if (favoriteProgramIds.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Text(
+                        '${favoriteProgramIds.length}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            onPressed: _navigateToFavorites,
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: Color(0xFF6C63FF),
+              ),
             )
           : Container(
-            padding: EdgeInsets.only(top: 15),
-        
+              padding: const EdgeInsets.only(top: 15),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Color(0xFF0F0F1E), Color(0xFF1A1A2E)],
+                  colors: [Color(0xFF0A0A14), Color(0xFF0F0F1E)],
                 ),
               ),
               child: Column(
@@ -323,7 +444,14 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             itemCount: filteredPrograms.length,
                             itemBuilder: (context, index) {
-                              return ProgramCard(program: filteredPrograms[index]);
+                              final program = filteredPrograms[index];
+                              final isFavorite = favoriteProgramIds.contains(program.id);
+                              
+                              return ProgramCard(
+                                program: program,
+                                isFavorite: isFavorite,
+                                onFavoriteToggle: () => _toggleFavorite(program.id),
+                              );
                             },
                           ),
                   ),
@@ -367,15 +495,15 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                       )
                     : LinearGradient(
                         colors: [
-                          Colors.white.withOpacity(0.1),
-                          Colors.white.withOpacity(0.05),
+                          const Color(0xFF1A1A2E).withOpacity(0.6),
+                          const Color(0xFF1A1A2E).withOpacity(0.3),
                         ],
                       ),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected
                       ? const Color(0xFF6C63FF)
-                      : Colors.white.withOpacity(0.2),
+                      : Colors.white.withOpacity(0.15),
                   width: 2,
                 ),
               ),
@@ -387,7 +515,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
+                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -396,7 +524,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
+                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
                     ),
                   ),
                 ],
@@ -432,27 +560,27 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                       )
                     : LinearGradient(
                         colors: [
-                          Colors.white.withOpacity(0.1),
-                          Colors.white.withOpacity(0.05),
+                          const Color(0xFF1A1A2E).withOpacity(0.6),
+                          const Color(0xFF1A1A2E).withOpacity(0.3),
                         ],
                       ),
                 borderRadius: BorderRadius.circular(25),
                 border: Border.all(
                   color: selectedRoomId == null
                       ? const Color(0xFF6C63FF)
-                      : Colors.white.withOpacity(0.2),
+                      : Colors.white.withOpacity(0.15),
                   width: 2,
                 ),
               ),
               child: Center(
                 child: Text(
-                  l10n.allRoomsLabel ,
+                  l10n.allRoomsLabel,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: selectedRoomId == null
                         ? Colors.white
-                        : Colors.white.withOpacity(0.7),
+                        : Colors.white.withOpacity(0.6),
                   ),
                 ),
               ),
@@ -479,15 +607,15 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                         )
                       : LinearGradient(
                           colors: [
-                            Colors.white.withOpacity(0.1),
-                            Colors.white.withOpacity(0.05),
+                            const Color(0xFF1A1A2E).withOpacity(0.6),
+                            const Color(0xFF1A1A2E).withOpacity(0.3),
                           ],
                         ),
                   borderRadius: BorderRadius.circular(25),
                   border: Border.all(
                     color: isSelected
                         ? const Color(0xFF6C63FF)
-                        : Colors.white.withOpacity(0.2),
+                        : Colors.white.withOpacity(0.15),
                     width: 2,
                   ),
                 ),
@@ -497,7 +625,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
+                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
                     ),
                   ),
                 ),
@@ -511,13 +639,136 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
 }
 
 // ============================================================================
-// PROGRAM CARD WIDGET (Updated with Room Info)
+// FAVORITES SCREEN
+// ============================================================================
+class FavoritesScreen extends StatefulWidget {
+  final List<Program> allPrograms;
+  final Set<int> favoriteProgramIds;
+  final Function(int) onFavoriteToggle;
+
+  const FavoritesScreen({
+    super.key,
+    required this.allPrograms,
+    required this.favoriteProgramIds,
+    required this.onFavoriteToggle,
+  });
+
+  @override
+  State<FavoritesScreen> createState() => _FavoritesScreenState();
+}
+
+class _FavoritesScreenState extends State<FavoritesScreen> {
+  late Set<int> _localFavorites;
+
+  @override
+  void initState() {
+    super.initState();
+    _localFavorites = Set.from(widget.favoriteProgramIds);
+  }
+
+  void _toggleFavorite(int programId) {
+    setState(() {
+      if (_localFavorites.contains(programId)) {
+        _localFavorites.remove(programId);
+      } else {
+        _localFavorites.add(programId);
+      }
+    });
+    widget.onFavoriteToggle(programId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
+    final favoritePrograms = widget.allPrograms
+        .where((program) => _localFavorites.contains(program.id))
+        .toList()
+      ..sort((a, b) => a.startDateTime.compareTo(b.startDateTime));
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A14),
+      appBar: AppBar(
+        title: Text(
+          'My Favorites',
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF0F0F1E),
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0A0A14), Color(0xFF0F0F1E)],
+          ),
+        ),
+        child: favoritePrograms.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.favorite_border,
+                      size: 80,
+                      color: Colors.white.withOpacity(0.3),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No favorite programs yet',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Add programs to your favorites to see them here',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.3),
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: favoritePrograms.length,
+                itemBuilder: (context, index) {
+                  final program = favoritePrograms[index];
+                  return ProgramCard(
+                    program: program,
+                    isFavorite: true,
+                    onFavoriteToggle: () => _toggleFavorite(program.id),
+                  );
+                },
+              ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// PROGRAM CARD WIDGET (Updated with Favorite Button)
 // ============================================================================
 
 class ProgramCard extends StatelessWidget {
   final Program program;
+  final bool isFavorite;
+  final VoidCallback onFavoriteToggle;
 
-  const ProgramCard({super.key, required this.program});
+  const ProgramCard({
+    super.key,
+    required this.program,
+    required this.isFavorite,
+    required this.onFavoriteToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -533,15 +784,16 @@ class ProgramCard extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.white.withOpacity(0.1),
-                  Colors.white.withOpacity(0.05),
+                  const Color(0xFF1A1A2E).withOpacity(0.7),
+                  const Color(0xFF1A1A2E).withOpacity(0.4),
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: program.isLive
                     ? Colors.red.withOpacity(0.5)
-                    : Colors.white.withOpacity(0.2),
+                    : Colors.white.withOpacity(0.15),
+                width: 2,
               ),
             ),
             child: Material(
@@ -561,7 +813,7 @@ class ProgramCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Room badge and Live indicator
+                      // Room badge, Live indicator, and Favorite button
                       Row(
                         children: [
                           if (program.room != null)
@@ -590,6 +842,7 @@ class ProgramCard extends StatelessWidget {
                                 horizontal: 8,
                                 vertical: 4,
                               ),
+                              margin: const EdgeInsets.only(right: 8),
                               decoration: BoxDecoration(
                                 color: Colors.red,
                                 borderRadius: BorderRadius.circular(8),
@@ -610,6 +863,30 @@ class ProgramCard extends StatelessWidget {
                                 ],
                               ),
                             ),
+                          // Favorite Button
+                          GestureDetector(
+                            onTap: onFavoriteToggle,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: isFavorite
+                                    ? const Color(0xFFFF1744).withOpacity(0.2)
+                                    : Colors.white.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: isFavorite
+                                      ? const Color(0xFFFF1744)
+                                      : Colors.white.withOpacity(0.2),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Icon(
+                                isFavorite ? Icons.favorite : Icons.favorite_border,
+                                color: isFavorite ? const Color(0xFFFF1744) : Colors.white.withOpacity(0.6),
+                                size: 20,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -696,88 +973,6 @@ class ProgramCard extends StatelessWidget {
     );
   }
 
-  Widget _buildParticipantsStack(List<dynamic> participants) {
-    final displayCount = participants.length > 4 ? 4 : participants.length;
-    final remaining = participants.length - displayCount;
-
-    return SizedBox(
-      height: 40,
-      child: Stack(
-        children: [
-          // Display up to 4 participants
-          ...List.generate(displayCount, (index) {
-            final participant = participants[index];
-            final String? photoUrl = participant['photo_url'];
-            final String name = participant['name'] ?? '?';
-
-            return Positioned(
-              left: index * 28.0,
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
-                  ),
-                  border: Border.all(
-                    color: const Color(0xFF1A1A2E),
-                    width: 2,
-                  ),
-                  image: photoUrl != null && photoUrl.isNotEmpty
-                      ? DecorationImage(
-                          image: NetworkImage(photoUrl),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
-                child: photoUrl == null || photoUrl.isEmpty
-                    ? Center(
-                        child: Text(
-                          name[0].toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      )
-                    : null,
-              ),
-            );
-          }),
-          // Show "+X" if there are more participants
-          if (remaining > 0)
-            Positioned(
-              left: displayCount * 28.0,
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF6C63FF),
-                  border: Border.all(
-                    color: const Color(0xFF1A1A2E),
-                    width: 2,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    '+$remaining',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildAllEntitiesStack(Program program) {
     // Combine all entities
     List<Map<String, dynamic>> allEntities = [];
@@ -846,7 +1041,7 @@ class ProgramCard extends StatelessWidget {
                     colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
                   ),
                   border: Border.all(
-                    color: const Color(0xFF1A1A2E),
+                    color: const Color(0xFF0A0A14),
                     width: 2,
                   ),
                   image: photoUrl != null && photoUrl.isNotEmpty
@@ -882,7 +1077,7 @@ class ProgramCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: const Color(0xFF6C63FF),
                   border: Border.all(
-                    color: const Color(0xFF1A1A2E),
+                    color: const Color(0xFF0A0A14),
                     width: 2,
                   ),
                 ),
@@ -905,7 +1100,7 @@ class ProgramCard extends StatelessWidget {
 }
 
 // ============================================================================
-// LIVE PROGRAM SCREEN (Keep as is)
+// LIVE PROGRAM SCREEN (Updated with darker theme)
 // ============================================================================
 
 class LiveProgramScreen extends StatelessWidget {
@@ -959,18 +1154,22 @@ class LiveProgramScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A14),
       appBar: AppBar(
-        title: Text(program.title),
-        backgroundColor: Colors.transparent,
+        title: Text(
+          program.title,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: const Color(0xFF0F0F1E),
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Container(
-        
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0F0F1E), Color(0xFF1A1A2E)],
+            colors: [Color(0xFF0A0A14), Color(0xFF0F0F1E)],
           ),
         ),
         child: SingleChildScrollView(
@@ -1221,7 +1420,7 @@ class LiveProgramScreen extends StatelessWidget {
                   : null,
             ),
             const SizedBox(width: 15),
-            Expanded( 
+            Expanded(
               child: Text(
                 name,
                 textAlign: TextAlign.left,

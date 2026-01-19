@@ -71,8 +71,7 @@ class _CustomBottomNavState extends State<CustomBottomNav>
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        AppTheme.surfaceColor.withOpacity(0.9),
-                        AppTheme.cardColor.withOpacity(0.9),
+                        Color.fromRGBO(199, 18, 94, 1), Color.fromRGBO(107, 22, 81, 1)
                       ],
                     ),
                     borderRadius: BorderRadius.circular(30),
@@ -174,7 +173,7 @@ class _CustomBottomNavState extends State<CustomBottomNav>
             gradient: isSelected
                 ? RadialGradient(
                     colors: [
-                      AppTheme.primaryColor.withOpacity(0.3 * value),
+                      Colors.white,
                       Colors.transparent,
                     ],
                   )
@@ -202,9 +201,7 @@ class _CustomBottomNavState extends State<CustomBottomNav>
                 duration: const Duration(milliseconds: 300),
                 child: Icon(
                   icon,
-                  color: isSelected
-                      ? Colors.white
-                      : const Color.fromARGB(255, 35, 109, 149).withOpacity(0.5),
+                  color: isSelected  ? Colors.white  : Colors.white,
                   size: 24 + (value * 4),
                 ),
               ),

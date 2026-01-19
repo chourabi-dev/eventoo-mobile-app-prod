@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -10,6 +11,7 @@ import 'package:mobile/services/auth_service.dart';
 import 'package:mobile/services/google_auth_service.dart';
 import 'package:mobile/shared/alertBox.dart';
 import 'package:mobile/widgets/language_switcher.dart';
+//import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:ui';
 import '../../widgets/animated_button.dart';
 import '../../theme/app_theme.dart';
@@ -172,6 +174,31 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
     }
   }
 
+
+
+  Future<void> _signInWithApple() async {
+  /*final credential = await SignInWithApple.getAppleIDCredential(
+    scopes: [
+      AppleIDAuthorizationScopes.email,
+      AppleIDAuthorizationScopes.fullName,
+    ],
+  );
+ 
+  final appleUserId = credential.userIdentifier; // STORE THIS
+  final email = credential.email; // Only first login
+  final fullName = credential.givenName;
+
+  final identityToken = credential.identityToken; // SEND TO BACKEND
+  final authCode = credential.authorizationCode;
+
+  // TODO: Send identityToken + appleUserId to backend
+
+  print(appleUserId);
+  print(email);
+  print(fullName);*/
+}
+
+
   
 
   @override
@@ -192,15 +219,7 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.backgroundColor,
-              AppTheme.surfaceColor,
-              AppTheme.cardColor,
-            ],
-          ),
+          color: AppTheme.mainBackgroundColor
         ),
         child: Stack(
           children: [
@@ -257,98 +276,190 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                           Container(
                             height: 50,
                             child: SizedBox( 
-                              child: Image.asset("assets/white-logo.png"),
+                              child: Image.asset("assets/eventoo.png"),
                             ),
                             
                           ),
-                           
-  
-                          Text(
-                            l10n.signInContinue,
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.7),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 50),
 
+                          SizedBox(height: 80,),
+                           
+   
                           // Form
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
+                            //borderRadius: BorderRadius.circular(30),
                             child: BackdropFilter(
                               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                               child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Colors.white.withOpacity(0.1),
-                                      Colors.white.withOpacity(0.05),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(30),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.2),
-                                    width: 1.5,
-                                  ),
-                                ),
+                                //color: Colors.red,
+                                width: MediaQuery.of(context).size.width, 
                                 child: Form(
                                   key: _formKey,
                                   child: Column(
-                                    children: [
-                                      // Email field
-                                      TextFormField(
-                                        controller: _emailController,
-                                        keyboardType: TextInputType.emailAddress,
-                                        decoration:  InputDecoration(
-                                          labelText: l10n.email ,
-                                          hintText: l10n.enterYourEmail,
-                                          prefixIcon: Icon(Icons.email_outlined),
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [ 
+
+                                      Text(
+                                        l10n.signInContinue,
+                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                          color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.7),
                                         ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return l10n.enterYourEmail;
-                                          }
-                                          if (!value.contains('@')) {
-                                            return l10n.enterValidEmail;
-                                          }
-                                          return null;
-                                        },
+                                        textAlign: TextAlign.left,
                                       ),
+
+                                      SizedBox(height: 18,),
+
+
+                                      TextFormField(
+                                          controller: _emailController,
+                                          keyboardType: TextInputType.emailAddress,
+                                          style:  TextStyle(
+                                            color: Colors.black, // text color
+                                            fontSize: 16,
+                                          ),
+                                          decoration: InputDecoration(
+                                            labelText: l10n.email,
+                                            labelStyle: const TextStyle(color: Color.fromRGBO(156, 156, 152, 1)),
+                                            hintText: l10n.enterYourEmail,
+                                            hintStyle: const TextStyle(color: Color.fromRGBO(156, 156, 152, 1)),
+                                            //prefixIcon: const Icon(Icons.email_outlined, color: Colors.white70),
+
+                                            filled: true,
+                                            fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
+
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4), // radius
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1), // focus color
+                                                width: 1.5,
+                                              ),
+                                            ),
+
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                          ),
+                                          
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return l10n.enterYourEmail;
+                                            }
+                                            if (!value.contains('@')) {
+                                              return l10n.enterValidEmail;
+                                            }
+                                            return null;
+                                          },
+                                        ),
+
+
                                       const SizedBox(height: 20),
 
                                       // Password field
                                       TextFormField(
-                                        controller: _passwordController,
-                                        obscureText: !_isPasswordVisible,
-                                        decoration: InputDecoration(
-                                          labelText: l10n.password,
-                                          hintText: l10n.enterYourPassword,
-                                          prefixIcon: const Icon(Icons.lock_outline),
-                                          suffixIcon: IconButton(
-                                            icon: Icon(
-                                              _isPasswordVisible
-                                                  ? Icons.visibility_off
-                                                  : Icons.visibility,
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                _isPasswordVisible = !_isPasswordVisible;
-                                              });
-                                            },
+                                          controller: _passwordController,
+                                          obscureText: !_isPasswordVisible,
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16,
                                           ),
+                                          decoration: InputDecoration(
+                                            labelText: l10n.password,
+                                            labelStyle: const TextStyle(
+                                              color: Color.fromRGBO(156, 156, 152, 1),
+                                            ),
+                                            hintText: l10n.enterYourPassword,
+                                            hintStyle: const TextStyle(
+                                              color: Color.fromRGBO(156, 156, 152, 1),
+                                            ),
+                                            filled: true,
+                                            fillColor: const Color.fromRGBO(225, 218, 203, 1),
+
+                                            /*prefixIcon: const Icon(
+                                              Icons.lock_outline,
+                                              color: Color.fromRGBO(156, 156, 152, 1),
+                                            ),*/
+
+                                            suffixIcon: IconButton(
+                                              icon: Icon(
+                                                _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                                                color: Color.fromRGBO(199, 18, 94, 1),
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _isPasswordVisible = !_isPasswordVisible;
+                                                });
+                                              },
+                                            ),
+
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1),
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
+                                          ),
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return l10n.enterYourPassword;
+                                            }
+                                            if (value.length < 6) {
+                                              return l10n.passwordError;
+                                            }
+                                            return null;
+                                          },
                                         ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return l10n.enterYourPassword;
-                                          }
-                                          if (value.length < 6) {
-                                            return l10n.passwordError;
-                                          }
-                                          return null;
-                                        },
-                                      ),
+
                                       const SizedBox(height: 12),
 
                                       // Forgot password
@@ -371,28 +482,59 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
 
                                       // Sign in button
                                       _isLoading
-                                          ? const CircularProgressIndicator()
+                                          ? Container(
+                                            height: 50,
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                color: AppTheme.accentColor,
+                                              ),
+                                            ),
+                                          )
                                           : Container(
 
                                             child: Column(
                                               children: [
                                                 AnimatedButton(
-                                              onPressed: _handleSignIn,
-                                              text: l10n.signIn,
-                                              gradient: AppTheme.accentGradient,
-                                              
-                                            ),
-
-                                              SizedBox(height: 15,),
-
-                                                AnimatedButton(
-                                                  onPressed: _handleSignInWithGoogle,
-                                                  text: l10n.signInWihGoogle,
-                                                  gradient: AppTheme.primaryGradient,
-                                                  icon: FontAwesomeIcons.google,
+                                                  onPressed: _handleSignIn,
+                                                  text: l10n.signIn,
+                                                  gradient: AppTheme.primaryButtonGradient
                                                 ),
- 
+                                                SizedBox(height: 15,),
+                                                Container(
+                                                  child: Row(
+                                                    children: [
 
+                                                      if( Platform.isAndroid )
+                                                      Expanded(child: AnimatedButton(
+                                                        onPressed: _handleSignInWithGoogle,
+                                                        text: "",
+                                                        gradient: AppTheme.secondaryButtonGradient,
+                                                        icon: FontAwesomeIcons.google,
+                                                        textColor: Colors.grey.shade600,
+                                                        
+                                                      ), ),
+
+
+                                                      /*if (Platform.isIOS == true)
+                                                      SizedBox(
+                                                        width: 15,
+                                                      ),
+                                                      if (Platform.isIOS == true) 
+                                                      Expanded(child: AnimatedButton(
+                                                        onPressed: _signInWithApple,
+                                                        text: "",
+                                                        gradient: AppTheme.secondaryButtonGradient,
+                                                        icon: FontAwesomeIcons.apple,
+                                                        textColor: Colors.grey.shade600,
+                                                      ), ),*/
+
+                                                      
+                                                      
+
+                                                    ],
+                                                  ),
+                                                )
+ 
                                               ],
                                             ),
                                           ),
@@ -432,9 +574,9 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                                   context.push('/signup');
                                 },
                                 child: Text(
-                                  l10n.signUp,
+                                  l10n.signUpLabel,
                                   style: TextStyle(
-                                    color: AppTheme.primaryColor,
+                                    color: AppTheme.accentColor,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

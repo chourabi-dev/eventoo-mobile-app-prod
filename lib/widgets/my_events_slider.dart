@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'dart:math' as math;
 
@@ -24,6 +25,7 @@ class _PremiumEventSliderState extends State<PremiumEventSlider> {
   double _currentPage = 0.0;
   int _selectedIndex = 0;
   bool _isButtonPressed = false;
+  bool _showArrows = true;
 
   @override
   void initState() {
@@ -57,6 +59,83 @@ class _PremiumEventSliderState extends State<PremiumEventSlider> {
     }
   }
 
+    Widget _buildArrow({
+    required bool isLeft,
+    required bool visible,
+    required VoidCallback onTap,
+  }) {
+    return Positioned(
+      top: 0,
+      bottom: 0,
+      left: isLeft ? 12 : null,
+      right: isLeft ? null : 12,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 250),
+        opacity: visible ? 1.0 : 0.0,
+        child: IgnorePointer(
+          ignoring: !visible,
+          child: Center(
+            child: GestureDetector(
+              onTap: onTap,
+              child: AnimatedScale(
+                scale: visible ? 1.0 : 0.8,
+                duration: const Duration(milliseconds: 200),
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.blue.shade500,
+                        Colors.purple.shade500,
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.35),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    isLeft
+                        ? Icons.chevron_left_rounded
+                        : Icons.chevron_right_rounded,
+                    color: Colors.white,
+                    size: 32,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+    void _goNext() {
+    if (_selectedIndex < widget.events.length - 1) {
+      HapticFeedback.lightImpact();
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutCubic,
+      );
+    }
+  }
+
+  void _goPrevious() {
+    if (_selectedIndex > 0) {
+      HapticFeedback.lightImpact();
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutCubic,
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -68,20 +147,45 @@ class _PremiumEventSliderState extends State<PremiumEventSlider> {
     }
 
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.grey.shade50,
-            Colors.grey.shade100,
-          ],
-        ),
-      ),
-      child: Column(
+      //color: Colors.amber,
+      child: 
+
+      Stack(
+              children: [
+                PageView.builder(
+                  controller: _pageController,
+                  itemCount: widget.events.length,
+                  itemBuilder: (context, index) {
+                    return _buildEventCard(index);
+                  },
+                ),
+
+                
+
+                _buildArrow(
+                  isLeft: true,
+                  visible: _showArrows && _selectedIndex > 0,
+                  onTap: _goPrevious,
+                ),
+
+                _buildArrow(
+                  isLeft: false,
+                  visible:
+                      _showArrows && _selectedIndex < widget.events.length - 1,
+                  onTap: _goNext,
+                ),
+              ],
+            ),
+      
+      
+      
+      
+      
+      
+      /*Column(
         children: [
           // Spacer for visual breathing room
-          const SizedBox(height: 40),
+          //const SizedBox(height: 40),
 
           // Main carousel slider
           Expanded(
@@ -102,11 +206,11 @@ class _PremiumEventSliderState extends State<PremiumEventSlider> {
           const SizedBox(height: 32),
 
           // Continue button
-          _buildContinueButton(),
+          // _buildContinueButton(),
 
           const SizedBox(height: 40),
         ],
-      ),
+      ),*/
     );
   }
 
@@ -144,7 +248,10 @@ class _PremiumEventSliderState extends State<PremiumEventSlider> {
 
   /// Build the card content with logo, title, and premium styling
   Widget _buildCardContent(Event event, bool isActive) {
-    return Container(
+
+    return GestureDetector(
+      onTap: _handleContinue,
+      child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(32),
@@ -248,6 +355,7 @@ class _PremiumEventSliderState extends State<PremiumEventSlider> {
           ],
         ),
       ),
+    ),
     );
   }
 

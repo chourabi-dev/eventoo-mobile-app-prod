@@ -8,6 +8,7 @@ import 'package:mobile/screens/networking_experience/tabs/my_meetings_timeline.d
 import 'package:mobile/screens/networking_experience/tabs/participants_tabs.dart';
 import 'package:mobile/screens/networking_experience/tabs/requests_tab.dart';
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
 
 class NetworkingExperience extends StatefulWidget {
   const NetworkingExperience({super.key});
@@ -98,7 +99,8 @@ BottomNavigationBarItem _navItem(
 Widget buildBottomNav() {
   final l10n = AppLocalizations.of(context);
   return Container(
-    margin: const EdgeInsets.all(16),
+    //margin: const EdgeInsets.all(16),
+    
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(24),
       boxShadow: [
@@ -110,29 +112,30 @@ Widget buildBottomNav() {
       ],
     ),
     child: ClipRRect(
-      borderRadius: BorderRadius.circular(24),
+      
+      borderRadius: BorderRadius.only( topLeft: Radius.circular(30), topRight: Radius.circular(30)  ),
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.accentBackgroundColor,
         elevation: 0,
         currentIndex: _selectedIndex,
         onTap: (value) {
           HapticFeedback.lightImpact();
           setState(() => _selectedIndex = value);
         },
-        selectedItemColor: Colors.blue.shade600,
-        unselectedItemColor: Colors.grey.shade500,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey.shade50,
         items: [
-          _navItem(Icons.share, l10n.homeLabel, 0),
-          _navItem(Icons.calendar_month, l10n.myMeetings, 1),
+          _navItem(Icons.home_filled, l10n.homeLabel, 0),
+          _navItem(Icons.notifications, l10n.myMeetings, 1),
           _navItemWithBadge(
-            Icons.inbox,
+            Icons.group,
             l10n.myInvitations,
             2,
             countList,
           ),
           _navItemWithBadge(
-            Icons.contact_emergency,
+            Icons.credit_card,
             l10n.businessCardExchange,
             3,
             countBadgesList,
@@ -207,6 +210,7 @@ BottomNavigationBarItem _navItemWithBadge(
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
+      backgroundColor: AppTheme.mainBackgroundColor,
       body: _tabs.elementAt(_selectedIndex),
        bottomNavigationBar: buildBottomNav(),
     );

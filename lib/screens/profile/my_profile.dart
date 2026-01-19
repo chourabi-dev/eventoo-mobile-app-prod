@@ -15,6 +15,7 @@ import 'package:mobile/services/event_service.dart';
 import 'package:mobile/services/fcm_service.dart';
 import 'package:mobile/services/general_service.dart';
 import 'package:mobile/theme/app_theme.dart';
+import 'package:mobile/widgets/delete_account_sheet.dart';
 import 'package:mobile/widgets/event_card.dart';
 import 'package:mobile/widgets/language_switcher.dart';
 import 'package:mobile/widgets/my_events_slider.dart';
@@ -30,6 +31,12 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
   String _fullname = '';
   String _email = '';
   String _phone = '';
+
+  String _company = '';
+  String _role = '';
+
+  
+
   String _avatar = '';
   String _countryFlag = '';
   bool _isLoading = true; 
@@ -127,7 +134,7 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
     );
     getUserInfo();
     getUserEvents();
-    getLatestEvents();
+    
     registerUserFcm();
     getMyContacts();
 
@@ -161,6 +168,12 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
         _fullname = fullName.isEmpty ? 'User' : fullName;
         _email = user['email'] ?? '';
         _phone = user['phone'] ?? '';
+
+
+        _company = user['company'] ?? '';
+        _role = user['role'] ?? '';
+
+        
         _countryFlag = user['country_flag'] ?? '';
         _avatar = user['photo'] ?? ''; 
         emailValid = user['emailValid'];
@@ -190,10 +203,13 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
       print(tmp);
 
       setState(() {
+         
         _myEvents = (body['data'] as List)
             .map((item) => Event.fromJson(item))
             .toList();
       });
+
+      getLatestEvents();
 
      setState(() {
        _loadingEvents = false;
@@ -220,9 +236,11 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
        _loadingEvents = true;
      });
 
-    _eventService.getCurrentEvents().then((res){
+    _generalGervice.getEvents().then((res){
       dynamic body = jsonDecode(res.body);
       List<dynamic> tmp = body['data'];
+
+      print("ALL EVENTS");
 
       setState(() {
         _events = (body['data'] as List)
@@ -471,6 +489,7 @@ Future<void> finishLogin(int eventId) async {
     final l10n = AppLocalizations.of(context);
 
   return Drawer(
+    backgroundColor: AppTheme.mainBackgroundColor,
     child: SafeArea(
       child: Column(
         children: [
@@ -507,8 +526,31 @@ Future<void> finishLogin(int eventId) async {
               context.push('/business-cards');
             },
           ),
+
+          _buildDrawerItem(
+            context,
+            icon: Icons.delete,
+            title: l10n.deleteMyAccount,
+            onTap: () async {
+              
+              await showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (_) => const DeleteAccountSheet(),
+              );
+
+            },
+            textColor: Colors.red,
+            iconColor: Colors.red
+          ),
+
+
+
           const Spacer(),
-          const Divider(),
+          //const Divider(),
           _buildDrawerItem(
             context,
             icon: Icons.logout_sharp,
@@ -621,6 +663,38 @@ Widget _buildDrawerItem(
 }
 
 
+ 
+  _emptyEventsWidget( ) {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.event_busy,
+              size: 72,
+              color: Colors.grey.shade400,
+            ),
+            
+            const SizedBox(height: 8),
+            Text(
+              
+              l10n.noEventsContent
+              ,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey.shade600,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
 
 
 
@@ -630,7 +704,8 @@ Widget _buildDrawerItem(
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppTheme.mainBackgroundColor,
+      
       drawer: _buildDrawer(context),
       
       body: emailValid == null ?
@@ -647,22 +722,41 @@ Widget _buildDrawerItem(
         physics: const BouncingScrollPhysics(),
         slivers: [
           _buildModernAppBar(context, size),
-          SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+         // _buildQuickActions(l10n),
+
+          SliverToBoxAdapter(child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${l10n.myEventsLabel} (${_myEvents.length})' ,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              
+            ],
+          ),
+          )),
+
 
           SliverToBoxAdapter(
             child: _myEvents.length != 0 ?  Container(
-                height: 600,
+                height: 400,
                 child:   PremiumEventSlider(events: _myEvents, onContinue: (id){
 
                   print(id);
 
                   finishLogin(int.parse(id));
 
-                },)
-                
-                
-                ,
-               ):Container(),
+                },) 
+               ):Container(
+                child: _emptyEventsWidget(),
+               ),
 
           ),
          
@@ -670,9 +764,63 @@ Widget _buildDrawerItem(
           SliverToBoxAdapter(child: SizedBox(height: 32)),
          _buildQuickActions(l10n),
           SliverToBoxAdapter(child: SizedBox(height: 32)),*/
-          _buildEventsSection(l10n),
+          //_buildEventsSection(l10n),
+
+
+          SliverToBoxAdapter(
+            child: Container(
+              margin: EdgeInsets.only(top: 15),
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${l10n.moreEvents} (${_events.length})' ,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              TextButton(
+                onPressed: () => context.push('/events'),
+                child: Text(
+                  l10n.seeAll,
+                  style: TextStyle(
+                    color: Color(0xFF667eea),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          ),
+
+          ),
+
+          SliverToBoxAdapter(
+            child: _events.length != 0 ?  Container(
+                height: 400,
+                child:   PremiumEventSlider(events: _events.take(5).toList()  , onContinue: (id){
+
+                  print(id);
+
+                  // finishLogin(int.parse(id));
+
+                  // go to sign up !!
+                  context.push('/events/$id/pick-profile');
+                            
+
+                },) 
+               ):Container(),
+
+          ),
+
+ 
         ],
-      ):
+      )
+      
+      :
       
       emailVerificationRequired(context, (){
         
@@ -694,21 +842,21 @@ Widget _buildDrawerItem(
     );
   }
 
-  Widget _buildModernAppBar(BuildContext context, Size size) {
-    return SliverAppBar(
-      expandedHeight: 280,
-      pinned: true,
-      stretch: true,
-      backgroundColor: Colors.white,
-      elevation: 0,
-      leading:Builder(
-  builder: (context) => IconButton(
-    icon: const Icon(Icons.menu, color: Colors.white),
-    onPressed: () {
-      Scaffold.of(context).openDrawer();
-    },
-  ),
-),
+    Widget _buildModernAppBar(BuildContext context, Size size) {
+      return SliverAppBar(
+            expandedHeight: 400,
+            pinned: true,
+            stretch: true,
+            //backgroundColor: Colors.white,
+            elevation: 0,
+            leading:Builder(
+        builder: (context) => IconButton(
+          icon: const Icon(Icons.menu, color: AppTheme.accentColor),
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+      ),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 8),
@@ -724,7 +872,7 @@ Widget _buildDrawerItem(
           fit: StackFit.expand,
           children: [
             // Modern gradient background
-            Container(
+            /*Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -736,7 +884,7 @@ Widget _buildDrawerItem(
                   end: Alignment.bottomRight,
                 ),
               ),
-            ),
+            ),*/
             // Animated circles background
             Positioned(
               top: -100,
@@ -820,159 +968,207 @@ Widget _buildDrawerItem(
   }
 
   Widget _buildProfileHeader(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Column(
-        children: [
-          // Avatar with edit button overlay
-          Stack(
-            children: [
-              Hero(
-                tag: 'profile-avatar',
+  final l10n = AppLocalizations.of(context);
+
+  return FadeTransition(
+    opacity: _fadeAnimation,
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+       //mainAxisAlignment: MainAxisAlignment.,
+      children: [
+        // Left side - Avatar with edit button overlay
+        Stack(
+          children: [
+            Hero(
+              tag: 'profile-avatar',
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 20,
+                      offset: Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Colors.white,
+                  child: _avatar.isEmpty
+                      ? Icon(Icons.person, size: 50, color: Colors.grey[400])
+                      : ClipOval(
+                          child: Image.network(
+                            _avatar,
+                            fit: BoxFit.cover,
+                            width: 100,
+                            height: 100,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(Icons.person, size: 50, color: Colors.grey[400]);
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          (loadingProgress.expectedTotalBytes ?? 1)
+                                      : null,
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () async {
+                  print("UPDATE IMAGE");
+                  _pickAndCropImage();
+                },
                 child: Container(
+                  padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
+                    color: const Color.fromRGBO(110, 185, 67, 1),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 20,
-                        offset: Offset(0, 10),
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.white,
-                    child: _avatar.isEmpty
-                        ? Icon(Icons.person, size: 50, color: Colors.grey[400])
-                        : ClipOval(
-                            child: Image.network(
-                              _avatar,
-                              fit: BoxFit.cover,
-                              width: 100,
-                              height: 100,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Icon(Icons.person, size: 50, color: Colors.grey[400]);
-                              },
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded /
-                                            (loadingProgress.expectedTotalBytes ?? 1)
-                                        : null,
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                  ),
+                  child: Icon(Icons.edit, size: 16, color: Colors.white),
                 ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: () async {
-                     print("UPDATE IMAGE");
-                     _pickAndCropImage();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Icon(Icons.edit, size: 16, color: Color(0xFF667eea)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 14),
-          // Name
-          Text(
-            _fullname,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 0.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 8),
-          // Email
-         Container(
-  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-  decoration: BoxDecoration(
-    color: Colors.white.withOpacity(0.2),
-    borderRadius: BorderRadius.circular(20),
-  ),
-  child: Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Icon(Icons.email_outlined, size: 14, color: Colors.white),
-      SizedBox(width: 6),
-      Flexible( // <-- prevents overflow in Row
-        child: Text(
-          _email, // first positional parameter
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-          overflow: TextOverflow.ellipsis, // <-- handles overflow
-          maxLines: 1, // <-- restrict to single line
-        ),
-      ),
-      SizedBox(width: 6), 
-      Icon(Icons.check_circle, size: 14, color: Colors.blue),
-      
-
-    ],
-  ),
-)
-,
-          if (_phone.isNotEmpty) ...[
-            SizedBox(height: 6),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.phone_outlined, size: 14, color: Colors.white),
-                  SizedBox(width: 6),
-                  Text(
-                    _phone,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
-        ],
-      ),
-    );
-  }
+        ),
+        
+        SizedBox(width: 20),
+        
+        // Right side - User info
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Name with verified icon
+              Row(
+               
+                children: [
+                  Flexible(
+                    child: Text(
+                      _fullname,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textColor,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(Icons.check_circle, size: 25, color: Colors.blue),
+                ],
+              ),
+              SizedBox(height: 12),
+              
+              // Email
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.email_outlined, size: 14, color: AppTheme.textColor),
+                    SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        _email,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.textColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Role
+              if (_role.isNotEmpty) ...[
+                SizedBox(height: 6),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    _role,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppTheme.textColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+              
+              // Company
+              if (_company.isNotEmpty) ...[
+                SizedBox(height: 6),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    _company,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppTheme.textColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+              
+              SizedBox(height: 12),
+              
+              // Edit Profile Button
+              _buildActionButton(
+                l10n.editProfile,
+                Icons.edit_outlined,
+                Color.fromARGB(255, 57, 65, 53),
+                () async {
+                  final result = await context.push<bool>('/update-profile');
+                  if (result == true) {
+                    getUserInfo();
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildStatsSection(AppLocalizations? l10n) {
     return SliverToBoxAdapter(

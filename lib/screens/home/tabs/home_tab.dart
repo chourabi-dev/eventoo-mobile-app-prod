@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/models/event.dart';
+import 'package:mobile/screens/badge_display_screen/badge_display_screen.dart';
 import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/services/event_service.dart';
 import 'package:mobile/theme/app_theme.dart';
@@ -21,16 +23,16 @@ class _HomeTabState extends State<HomeTab> {
 
 
   dynamic _event;
-  bool _loading = true;
+  bool _loading = true; 
+  List<ModuleData> modules = [ ];
 
-
-  
+  Map<String, dynamic>? _badgeSettings;
+  Map<String, dynamic>? _userData;
+  bool _loadingBadgeData = false;
   EventService _eventService = EventService();
   List<dynamic> chatNotifications  = [];
   List<Event> _myEvents  = [];
    
-
-  List<ModuleData> modules = [ ];
 
 
 
@@ -41,6 +43,7 @@ class _HomeTabState extends State<HomeTab> {
     getEventInfo();
     updateUnreadedMessages();
     listenToChat();
+    _loadBadgeData();
 
   }
 
@@ -122,34 +125,50 @@ class _HomeTabState extends State<HomeTab> {
 
   final List<ModuleData> modules = [
     ModuleData(
+      title: (l10n) =>  "Badge", //l10n.badgeOptions,
+      icon: Icons.badge,
+      gradient: AppTheme.primaryGradient,
+      color: AppTheme.primaryColor,
+      route: '/badge', // <-- add route here,
+      backgroundIMAGE: 'assets/menu-badge.png'
+    ),
+
+    ModuleData(
       title: (l10n) => l10n.calendar,
       icon: Icons.calendar_today_rounded,
       gradient: AppTheme.secondaryGradient,
       color: AppTheme.secondaryColor,
       route: '/event-calendar', // <-- add route here
+      backgroundIMAGE: 'assets/agenda.png'
     ),
     // Participants module only if allowed
     if ( showParticipantList == true)
       ModuleData(
         title: (l10n) => l10n.participants,
-        icon: Icons.people_rounded,
-        gradient: AppTheme.accentGradient,
-        color: AppTheme.accentColor,
+        icon: Icons.people_rounded, 
+        gradient: AppTheme.expositionGardien,
+        color: const Color.fromARGB(255, 205, 154, 78),
         route: '/participants',
+        backgroundIMAGE: 'assets/21.png',
       ),
-    ModuleData(
-      title: (l10n) => l10n.exposers,
-      icon: Icons.store,
-      gradient: AppTheme.expositionGardien,
-      color: const Color.fromARGB(255, 205, 154, 78),
-      route: '/exposition',
-    ),
+    
     ModuleData(
       title: (l10n) => l10n.networking,
       icon: Icons.business_center_rounded,
       gradient: AppTheme.primaryGradient,
       color: AppTheme.primaryColor,
       route: '/networking',
+      backgroundIMAGE: 'assets/4.png'
+    ),
+
+
+    ModuleData(
+      title: (l10n) => l10n.myContacts,
+      icon: Icons.contacts,
+      gradient: AppTheme.pinkGradient,
+      color: AppTheme.primaryColor,
+      route: '/my-contacts',
+      backgroundIMAGE: 'assets/13.png'
     ),
 
 
@@ -159,14 +178,16 @@ class _HomeTabState extends State<HomeTab> {
       gradient: AppTheme.pinkGradient,
       color: Color.fromARGB(255, 117, 193, 251),
       route: '/business-cards',
+      backgroundIMAGE: 'assets/menu-badge.png'
     ),
 
     ModuleData(
-      title: (l10n) => l10n.myContacts,
-      icon: Icons.contacts,
-      gradient: AppTheme.pinkGradient,
-      color: AppTheme.primaryColor,
-      route: '/my-contacts',
+      title: (l10n) => l10n.exposers,
+      icon: Icons.store,
+      gradient: AppTheme.participantGardien,
+        color: AppTheme.deepColor,
+      route: '/exposition',
+      backgroundIMAGE: 'assets/11.png'
     ),
  
 
@@ -177,6 +198,119 @@ class _HomeTabState extends State<HomeTab> {
   return modules;
 }
 
+
+ Widget _buildOptionButton({
+    required IconData icon,
+    required String title,
+    required Gradient gradient,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primaryColor.withOpacity(0.3),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 32, color: Colors.white),
+            const SizedBox(width: 16),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+    void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+
+    Future<void> _loadBadgeData() async {
+    setState(() => _loadingBadgeData = true);
+
+    try {
+      // TODO: Replace with actual API calls
+      // Fetch badge settings from your API
+      final badgeSettingsTEXT = await _eventService.getMyBadgeSetting();
+
+
+      // do we have a badge setting ?
+      dynamic badgeSuccess = jsonDecode(badgeSettingsTEXT.body)['success'];
+
+      if( badgeSuccess ){
+          dynamic setting = jsonDecode(badgeSettingsTEXT.body)['setting'];
+
+
+          // Fetch user data from your API
+          final userDataTEXT = await _eventService.getEventProfileDATA();
+
+          setState(() {
+            _badgeSettings = setting;
+            _userData = jsonDecode(userDataTEXT.body)['data'];
+            _loadingBadgeData = false;
+          });
+      }else{
+        // log err
+        setState(() => _loadingBadgeData = false);
+      }
+      
+      
+    } catch (e) {
+      print('Error loading badge data: $e');
+      setState(() => _loadingBadgeData = false);
+    }
+  }
+
+  void _showMyBadge() {
+    if (_loadingBadgeData) {
+      _showSnackBar('Loading badge data...');
+      return;
+    }
+
+    if (_badgeSettings == null || _userData == null) {
+      _showSnackBar('Badge data not available');
+      return;
+    }else{
+      
+      Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BadgeDisplayScreen(
+          badgeSettings: _badgeSettings!,
+          userData: _userData!,
+        ),
+      ),
+    );
+
+    }
+  }
 
 
  
@@ -198,14 +332,7 @@ class _HomeTabState extends State<HomeTab> {
     :
     Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppTheme.backgroundColor,
-              AppTheme.surfaceColor,
-            ],
-          ),
+          color:  AppTheme.mainBackgroundColor,
         ),
         child: SafeArea(
           child: Column(
@@ -227,7 +354,7 @@ class _HomeTabState extends State<HomeTab> {
 
                       });*/
                        
-                    }, icon: Icon(Icons.arrow_circle_left,color: Colors.blue.shade300, size: 30,)),
+                    }, icon: Icon( FontAwesomeIcons.arrowLeft ,color: AppTheme.accentColor, size: 25,)),
                     
 
                     GestureDetector(
@@ -293,12 +420,12 @@ class _HomeTabState extends State<HomeTab> {
                               l10n.welcome,
                               overflow: TextOverflow.clip,
                               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: Colors.blue.withOpacity(0.7),
+                                color: AppTheme.accentColor
                               ),
                             ),
                             
                             const SizedBox(height: 4),
-                            ShaderMask(
+                            /*ShaderMask(
                               shaderCallback: (bounds) =>
                                   AppTheme.primaryGradient.createShader(bounds),
                               child: Container(
@@ -312,8 +439,10 @@ class _HomeTabState extends State<HomeTab> {
                                   fontSize: 26,
                                 ),
                                 overflow: TextOverflow.fade,
-                              ),)
-                            ),
+                              )
+                              
+                              ,)
+                            ),*/
                           ],
                         ),
                         
@@ -349,31 +478,63 @@ class _HomeTabState extends State<HomeTab> {
                     ),
                     itemCount: modules.length,
                     itemBuilder: (context, index) {
-                      return TweenAnimationBuilder<double>(
-                        duration: Duration(milliseconds: 400 + (index * 100)),
-                        tween: Tween(begin: 0.0, end: 1.0),
-                        curve: Curves.easeOutCubic,
-                        builder: (context, value, child) {
-                          return Transform.scale(
-                            scale: value,
-                            child: Opacity(
-                              opacity: value,
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: ModuleCard(
-                          
-                          data: modules[index],
-                          onTap: () {
-                            final route = modules[index].route;
-                            if (route != null) {
-                              context.push(route);
-                            }
-                          },
-                        ),
-                      );
-                    },
+  return TweenAnimationBuilder<double>(
+    duration: Duration(milliseconds: 400 + (index * 100)),
+    tween: Tween(begin: 0.0, end: 1.0),
+    curve: Curves.easeOutCubic,
+    builder: (context, value, child) {
+      return Transform.scale(
+        scale: value,
+        child: Opacity(
+          opacity: value,
+          child: child,
+        ),
+      );
+    },
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            child: GestureDetector(
+              onTap: () {
+                final route = modules[index].route;
+
+                // exception for badge
+                if (route == "/badge") {
+                  _showMyBadge();
+                } else {
+                  if (route != null) {
+                    context.push(route);
+                  }
+                }
+              },
+              child: Image.asset(
+                modules[index].backgroundIMAGE,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        Text(
+          modules[index].title(l10n), // <-- title here
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    ),
+  );
+},
+
                   ),
                 ),
               ),

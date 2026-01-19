@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/participant_model.dart';
 import 'package:mobile/screens/participant/participant_screen.dart';
+import 'package:mobile/theme/app_theme.dart';
+import 'package:mobile/widgets/user_avatar.dart';
 
 class ParticipantCard extends StatelessWidget {
   final Participant participant;
@@ -15,7 +17,7 @@ class ParticipantCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.mainDeepBackgroundColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -44,7 +46,7 @@ class ParticipantCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// Avatar
-                CircleAvatar(
+                /*CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.grey[300],
                   backgroundImage: participant.photoUrl.isNotEmpty
@@ -53,10 +55,12 @@ class ParticipantCard extends StatelessWidget {
                   child: participant.photoUrl.isEmpty
                       ? const Icon(Icons.person, color: Colors.white)
                       : null,
-                ),
+                ),*/
+
+                UserAvatar(imageUrl: participant.photoUrl, fullName: participant.fullName, radius: 30, ),
 
                 const SizedBox(width: 16),
-
+                
                 /// Content
                 Expanded(
                   child: Column(

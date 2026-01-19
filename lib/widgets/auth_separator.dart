@@ -14,7 +14,7 @@ class AuthSeparator extends StatelessWidget {
       children: [
         Expanded(
           child: Divider(
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.grey.withOpacity(0.4),
             thickness: 1,
           ),
         ),
@@ -25,13 +25,13 @@ class AuthSeparator extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.grey.withOpacity(0.6),
             ),
           ),
         ),
         Expanded(
           child: Divider(
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.grey.withOpacity(0.4),
             thickness: 1,
           ),
         ),

@@ -6,6 +6,7 @@ import 'package:mobile/l10n/app_localizations.dart';
 import 'dart:convert';
 
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
 
 // Models
 class MeetingsResponse {
@@ -132,7 +133,8 @@ class _MeetingsScreenState extends State<MeetingsScreen>
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppTheme.mainBackgroundColor,
+      
      
      
       body: 
@@ -154,19 +156,19 @@ class _MeetingsScreenState extends State<MeetingsScreen>
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                colors: [Color.fromRGBO(199, 18, 94, 1), Color.fromRGBO(107, 22, 81, 1)],
                               ),
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF6366F1).withOpacity(0.3),
+                                  color: Color.fromRGBO(199, 18, 94, 1).withOpacity(0.3),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
                             child: const Icon(
-                              Icons.inbox,
+                              Icons.notifications,
                               color: Colors.white,
                               size: 28,
                             ),

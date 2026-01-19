@@ -2,42 +2,52 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Select photo for your profile</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Take photo for your profile</string>
+
+	<!-- App Identity -->
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+
 	<key>CFBundleDisplayName</key>
 	<string>Mobile</string>
+
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+
 	<key>CFBundleName</key>
 	<string>mobile</string>
+
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
+
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+
+	<!-- Launch & UI -->
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -45,9 +55,49 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
+
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+
+	<!-- ========================= -->
+	<!-- REQUIRED PERMISSIONS -->
+	<!-- ========================= -->
+
+	<!-- Camera (image_picker, mobile_scanner) -->
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires camera access to scan QR codes and upload images.</string>
+
+	<!-- Photo Library (image_picker, share_plus) -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to your photo library to select images.</string>
+
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app allows saving images to your photo library.</string>
+
+	<!-- Microphone (webview, youtube, scanner internal checks) -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is required for media playback features.</string>
+
+	<!-- Push Notifications (firebase_messaging) -->
+	<key>NSUserNotificationUsageDescription</key>
+	<string>Notifications are used to inform you about important updates and events.</string>
+
+	<!-- App Tracking Transparency (firebase_analytics, auth, google sign-in) -->
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Tracking is used to improve app analytics and enhance user experience.</string>
+
+	<!-- ========================= -->
+	<!-- NETWORK -->
+	<!-- ========================= -->
+
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
+
 </dict>
 </plist>
