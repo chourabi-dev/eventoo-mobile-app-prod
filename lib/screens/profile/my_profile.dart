@@ -196,20 +196,20 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
        _loadingEvents = true;
      });
 
+
     _eventService.getUserEventRegistrations().then((res){
       dynamic body = jsonDecode(res.body);
-      List<dynamic> tmp = body['data'];
+      //List<dynamic> tmp = body['data'];
 
-      print(tmp);
+      print("USER EVENTS REPONSE:");
+      print(body);
 
       setState(() {
          
         _myEvents = (body['data'] as List)
             .map((item) => Event.fromJson(item))
             .toList();
-      });
-
-      getLatestEvents();
+      }); 
 
      setState(() {
        _loadingEvents = false;
@@ -223,6 +223,8 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
       });
       
      
+    }).then((d){
+      getLatestEvents();
     });
     
   }
@@ -821,7 +823,7 @@ Widget _buildDrawerItem(
                 child: Text(
                   l10n.seeAll,
                   style: TextStyle(
-                    color: Color(0xFF667eea),
+                    color: AppTheme.accentColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -878,7 +880,7 @@ Widget _buildDrawerItem(
 
     Widget _buildModernAppBar(BuildContext context, Size size) {
       return SliverAppBar(
-            expandedHeight: 400,
+            expandedHeight: 300,
             pinned: true,
             stretch: true,
             //backgroundColor: Colors.white,
@@ -1115,7 +1117,7 @@ Widget _buildDrawerItem(
               SizedBox(height: 12),
               
               // Email
-              Container(
+              /*Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
@@ -1140,32 +1142,12 @@ Widget _buildDrawerItem(
                     ),
                   ],
                 ),
-              ),
+              ),*/
               
               // Role
               
               
-              // Company
-              if (_company.isNotEmpty) ...[
-                SizedBox(height: 6),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    _company,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppTheme.textColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-              
-              SizedBox(height: 12),
+             
 
               if (_role.isNotEmpty) ...[
                 SizedBox(height: 6),
@@ -1185,6 +1167,29 @@ Widget _buildDrawerItem(
                   ),
                 ),
               ],
+              
+              SizedBox(height: 12),
+
+               // Company
+              if (_company.isNotEmpty) ...[
+                SizedBox(height: 6),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    _company,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppTheme.textColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+
               SizedBox(height: 12),
               
               // Edit Profile Button
@@ -1416,7 +1421,7 @@ Widget _buildDrawerItem(
                 child: Text(
                   l10n.seeAll,
                   style: TextStyle(
-                    color: Color(0xFF667eea),
+                    color: AppTheme.primaryColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

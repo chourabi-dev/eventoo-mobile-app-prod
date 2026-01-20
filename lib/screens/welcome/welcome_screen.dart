@@ -235,9 +235,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
                                             onPressed: () =>
                                             context.push('/signup'),
                                             text: l10n.signUp,
-                                            gradient:
-                                            AppTheme.secondaryButtonGradient,
+                                            gradient:  AppTheme.secondaryButtonGradient,
                                             textColor: Colors.grey.shade600,
+                                            icon: Icons.mail,
                                           ),
 
 
@@ -260,7 +260,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
                                           },
                                             text: l10n.signUpWihGoogle,
                                             gradient: AppTheme.secondaryButtonGradient,
-                                            //icon: FontAwesomeIcons.google,
+                                            icon: FontAwesomeIcons.google,
                                             textColor: Colors.grey.shade600,
                                           ),
  

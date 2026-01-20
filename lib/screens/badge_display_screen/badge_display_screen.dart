@@ -189,14 +189,7 @@ class _BadgeDisplayScreenState extends State<BadgeDisplayScreen> {
                             uppercase: _getBool(settings['first_name_upper_case']),
                           ),
 
-                          if (_shouldShowField(settings['profile_activate_view']))
-                          _buildTextField(
-                            text: user['profileLabel'] ?? '',
-                            size: _getDouble(settings['profile_size']),
-                            bold: _getBool(settings['profile_bold']),
-                            uppercase: _getBool(settings['profile_upper_case']),
-                          ),
-
+                         
                         if (_shouldShowField(settings['contry_activate_view']))
                           _buildTextField(
                             text: user['country']?['name'] ?? '',
@@ -205,10 +198,17 @@ class _BadgeDisplayScreenState extends State<BadgeDisplayScreen> {
                             uppercase: _getBool(settings['country_uppercase']),
                           ),
 
+                          
+
+
+
                        ...(user['feilds'] as List).map<Widget>((f) {
                         if (settings['show_on_badge'] == true ) {
                           return const SizedBox.shrink();
                         }
+
+
+                        
 
                         return _buildTextField(
                           text: f['value']?.toString() ?? '',
@@ -220,6 +220,16 @@ class _BadgeDisplayScreenState extends State<BadgeDisplayScreen> {
                       
                         if (_shouldShowField(settings['qrcode_activate_view']))
                           _buildQRCode(user['userID']?.toString() ?? ''),
+
+
+                           if (_shouldShowField(settings['profile_activate_view']))
+                          _buildTextField(
+                            text: user['profileLabel'] ?? '',
+                            size: _getDouble(settings['profile_size']),
+                            bold: _getBool(settings['profile_bold']),
+                            uppercase: _getBool(settings['profile_upper_case']),
+                          ),
+
                       ],
                     ),
                   ),

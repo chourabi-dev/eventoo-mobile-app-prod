@@ -350,14 +350,14 @@ class _ChatScreenState extends State<ChatScreen> {
       return "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
     }
 
-    if (difference.inDays == 1) {
+    /*if (difference.inDays == 1) {
       return "Yesterday";
     }
 
     if (difference.inDays < 7) {
       const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
       return days[date.weekday - 1];
-    }
+    }*/
 
     return "${date.day.toString().padLeft(2, '0')}/"
         "${date.month.toString().padLeft(2, '0')}/"

@@ -20,6 +20,7 @@ class AppLocalizations {
       'sign_in': 'Sign In',
       'sign_up': 'Sign Up',
       'sign_up_label':"Sign Up",
+      'sign_up_label_login_screen':"Sign Up",
       'sign_in_continue': 'Sign in to continue',
       'sign_up_continue': 'Sign up to continue',
       'email': 'Email',
@@ -228,6 +229,7 @@ class AppLocalizations {
       'sign_in': 'Se Connecter',
       'sign_up': "S’inscrire avec e-mail",
       'sign_up_label': "S’inscrire",
+      'sign_up_label_login_screen': "Inscrivez-vous", 
       'sign_in_continue': 'Connectez-vous pour continuer',
       'sign_up_continue': "Inscrivez-vous pour continuer",
       'email': 'Email',
@@ -340,7 +342,7 @@ class AppLocalizations {
       "scan_badge_label":"Scanner le badge",
       "scan_instructions_label":"Aligner le code QR dans le cadre",
       "sign_in_with_google":"Se connecter avec Google",
-      "sign_up_with_google":"Inscrivez-vous avec Google",
+      "sign_up_with_google":"S'inscrire avec Google",
       
       "my_contacts_label":"Mes contacts",
       "remarque_label":"Remarque",
@@ -444,6 +446,10 @@ class AppLocalizations {
   
   String get signUp => translate('sign_up');
   String get signUpLabel => translate('sign_up_label');
+  String get signUpLabelLoginScreen => translate('sign_up_label_login_screen');
+  
+
+  
   String get signInContinue => translate('sign_in_continue');
   String get signUpContinue => translate('sign_up_continue');
   String get email => translate('email');

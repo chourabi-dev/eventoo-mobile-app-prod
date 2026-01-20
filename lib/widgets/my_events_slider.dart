@@ -4,6 +4,7 @@ import 'package:mobile/l10n/app_localizations.dart';
 import 'dart:math' as math;
 
 import 'package:mobile/models/event.dart';
+import 'package:mobile/theme/app_theme.dart';
 
 
 class PremiumEventSlider extends StatefulWidget {
@@ -87,13 +88,13 @@ class _PremiumEventSliderState extends State<PremiumEventSlider> {
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       colors: [
-                        Colors.blue.shade500,
-                        Colors.purple.shade500,
+                        AppTheme.accentBackgroundColor,
+                        AppTheme.accentColor,
                       ],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(0.35),
+                        color: AppTheme.accentColor.withOpacity(0.35),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),

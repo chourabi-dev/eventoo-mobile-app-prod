@@ -598,6 +598,95 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
     );
   }
 
+
+  Future<void> _addToFavourite(int id) async {
+     
+   
+
+    try {
+      final body = await _eventService.addParticipantToMyFavoutites( id,  ""  );
+      dynamic res = jsonDecode(body.body);
+
+      if (res != null && res['success'] == true) {
+        //setState(() => _isFavourite = true);
+
+        _showToast(
+          context,
+          message: res['message'] ?? 'Added to favourites',
+          success: true,
+        );
+      } else {
+        _showToast(
+          context,
+          message: res['message'] ?? 'Something went wrong',
+          success: false,
+        );
+      }
+    } catch (_) {
+      _showToast(
+        context,
+        message: 'Server error, please try again',
+        success: false,
+      );
+    } finally {
+      //setState(() => _isAddingToFav = false);
+    }
+  }
+
+    void _showToast(
+    BuildContext context, {
+    required String message,
+    required bool success,
+  }) {
+    final overlay = Overlay.of(context);
+    final entry = OverlayEntry(
+      builder: (_) => Positioned(
+        bottom: 90,
+        left: 24,
+        right: 24,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: success ? Colors.green.shade600 : Colors.red.shade600,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  blurRadius: 16,
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  success ? Icons.check_circle : Icons.error,
+                  color: Colors.white,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(entry);
+    Future.delayed(const Duration(seconds: 2), entry.remove);
+  }
+  
+
   Future<void> _showParticipantActions(
     Participant participant,
   ) async {
@@ -618,6 +707,7 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
       showModalBottomSheet(
         context: context,
         //showDragHandle: true,
+        isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (context) => ParticipantActionsSheet(
           participant: participant,
@@ -625,6 +715,11 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
           onSendInvitation: () => _sendMeetingInvitation(participant),
           onRequestBusinessCard: () => _requestBusinessCard(participant),
           onOpenChat: () => _openChat(participant),
+          onfavAdd: (){
+            print("ADDING TO FAV ${participant.id}");
+            _addToFavourite(participant.id);
+
+          },
         ),
       );
           
@@ -1150,13 +1245,15 @@ class ParticipantActionsSheet extends StatelessWidget {
   final VoidCallback onSendInvitation;
   final VoidCallback onRequestBusinessCard;
   final VoidCallback onOpenChat;
+  final VoidCallback onfavAdd;
+  
   const ParticipantActionsSheet({
     super.key,
     required this.participant,
     required this.roles,
     required this.onSendInvitation,
     required this.onRequestBusinessCard,
-    required this.onOpenChat,
+    required this.onOpenChat, required this.onfavAdd,
   });
   @override
   Widget build(BuildContext context) {
@@ -1261,6 +1358,15 @@ class ParticipantActionsSheet extends StatelessWidget {
               l10n.chatsLabel,
               const Color(0xFF4ECDC4),
               onOpenChat,
+            ), 
+
+
+            _buildActionButton(
+              context,
+              Icons.star,
+              l10n.addToFavLabel,
+              AppTheme.deepColor,
+              onfavAdd,
             ), 
 
            

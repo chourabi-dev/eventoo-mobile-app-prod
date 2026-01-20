@@ -169,14 +169,16 @@ class DiscussionTile extends StatelessWidget {
       return "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
     }
 
-    if (difference.inDays == 1) {
-      return "Yesterday";
+    /*if (difference.inDays == 1) {
+      return "";
     }
 
     if (difference.inDays < 7) {
-      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-      return days[date.weekday - 1];
-    }
+      /*const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      return days[date.weekday - 1];*/
+
+      return "";
+    }*/
 
     return "${date.day.toString().padLeft(2, '0')}/"
         "${date.month.toString().padLeft(2, '0')}/"

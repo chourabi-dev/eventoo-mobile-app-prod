@@ -399,8 +399,7 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                                               color: Color.fromRGBO(156, 156, 152, 1),
                                             ),
                                             filled: true,
-                                            fillColor: const Color.fromRGBO(225, 218, 203, 1),
-
+                                            
                                             /*prefixIcon: const Icon(
                                               Icons.lock_outline,
                                               color: Color.fromRGBO(156, 156, 152, 1),
@@ -417,7 +416,7 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                                                 });
                                               },
                                             ),
-
+                                            fillColor: const Color.fromRGBO(225, 218, 203, 1), 
                                             border: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(4),
                                               borderSide: const BorderSide(color: Colors.grey, width: 0),
@@ -447,6 +446,7 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                                                 width: 1.5,
                                               ),
                                             ),
+                                            
                                             
                                           ),
                                           validator: (value) {
@@ -507,7 +507,7 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                                                       if( Platform.isAndroid )
                                                       Expanded(child: AnimatedButton(
                                                         onPressed: _handleSignInWithGoogle,
-                                                        text: "",
+                                                        text: l10n.signInWihGoogle,
                                                         gradient: AppTheme.secondaryButtonGradient,
                                                         icon: FontAwesomeIcons.google,
                                                         textColor: Colors.grey.shade600,
@@ -562,27 +562,35 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                           const SizedBox(height: 24),
 
                           // Sign up link
-                          Row(
+                         Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                l10n.dontHaveAccount,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  context.push('/signup');
-                                },
+                              Flexible(
                                 child: Text(
-                                  l10n.signUpLabel,
-                                  style: TextStyle(
-                                    color: AppTheme.accentColor,
-                                    fontWeight: FontWeight.bold,
+                                  l10n.dontHaveAccount,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              Flexible(
+                                child: TextButton(
+                                  onPressed: () {
+                                    context.push('/signup');
+                                  },
+                                  child: Text(
+                                    l10n.signUpLabelLoginScreen,
+                                    style: TextStyle(
+                                      color: AppTheme.accentColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
                             ],
-                          ),
+                          )
+
+
                         ],
                       ),
                     ),

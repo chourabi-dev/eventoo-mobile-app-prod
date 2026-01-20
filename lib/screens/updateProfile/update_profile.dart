@@ -213,6 +213,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
+      backgroundColor: AppTheme.mainBackgroundColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -224,7 +225,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
         actions: const [LanguageSwitcher()],
       ),
       body: Container(
-        decoration: BoxDecoration(
+        /*decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -234,7 +235,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
               AppTheme.cardColor,
             ],
           ),
-        ),
+        ),*/
         child: Stack(
           children: [
             // Decorative circles
@@ -300,7 +301,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
 
                           // Form container
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
+                           // borderRadius: BorderRadius.circular(30),
                             child: BackdropFilter(
                               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                               child: Container(
@@ -324,12 +325,43 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                   key: _formKey,
                                   child: Column(
                                     children: [
-
+                                      
                                        DropdownButtonFormField<String>(
                                             value: _selectedSex,
                                             decoration: InputDecoration(
                                               labelText: l10n.sex,           // <-- add in localization
                                               prefixIcon: const Icon(FontAwesomeIcons.mars),
+                                              fillColor: const Color.fromRGBO(225, 218, 203, 1), 
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1),
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
                                             ),
                                             items: [
                                               DropdownMenuItem(value: "male", child: Text(l10n.male)),
@@ -352,6 +384,37 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                           labelText: l10n.firstName,
                                           hintText: l10n.enterFirstName,
                                           prefixIcon: const Icon(Icons.person),
+                                          fillColor: const Color.fromRGBO(225, 218, 203, 1), 
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1),
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
                                         ),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
@@ -369,6 +432,37 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                           labelText: l10n.lastName,
                                           hintText: l10n.enterLastName,
                                           prefixIcon: const Icon(Icons.person),
+                                          fillColor: const Color.fromRGBO(225, 218, 203, 1), 
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1),
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
                                         ),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
@@ -388,8 +482,36 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                         decoration: InputDecoration(
                                           labelText:  l10n.companyLabel, 
                                           prefixIcon:  Icon(FontAwesomeIcons.building ),
-                                           
-                                           
+                                          fillColor: const Color.fromRGBO(225, 218, 203, 1), 
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1),
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
                                             
                                         ),
                                          
@@ -403,7 +525,37 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                         decoration: InputDecoration(
                                           labelText: l10n.functionLabel, 
                                           prefixIcon: const Icon(Icons.check),
-                                           
+                                           fillColor: const Color.fromRGBO(225, 218, 203, 1), 
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1),
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
                                              
                                             
                                         ),
@@ -422,6 +574,37 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                           labelText: l10n.phone,
                                           hintText: l10n.enterYourPhone,
                                           prefixIcon: const Icon(Icons.phone),
+                                          fillColor: const Color.fromRGBO(225, 218, 203, 1), 
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1),
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
                                         ),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
@@ -462,6 +645,37 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
       decoration: InputDecoration(
         labelText: l10n.country,
         prefixIcon: const Icon(Icons.public),
+        fillColor: const Color.fromRGBO(225, 218, 203, 1), 
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1),
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
       ),
       validator: (_) =>
           _selectedCountry == null ? l10n.selectCountry : null,
@@ -478,7 +692,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                           : AnimatedButton(
                                               onPressed: _handleUpdateProfile,
                                               text: l10n.updateMyProfile,
-                                              gradient: AppTheme.accentGradient,
+                                              gradient: AppTheme.primaryButtonGradient,
                                               icon: Icons.save,
                                             ),
 

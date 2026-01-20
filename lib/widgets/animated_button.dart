@@ -104,7 +104,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
                           widget.text,
                           style:  TextStyle(
                             color: widget.textColor == null ? Colors.white : widget.textColor,
-                            fontSize: 15,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.5,
                           ),
