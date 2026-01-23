@@ -214,6 +214,20 @@ class AppLocalizations {
       "function_label": "Occupation",
       "my_events_subtitle":"In which I am registered",
       "more_events_subtitle":"Which I am not yet \nregistered for",
+
+      "speakers_label":"Speakers",
+      "about_label":"About",
+
+      "connect_with_us": "Connect with us",
+
+      "products_label":"Products",
+      "videos_label":"Videos",
+      "catalogue_label":"Catalogue",
+      "teams_label":"Team",
+       
+
+      
+
       
       
    
@@ -417,6 +431,19 @@ class AppLocalizations {
       "function_label": "Fonction",
       "my_events_subtitle":"Dans lesquels je suis inscrit",
       "more_events_subtitle":"Dans lesquels je ne \nsuis pas encore inscrit",
+
+      "speakers_label":"Intervenants",
+      "about_label":"À propos",
+      "connect_with_us":"Contactez-nous",
+      
+      "products_label":"Produits",
+
+"videos_label":"Vidéos",
+
+"catalogue_label":"Catalogue",
+
+"teams_label":"Équipe",
+      
 
 
  
@@ -683,6 +710,19 @@ class AppLocalizations {
 
   String get myEventsSubTitleDans => translate('my_events_subtitle');
   String get moreEventsSubtitle => translate('more_events_subtitle');
+  
+  String get speakersLabel => translate('speakers_label');
+  String get aboutLabel => translate('about_label');
+
+  
+  String get connectWithUs => translate('connect_with_us');
+  
+  String get productsLabel => translate('products_label');
+  String get videosLabel => translate('videos_label');
+  String get catalogueLabel => translate('catalogue_label');
+  String get teamsLabel => translate('teams_label');
+  
+   
   
 
   

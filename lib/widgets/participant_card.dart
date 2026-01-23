@@ -79,33 +79,12 @@ class ParticipantCard extends StatelessWidget {
 
                       const SizedBox(height: 4),
 
-                      /// Profile label
-                      Text(
-                        participant.profileLabel,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
-                      ),
 
-                      const SizedBox(height: 4),
-
-                      /// Country
-                      Text(
-                        participant.country.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-
-                      const SizedBox(height: 6),
 
                       /// Dynamic fields
                       ...participant.feilds
                           .where((f) =>
-                              f.showOnParticipantListPage == true &&
+                              f.showOnParticipantListPage == true && f.value != "" &&
                               ((f.value != null && f.value!.isNotEmpty) ||
                                   f.multipleValuesSelected.isNotEmpty))
                           .map(
@@ -121,6 +100,39 @@ class ParticipantCard extends StatelessWidget {
                               ),
                             ),
                           ),
+
+                          const SizedBox(height: 4),
+                      Container( 
+                        child: Text(
+                          participant.profileLabel,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textColor,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: 14,
+                            color: Colors.grey[500],
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            participant.country.name,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ],
+                      ),
+                      
                     ],
                   ),
                 ),

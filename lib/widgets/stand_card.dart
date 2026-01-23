@@ -78,9 +78,9 @@ class _StandCardState extends State<StandCard> {
                     children: [
                       // Logo
                       Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
+                        width: 100,
+                        //height: 80,
+                        /*decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
@@ -89,11 +89,11 @@ class _StandCardState extends State<StandCard> {
                               offset: const Offset(0, 5),
                             ),
                           ],
-                        ),
-                        child: ClipOval(
+                        ),*/
+                        child: Container(
                           child: Image.network(
                             widget.stand.logo,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.fill,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
                                 color: const Color(0xFF6C63FF),
@@ -134,7 +134,7 @@ class _StandCardState extends State<StandCard> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            /*Icon(
                               Icons.location_on,
                               size: 14,
                               color: widget.stand.isClickable
@@ -153,7 +153,7 @@ class _StandCardState extends State<StandCard> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                            ),
+                            ),*/
                           ],
                         ),
                       ),

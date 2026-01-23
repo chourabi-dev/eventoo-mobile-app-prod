@@ -14,6 +14,8 @@ class Contact {
   final String phone;
   final String avatarUrl;
   final String eventName;
+  final String type;
+  
 
   Contact({
     required this.id,
@@ -22,7 +24,7 @@ class Contact {
     required this.email,
     required this.phone,
     required this.avatarUrl,
-    required this.eventName,
+    required this.eventName, required this.type,
   });
 
   factory Contact.fromJson(Map<String, dynamic> json) {
@@ -33,7 +35,8 @@ class Contact {
       email: json['email'],
       phone: json['phone'],
       avatarUrl: json['avatarUrl'],
-      eventName: json['eventName'],
+      eventName: json['eventName'], 
+      type: json['type']
     );
   }
 }
@@ -58,6 +61,7 @@ class _BusinessCardsScreenState extends State<BusinessCardsScreen>
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
   EventService eventService = EventService();
+  String? _selectedType; // incoming / outgoing
 
   @override
   void initState() {
@@ -82,11 +86,11 @@ class _BusinessCardsScreenState extends State<BusinessCardsScreen>
   Future<void> _loadContacts() async {
     setState(() => _isLoading = true);
     
-    eventService.myBusinessCardsContacts().then((res){
-
-
-
+    eventService.myBusinessCardsContacts().then((res){ 
       final data = jsonDecode(res.body);
+
+      print(data);
+
     final contacts = (data['contacts'] as List)
         .map((json) => Contact.fromJson(json))
         .toList();
@@ -105,20 +109,25 @@ class _BusinessCardsScreenState extends State<BusinessCardsScreen>
 
     
   }
+void _filterContacts() {
+  setState(() {
+    _filteredContacts = _allContacts.where((contact) {
+      final matchesSearch =
+          contact.fullname.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          contact.email.toLowerCase().contains(_searchQuery.toLowerCase());
 
-  void _filterContacts() {
-    setState(() {
-      _filteredContacts = _allContacts.where((contact) {
-        final matchesSearch = contact.fullname
-                .toLowerCase()
-                .contains(_searchQuery.toLowerCase()) ||
-            contact.email.toLowerCase().contains(_searchQuery.toLowerCase());
-        final matchesEvent =
-            _selectedEvent == null || contact.eventName == _selectedEvent;
-        return matchesSearch && matchesEvent;
-      }).toList();
-    });
-  }
+      final matchesEvent =
+          _selectedEvent == null || contact.eventName == _selectedEvent;
+
+      final matchesType =
+          _selectedType == null || contact.type == _selectedType;
+          // contact.type should be: 'incoming' or 'outgoing'
+
+      return matchesSearch && matchesEvent && matchesType;
+    }).toList();
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -162,72 +171,113 @@ class _BusinessCardsScreenState extends State<BusinessCardsScreen>
     );
   }
 
+  
   Widget _buildFilterSection() {
-    final l10n = AppLocalizations.of(context);
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          // Search field
-          TextField(
+  final l10n = AppLocalizations.of(context);
+
+  return Container(
+    color: Colors.white,
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      children: [
+        // Search field
+        TextField(
+          onChanged: (value) {
+            _searchQuery = value;
+            _filterContacts();
+          },
+          decoration: InputDecoration(
+            hintText: l10n.searchParticipantsLabel,
+            prefixIcon: const Icon(Icons.search, color: Color(0xFF4A5568)),
+            filled: true,
+            fillColor: const Color(0xFFF7FAFC),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // Event filter
+        _buildDropdownContainer(
+          child: DropdownButton<String?>(
+            value: _selectedEvent,
+            hint: Text(l10n.myEventsLabel),
+            isExpanded: true,
+            icon: const Icon(Icons.event),
+            items: [
+              DropdownMenuItem<String?>(
+                value: null,
+                child: Text(l10n.myEventsLabel),
+              ),
+              ..._eventNames.map((event) {
+                return DropdownMenuItem<String>(
+                  value: event,
+                  child: Text(event),
+                );
+              }).toList(),
+            ],
             onChanged: (value) {
-              _searchQuery = value;
+              setState(() => _selectedEvent = value);
               _filterContacts();
             },
-            decoration: InputDecoration(
-              hintText: l10n.searchParticipantsLabel,
-              prefixIcon: const Icon(Icons.search, color: Color(0xFF4A5568)),
-              filled: true,
-              fillColor: const Color(0xFFF7FAFC),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-            ),
           ),
-          const SizedBox(height: 12),
-          // Event filter
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF7FAFC),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String?>(
-                value: _selectedEvent,
-                hint:  Text( l10n.eventLabel ),
-                isExpanded: true,
-                icon: const Icon(Icons.filter_list),
-                items: [
-                   DropdownMenuItem<String?>(
-                    value: null,
-                    child: Text( l10n.eventLabel ),
-                  ),
-                  ..._eventNames.map((event) {
-                    return DropdownMenuItem<String>(
-                      value: event,
-                      child: Text(event),
-                    );
-                  }).toList(),
-                ],
-                onChanged: (value) {
-                  setState(() => _selectedEvent = value);
-                  _filterContacts();
-                },
+        ),
+
+        const SizedBox(height: 12),
+
+        // Type filter (Incoming / Outgoing)
+        _buildDropdownContainer(
+          child: DropdownButton<String?>(
+            value: _selectedType,
+            hint: Text('${l10n.outgoing} / ${l10n.incoming}'),
+            isExpanded: true,
+            icon: const Icon(Icons.swap_horiz),
+            items: [
+              DropdownMenuItem<String?>(
+                value: null,
+                child: Text('${l10n.outgoing} / ${l10n.incoming}'),
               ),
-            ),
+              DropdownMenuItem<String>(
+                value: 'incoming',
+                child: Text(l10n.incoming),
+              ),
+              DropdownMenuItem<String>(
+                value: 'outgoing',
+                child: Text(l10n.outgoing),
+              ),
+            ],
+            onChanged: (value) {
+              setState(() => _selectedType = value);
+              _filterContacts();
+            },
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildDropdownContainer({required Widget child}) {
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(horizontal: 12),
+    decoration: BoxDecoration(
+      color: const Color(0xFFF7FAFC),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: DropdownButtonHideUnderline(child: child),
+  );
+}
+
+
+
 
   Widget _buildCardsList() {
     return ListView.builder(
@@ -240,6 +290,8 @@ class _BusinessCardsScreenState extends State<BusinessCardsScreen>
   }
 
   Widget _buildBusinessCard(Contact contact, int index) {
+    final l10n = AppLocalizations.of(context);
+    
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 300 + (index * 100)),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -380,6 +432,12 @@ class _BusinessCardsScreenState extends State<BusinessCardsScreen>
                     Icons.phone_outlined,
                     contact.phone,
                     Colors.green,
+                  ),
+                   const SizedBox(height: 12),
+                  _buildInfoRow(
+                    Icons.share,
+                    contact.type == 'outgoing' ? l10n.outgoing : l10n.incoming,
+                    Colors.orange,
                   ),
                 ],
               ),

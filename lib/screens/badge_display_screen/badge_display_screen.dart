@@ -183,7 +183,14 @@ class _BadgeDisplayScreenState extends State<BadgeDisplayScreen> {
 
                         if (_shouldShowField(settings['first_name_activate_view']))
                           _buildTextField(
-                            text: user['fullName'] ?? '',
+                            text: user['fullName'].split(" ")[0] ?? '',
+                            size: _getDouble(settings['first_name_size']),
+                            bold: _getBool(settings['first_name_bold']),
+                            uppercase: _getBool(settings['first_name_upper_case']),
+                          ),
+
+                          _buildTextField(
+                            text: user['fullName'].split(" ")[1] ?? '',
                             size: _getDouble(settings['first_name_size']),
                             bold: _getBool(settings['first_name_bold']),
                             uppercase: _getBool(settings['first_name_upper_case']),

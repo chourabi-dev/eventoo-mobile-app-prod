@@ -161,6 +161,15 @@ class _HomeTabState extends State<HomeTab> {
       backgroundIMAGE: 'assets/4.png'
     ),
 
+    ModuleData(
+      title: (l10n) => l10n.speakersLabel,
+      icon: Icons.business_center_rounded,
+      gradient: AppTheme.primaryGradient,
+      color: AppTheme.primaryColor,
+      route: '/speakers',
+      backgroundIMAGE: 'assets/20.png'
+    ),
+
 
     ModuleData(
       title: (l10n) => l10n.myContacts,

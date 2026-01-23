@@ -259,9 +259,9 @@ class _SignUpScreenState extends State<SignUpScreen>
                           const SizedBox(height: 25),
 
                           // Form container
-                          ClipRRect( 
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                          Container( 
+                            child: Container(
+                               
                               child: Container(
                                  
                                 padding: const EdgeInsets.all(0),

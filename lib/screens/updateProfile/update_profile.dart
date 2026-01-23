@@ -300,26 +300,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                           const SizedBox(height: 30),
 
                           // Form container
-                          ClipRRect(
+                          Container(
                            // borderRadius: BorderRadius.circular(30),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                               
                               child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Colors.white.withOpacity(0.1),
-                                      Colors.white.withOpacity(0.05),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(30),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.2),
-                                    width: 1.5,
-                                  ),
-                                ),
+                                
                                 padding: const EdgeInsets.all(0),
                                 child: Form(
                                   key: _formKey,

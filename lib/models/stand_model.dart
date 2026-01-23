@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile/models/participant_model.dart';
 
 class Stand {
   final int id;
@@ -17,6 +18,8 @@ class Stand {
   final List<Product> products;
   final List<Video> videos;
   final List<Catalogue> catalogues;
+  final List<Participant> members;
+  
 
   Stand({
     required this.id,
@@ -34,6 +37,7 @@ class Stand {
     required this.products,
     required this.videos,
     required this.catalogues,
+    required this.members, 
   });
 
   factory Stand.fromJson(Map<String, dynamic> json) {
@@ -60,6 +64,10 @@ class Stand {
           [],
       catalogues: (json['catalogues'] as List?)
               ?.map((c) => Catalogue.fromJson(c))
+              .toList() ??
+          [],
+      members: (json['members'] as List?)
+              ?.map((c) => Participant.fromJson(c))
               .toList() ??
           [],
     );

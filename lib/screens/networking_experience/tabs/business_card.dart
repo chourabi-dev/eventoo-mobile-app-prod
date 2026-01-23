@@ -88,11 +88,7 @@ class _BusinessCardExchangeTabState extends State<BusinessCardExchangeTab>
 
     try {
       
-
-      await eventService.handleBusinessCardRequest(requestId, action);
-      
-      
-      
+      await eventService.handleBusinessCardRequest(requestId, action); 
       fetchBusinessCardRequests();
       _showSuccessDialog(action);
 
@@ -522,7 +518,7 @@ class BusinessCardRequestCard extends StatelessWidget {
                               ),
                               SizedBox(width: 10,),
                               
-                              Text("${businessCard.email}")
+                              Expanded(child: Text("${businessCard.email}"))
                                
                             ],
                           ),

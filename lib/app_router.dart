@@ -14,6 +14,7 @@ import 'package:mobile/screens/profile/my_profile.dart';
 import 'package:mobile/screens/profile_selection/profile_selection.dart';
 import 'package:mobile/screens/reset_password/reset_password_screen.dart';
 import 'package:mobile/screens/signup/signup_screen.dart';
+import 'package:mobile/screens/speakers/speakers_screen.dart';
 import 'package:mobile/screens/updateProfile/update_profile.dart';
 import 'screens/welcome/welcome_screen.dart';
 import 'screens/events/events_screen.dart';
@@ -135,6 +136,22 @@ class AppRouter {
         pageBuilder: (context, state) => CustomTransitionPage(
           key: state.pageKey,
           child: const MyEventsScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.easeInOut;
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            return SlideTransition(position: animation.drive(tween), child: child);
+          },
+        ),
+      ),
+
+      GoRoute(
+        path: '/speakers',
+        name: 'speakers',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const SpeakersListScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
             const end = Offset.zero;

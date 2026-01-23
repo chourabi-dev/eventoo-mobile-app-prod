@@ -754,7 +754,23 @@ Widget _buildDrawerItem(
                     ),
                   ],
                 ),
-              )
+              ),
+
+
+              TextButton(
+                onPressed: () => context.push('/my-events'),
+                child: Text(
+                  l10n.seeAll,
+                  style: TextStyle(
+                    color: AppTheme.accentColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+
+
+
+
 
             ],
           ),
@@ -1114,43 +1130,9 @@ Widget _buildDrawerItem(
                   Icon(Icons.check_circle, size: 25, color: Colors.blue),
                 ],
               ),
-              SizedBox(height: 12),
               
-              // Email
-              /*Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.email_outlined, size: 14, color: AppTheme.textColor),
-                    SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        _email,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppTheme.textColor,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
-                ),
-              ),*/
-              
-              // Role
-              
-              
-             
 
-              if (_role.isNotEmpty) ...[
-                SizedBox(height: 6),
+              if (_role.isNotEmpty) ...[ 
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
@@ -1166,10 +1148,7 @@ Widget _buildDrawerItem(
                     ),
                   ),
                 ),
-              ],
-              
-              SizedBox(height: 12),
-
+              ], 
                // Company
               if (_company.isNotEmpty) ...[
                 SizedBox(height: 6),

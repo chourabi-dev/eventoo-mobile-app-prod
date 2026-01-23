@@ -881,9 +881,38 @@ class ParticipantCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Container(
-                         
-                         
+                      
+                      ...participant.feilds
+                          .where((f) => f.showOnNetworkingApp == true && f.value != null && f.value != "")
+                          .map((f) => Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (f.value != null)
+                                      Text(
+                                        f.value ?? "",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey[600],
+                                          fontFamily: 'Inter',
+                                        ),
+                                      ),
+                                    if (f.multipleValuesSelected.isNotEmpty)
+                                      Text(
+                                        f.multipleValuesSelected.join(", "),
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey[600],
+                                          fontFamily: 'Inter',
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              )),
+
+                      const SizedBox(height: 4),
+                      Container( 
                         child: Text(
                           participant.profileLabel,
                           style: const TextStyle(
@@ -913,34 +942,8 @@ class ParticipantCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      ...participant.feilds
-                          .where((f) => f.showOnNetworkingApp == true)
-                          .map((f) => Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (f.value != null)
-                                      Text(
-                                        f.value ?? "",
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.grey[600],
-                                          fontFamily: 'Inter',
-                                        ),
-                                      ),
-                                    if (f.multipleValuesSelected.isNotEmpty)
-                                      Text(
-                                        f.multipleValuesSelected.join(", "),
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.grey[600],
-                                          fontFamily: 'Inter',
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ))
+                      
+
                     ],
                   ),
                 ),
