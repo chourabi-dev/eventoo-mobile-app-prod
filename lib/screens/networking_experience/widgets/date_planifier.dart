@@ -8,6 +8,7 @@ import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/models/api_networking_date.dart';
 import 'package:mobile/models/participant_model.dart';
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
 
 class MeetingInvitationDialog extends StatefulWidget {
   final Participant participant;
@@ -236,19 +237,53 @@ class _MeetingInvitationDialogState extends State<MeetingInvitationDialog> {
               )
               :
               DropdownButtonFormField<ApiLocation>(
-                value: _selectedLocation,
-                items: locations
-                    .map(
-                      (l) => DropdownMenuItem(
-                        value: l,
-                        child: Text(l.location),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) =>
-                    setState(() => _selectedLocation = value),
-                decoration: _inputDecoration(Icons.location_on),
-              ),
+  isExpanded: true,
+  value: _selectedLocation,
+
+  // 🔽 ITEMS (menu)
+  items: locations.map((l) {
+    return DropdownMenuItem<ApiLocation>(
+      value: l,
+      child: Row(
+        children: [
+          Icon(Icons.location_on, color: AppTheme.accentColor),
+          SizedBox(width: 5),
+          Expanded(
+            child: Text(
+              '${l.location} ${l.moreInfo}',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }).toList(),
+
+  // ✅ SELECTED ITEM (champ)
+  selectedItemBuilder: (context) {
+    return locations.map((l) {
+      return Row(
+        children: [
+          Icon(Icons.location_on, color: AppTheme.accentColor),
+          SizedBox(width: 5),
+          Expanded(
+            child: Text(
+              l.location, // ⭐ UNE SEULE LIGNE
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      );
+    }).toList();
+  },
+
+  onChanged: (value) => setState(() => _selectedLocation = value),
+  //decoration: _inputDecoration(Icons.location_on),
+),
+
+              
 
               const SizedBox(height: 30),
 

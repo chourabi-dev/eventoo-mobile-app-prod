@@ -15,6 +15,7 @@ import 'package:mobile/services/event_service.dart';
 import 'package:mobile/services/fcm_service.dart';
 import 'package:mobile/services/general_service.dart';
 import 'package:mobile/theme/app_theme.dart';
+import 'package:mobile/widgets/animated_button.dart';
 import 'package:mobile/widgets/delete_account_sheet.dart';
 import 'package:mobile/widgets/event_card.dart';
 import 'package:mobile/widgets/language_switcher.dart';
@@ -303,13 +304,13 @@ Widget emailVerificationRequired(BuildContext context, VoidCallback onResend) {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.1),
+              gradient: AppTheme.primaryButtonGradient,
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.mark_email_unread_outlined,
               size: 50,
-              color: Colors.orange,
+              color: Colors.white,
             ),
           ),
 
@@ -347,24 +348,10 @@ Widget emailVerificationRequired(BuildContext context, VoidCallback onResend) {
             
             _clickedOnSendValidationEmailButton == false ?
             
-            ElevatedButton(
+            AnimatedButton(
+              gradient: AppTheme.primaryButtonGradient,
               onPressed: onResend,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child:  
-              
-              Text(
-                l10n.emailRequiredValidationButton,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              )
-             
+              text: l10n.emailRequiredValidationButton,
             )
             :
             Container(
@@ -372,33 +359,41 @@ Widget emailVerificationRequired(BuildContext context, VoidCallback onResend) {
               )
           ),
 
+
+          if ( _clickedOnSendValidationEmailButton == true )
+          SizedBox(height: 25,),
+
+          if ( _clickedOnSendValidationEmailButton == true )
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextButton(
-                child: Text( l10n.refreshLabel ),
-                onPressed: (){
+                Expanded(child: AnimatedButton(onPressed: (){
                   setState(() {
                     emailValid = null;
 
                   });
                   
                   getUserInfo();
-                }
-              ),
-              SizedBox(width: 35,),
-              TextButton(
-            child: Text( l10n.logout, style: TextStyle(color: Colors.red), ),
+
+              }, text: l10n.refreshLabel, gradient: AppTheme.primaryButtonGradient))
+              ,
+
+              SizedBox(width: 5,),
+              
+
+          Expanded(child: TextButton(
+            child: Text( l10n.logout, style: TextStyle(color: Colors.grey), ),
             onPressed: () async{
               final storage = FlutterSecureStorage();
                       await storage.deleteAll();
                      
                      context.go('/');
             }
-          )
+          ))
               
             ],
           )
+          
  
         ],
       ),

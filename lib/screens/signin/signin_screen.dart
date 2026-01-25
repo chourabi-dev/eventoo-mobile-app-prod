@@ -504,7 +504,7 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                                                   child: Row(
                                                     children: [
 
-                                                      if( Platform.isAndroid )
+                                                      /*if( Platform.isAndroid )
                                                       Expanded(child: AnimatedButton(
                                                         onPressed: _handleSignInWithGoogle,
                                                         text: l10n.signInWihGoogle,
@@ -512,7 +512,7 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
                                                         icon: FontAwesomeIcons.google,
                                                         textColor: Colors.grey.shade600,
                                                         
-                                                      ), ),
+                                                      ), ),-*/
 
 
                                                       /*if (Platform.isIOS == true)

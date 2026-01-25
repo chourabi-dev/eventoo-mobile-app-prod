@@ -244,7 +244,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
                                           SizedBox( height: 18, ), 
 
 
-                                          if( Platform.isAndroid )
+                                          /*if( Platform.isAndroid )
                                           _googleSignupScreen == true? 
                                           Container(
                                             child: CircularProgressIndicator(),
@@ -262,7 +262,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
                                             gradient: AppTheme.secondaryButtonGradient,
                                             icon: FontAwesomeIcons.google,
                                             textColor: Colors.grey.shade600,
-                                          ),
+                                          ),*/
  
                                           
 

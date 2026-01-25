@@ -5,6 +5,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/models/api_networking_date.dart';
 import 'package:mobile/models/networking_role.dart';
@@ -102,13 +103,15 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
   List<Participant> _filteredParticipants = [];
   List<Participant> _recommendations = [];
   bool _isLoadingData = true;
+  bool _loadingNewParticipants = false;
+         
 
   var _countries = <Map<String, dynamic>>[];
   var _profiles = <Map<String, dynamic>>[];
-  String _selectedCountry = "";
-
+  String _selectedCountry = ""; 
 
   EventService _eventService = EventService();
+  static const _storage = FlutterSecureStorage();
  
   @override
   void initState() {
@@ -157,10 +160,40 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
   }
 
   Future<void> _loadData() async {
+    String? participantsStorage = await _storage.read(key: "networking_participants");
+    if( participantsStorage != null ){
+      if( participantsStorage.isNotEmpty ){
+
+        setState(() {
+          _loadingNewParticipants = true;
+        });
+
+        dynamic body = jsonDecode(participantsStorage);
+
+        setState(() {
+          _participants = (body['data'] as List)
+                  .map((e) => Participant.fromJson(e))
+                  .toList();
+
+        _filteredParticipants = (body['data'] as List)
+                  .map((e) => Participant.fromJson(e))
+                  .toList();
+          _recommendations = (body['data'] as List)
+                  .map((e) => Participant.fromJson(e))
+                  .toList();
+          _isLoadingData = false;
+        });
+      }
+    }
+
+
+    print("FETCHING NETWORKING EXPERINCE PARTICIPANTS...");
     
 
-    _eventService.networkingExperienceParticipants().then((res){
+    _eventService.networkingExperienceParticipants().then((res) async {
       dynamic body = jsonDecode(res.body);
+
+      await _storage.write(key: "networking_participants", value: res.body );
 
 
        setState(() {
@@ -173,19 +206,19 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
                   .toList();
           _recommendations = (body['data'] as List)
                   .map((e) => Participant.fromJson(e))
-                  .toList();
+                  .toList(); 
+         _isLoadingData = false; 
+         _loadingNewParticipants = false;
 
-
-         _isLoadingData = false;
-      
-      
-      }); 
-          
-              
-          
-          
-          
+      });
         
+      }).catchError((err){
+        print(err.toString());
+        setState(() {
+          _isLoadingData = false;
+          _loadingNewParticipants = false;
+         
+        });
       });
      
   }
@@ -545,6 +578,11 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
                   const SizedBox(height: 12),
                   const LinearProgressIndicator(),
                 ],
+
+                SizedBox(height: 15,),
+
+                if( _loadingNewParticipants )
+                LinearProgressIndicator()
               ],
             ),
           ),
