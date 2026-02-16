@@ -1,11 +1,11 @@
+# Set the platform to 15.5 for mobile_scanner
 platform :ios, '15.5'
 
-# These lines allow the Podfile to talk to the Flutter SDK
+# 1. Dynamically find the Flutter Root path
 def flutter_root
   generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
   unless File.exist?(generated_xcode_build_settings_path)
-    # This is fine on Windows; Codemagic will generate this file during the build
-    return "" 
+    raise "Generated.xcconfig must exist. If you're running pod install manually, make sure flutter pub get is executed first"
   end
   File.foreach(generated_xcode_build_settings_path) do |line|
     matches = line.match(/FLUTTER_ROOT\=(.*)/)
@@ -13,15 +13,15 @@ def flutter_root
   end
 end
 
-# Load the helper scripts from the Flutter SDK
-flutter_bin_path = File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelper')
-require flutter_bin_path if File.exist?(flutter_bin_path)
+# 2. Load the Flutter podhelper script
+# This provides the 'flutter_install_all_ios_pods' method
+load File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelper.rb')
 
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  # This is the magic command that links firebase_analytics and others
+  # 3. This now exists because we 'load'ed the podhelper above
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
@@ -29,6 +29,7 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
     target.build_configurations.each do |config|
+      # Force every dependency to 15.5 to avoid conflicts
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
     end
   end
