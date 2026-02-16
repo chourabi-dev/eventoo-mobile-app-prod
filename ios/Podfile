@@ -1,1 +1,22 @@
+# Uncomment this line to define a global platform for your project
 platform :ios, '15.5'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build speed.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def parse_KV_file(file, separator='=')
+  File.foreach(file).map { |line| line.strip.split(separator, 2) if line.include?(separator) }.compact.to_h
+end
+
+use_frameworks!
+use_modular_headers!
+
+target 'Runner' do
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+end
