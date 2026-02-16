@@ -1,7 +1,6 @@
-# Uncomment this line to define a global platform for your project
+# ios/Podfile
 platform :ios, '15.5'
 
-# CocoaPods analytics can be disabled
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {
@@ -10,10 +9,24 @@ project 'Runner', {
   'Release' => :release,
 }
 
-# Load Flutter pod helper
-flutter_application_path = '../'
-load File.join(flutter_application_path, 'packages', 'flutter_tools', 'bin', 'podhelper.rb')
+# This will automatically load Flutter pods
+require File.expand_path('../Flutter/ephemeral/flutter_export_environment.rb', __FILE__)
 
 target 'Runner' do
-  install_all_flutter_pods(flutter_application_path)
+  use_frameworks!
+  use_modular_headers!
+
+  # Install all Flutter plugins
+  install_all_flutter_pods(File.dirname(File.realpath(__FILE__)))
+
+  # Add any other pods manually here if needed
+  # pod 'Firebase/Messaging'
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+    end
+  end
 end
