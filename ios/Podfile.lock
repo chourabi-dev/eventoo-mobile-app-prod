@@ -1,0 +1,32 @@
+# Set the platform to 15.5 for mobile_scanner
+platform :ios, '15.5'
+
+# Do not change the lines below; they allow Flutter to manage your plugins
+target_conf_file = File.join('..', '.flutter-plugins-dependencies')
+def flutter_install_all_ios_pods(ios_application_path = nil)
+  native_additions_path = File.join(ios_application_path, '..', '.flutter-plugins-dependencies')
+  return unless File.exists?(native_additions_path)
+  
+  dependencies_file = File.join(ios_application_path, '..', '.flutter-plugins-dependencies')
+  return unless File.exists?(dependencies_file)
+end
+
+# This part tells the build machine where to find the Flutter engine
+load File.join(File.dirname(File.realpath(__FILE__)), '..', '..', '..', 'bin', 'cache', 'pkg', 'sky_engine', 'lib', 'ui', 'painting.dart') rescue nil
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      # Forces the target to 15.5
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
+    end
+  end
+end
