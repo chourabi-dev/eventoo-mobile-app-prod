@@ -1,32 +1,47 @@
 workflows:
-  ios-workflow:
-    name: iOS Build Workflow
+  ios-release:
+    name: iOS App Store Release
     max_build_duration: 60
     instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: AppStoreKey # This matches your key name in Codemagic
     environment:
       flutter: stable
       xcode: latest
       cocoapods: default
+      vars:
+        BUNDLE_ID: "io.eventoo.mobile" # Update this if your bundle ID is different
     scripts:
       - name: Clean up and Fetch Dependencies
         script: |
-          # Clean previous state
           flutter clean
           rm -rf ios/Pods
           rm -rf ios/Podfile.lock
-          
-          # Get Flutter packages
           flutter pub get
-          
-          # Force fresh CocoaPods install for iOS 15.5
-          cd ios
-          pod install --repo-update
-      - name: Build iOS Debug
+          cd ios && pod install --repo-update
+      - name: Set up Code Signing
         script: |
-          flutter build ios --debug --no-codesign
+          # Initialize the macOS keychain on the build machine
+          keychain initialize
+          # Fetch or create the distribution certificates and provisioning profiles
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          # Add the fetched certificates to the keychain
+          keychain add-certificates
+          # Tell the Xcode project to use the profiles we just downloaded
+          xcode-project use-profiles
+      - name: Build IPA for Release
+        script: |
+          # Build the production-ready .ipa file
+          # The build number is automatically set by Codemagic
+          flutter build ipa --release \
+            --build-number=$BUILD_NUMBER \
+            --export-options-plist=$HOME/export_options.plist
     artifacts:
-      - build/ios/iphoneos/*.app
+      - build/ios/ipa/*.ipa
     publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true # Automatically uploads to TestFlight for you
       email:
         recipients:
-          - tchourabi@gmail.com # Change this to your email
+          - tchourabi@gmail.com
