@@ -1,5 +1,4 @@
-# ios/Podfile
-platform :ios, '15.5'
+platform :ios, '15.0'
 
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -9,23 +8,18 @@ project 'Runner', {
   'Release' => :release,
 }
 
-# This will automatically load Flutter pods
-require File.expand_path('../Flutter/ephemeral/flutter_export_environment.rb', __FILE__)
-
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  # Install all Flutter plugins
+  # This line installs all Flutter plugins automatically
   install_all_flutter_pods(File.dirname(File.realpath(__FILE__)))
-
-  # Add any other pods manually here if needed
-  # pod 'Firebase/Messaging'
 end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
+      # Fix simulator build issues for Apple Silicon
       config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
     end
   end
