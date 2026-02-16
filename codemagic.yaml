@@ -21,22 +21,25 @@ workflows:
           cd ios && pod install --repo-update
       - name: Set up Code Signing
         script: |
-          # 1. Prepare the Mac's keychain
           keychain initialize
           
-          # 2. Force the project file to use Manual signing instead of Automatic
-          # This fixes the "No valid code signing certificates found" error on CI
+          # 1. Force Manual signing style
           sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' ios/Runner.xcodeproj/project.pbxproj
           
-          # 3. Fetch certificates from Apple
+          # 2. Force Distribution Identity (This is the critical fix for your error)
+          # We are replacing 'iPhone Developer' with 'iPhone Distribution' everywhere
+          sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = "iPhone Distribution";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = "iPhone Developer";/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = "iPhone Distribution";/g' ios/Runner.xcodeproj/project.pbxproj
+          
+          # 3. Fetch App Store Distribution files
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
           
-          # 4. Import certificates and map profiles
+          # 4. Finalize the virtual Mac's environment
           keychain add-certificates
           xcode-project use-profiles
       - name: Build IPA for Release
         script: |
-          # We use the --release flag and let Codemagic handle the final export
+          # Use --export-method to ensure Flutter knows we are going to the Store
           flutter build ipa --release \
             --build-number=$BUILD_NUMBER \
             --export-options-plist=$HOME/export_options.plist
