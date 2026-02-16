@@ -1,0 +1,32 @@
+workflows:
+  ios-workflow:
+    name: iOS Build Workflow
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Clean up and Fetch Dependencies
+        script: |
+          # Clean previous state
+          flutter clean
+          rm -rf ios/Pods
+          rm -rf ios/Podfile.lock
+          
+          # Get Flutter packages
+          flutter pub get
+          
+          # Force fresh CocoaPods install for iOS 15.5
+          cd ios
+          pod install --repo-update
+      - name: Build iOS Debug
+        script: |
+          flutter build ios --debug --no-codesign
+    artifacts:
+      - build/ios/iphoneos/*.app
+    publishing:
+      email:
+        recipients:
+          - tchourabi@gmail.com # Change this to your email
