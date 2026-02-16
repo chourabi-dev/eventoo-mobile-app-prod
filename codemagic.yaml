@@ -10,7 +10,7 @@ workflows:
       xcode: latest
       cocoapods: default
       vars:
-        BUNDLE_ID: "io.eventoo.mobile" # Check this matches your App Store ID
+        BUNDLE_ID: "io.eventoo.mobile"
     scripts:
       - name: Clean up and Fetch Dependencies
         script: |
@@ -21,21 +21,22 @@ workflows:
           cd ios && pod install --repo-update
       - name: Set up Code Signing
         script: |
-          # 1. Prepare the Mac's keychain to store certificates
+          # 1. Prepare the Mac's keychain
           keychain initialize
           
-          # 2. Fetch the certificates from Apple using your API key
-          # Use --type IOS_APP_STORE for release builds
+          # 2. Force the project file to use Manual signing instead of Automatic
+          # This fixes the "No valid code signing certificates found" error on CI
+          sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' ios/Runner.xcodeproj/project.pbxproj
+          
+          # 3. Fetch certificates from Apple
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
           
-          # 3. Import those certificates into the Mac's system
+          # 4. Import certificates and map profiles
           keychain add-certificates
-          
-          # 4. Tell the project to use these new files
           xcode-project use-profiles
       - name: Build IPA for Release
         script: |
-          # This command now has the certificates it needs!
+          # We use the --release flag and let Codemagic handle the final export
           flutter build ipa --release \
             --build-number=$BUILD_NUMBER \
             --export-options-plist=$HOME/export_options.plist
