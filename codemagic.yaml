@@ -4,13 +4,13 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m1
     integrations:
-      app_store_connect: AppStoreKey # This matches your key name in Codemagic
+      app_store_connect: AppStoreKey 
     environment:
       flutter: stable
       xcode: latest
       cocoapods: default
       vars:
-        BUNDLE_ID: "io.eventoo.mobile" # Update this if your bundle ID is different
+        BUNDLE_ID: "io.eventoo.mobile" # Check this matches your App Store ID
     scripts:
       - name: Clean up and Fetch Dependencies
         script: |
@@ -21,18 +21,21 @@ workflows:
           cd ios && pod install --repo-update
       - name: Set up Code Signing
         script: |
-          # Initialize the macOS keychain on the build machine
+          # 1. Prepare the Mac's keychain to store certificates
           keychain initialize
-          # Fetch or create the distribution certificates and provisioning profiles
+          
+          # 2. Fetch the certificates from Apple using your API key
+          # Use --type IOS_APP_STORE for release builds
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
-          # Add the fetched certificates to the keychain
+          
+          # 3. Import those certificates into the Mac's system
           keychain add-certificates
-          # Tell the Xcode project to use the profiles we just downloaded
+          
+          # 4. Tell the project to use these new files
           xcode-project use-profiles
       - name: Build IPA for Release
         script: |
-          # Build the production-ready .ipa file
-          # The build number is automatically set by Codemagic
+          # This command now has the certificates it needs!
           flutter build ipa --release \
             --build-number=$BUILD_NUMBER \
             --export-options-plist=$HOME/export_options.plist
@@ -41,7 +44,7 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
-        submit_to_testflight: true # Automatically uploads to TestFlight for you
+        submit_to_testflight: true
       email:
         recipients:
           - tchourabi@gmail.com
