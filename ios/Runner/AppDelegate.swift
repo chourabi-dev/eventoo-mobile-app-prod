@@ -1,4 +1,3 @@
-import FirebaseCore
 import UIKit
 import Flutter
 
