@@ -9,21 +9,14 @@ import 'package:firebase_core/firebase_core.dart';
 
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); 
-
-  //SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint('Firebase init failed: $e');
-  }
-
-  runApp(const MyApp());
-
-  
-
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
+
+
+
+
 // ============================================================================
 // APP ROOT
 // ============================================================================
