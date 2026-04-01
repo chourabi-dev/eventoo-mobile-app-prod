@@ -3,12 +3,15 @@
 <plist version="1.0">
 <dict>
 
-	<!-- App Identity -->
+	<!-- ========================= -->
+	<!-- APP IDENTITY              -->
+	<!-- ========================= -->
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 
 	<key>CFBundleDisplayName</key>
-	<string>Mobile</string>
+	<string>Eventoo</string>
 
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
@@ -20,7 +23,7 @@
 	<string>6.0</string>
 
 	<key>CFBundleName</key>
-	<string>mobile</string>
+	<string>Eventoo</string>
 
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
@@ -34,7 +37,28 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 
-	<!-- Launch & UI -->
+	<!-- ========================= -->
+	<!-- GOOGLE SIGN-IN URL SCHEME -->
+	<!-- Required for OAuth callback from Google Sign-In -->
+	<!-- REVERSED_CLIENT_ID from GoogleService-Info.plist -->
+	<!-- ========================= -->
+
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.200852093381-7aljv8gndmuubv7mppr3l5hleimt3cg4</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- ========================= -->
+	<!-- LAUNCH & UI               -->
+	<!-- ========================= -->
+
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 
@@ -63,32 +87,31 @@
 	<true/>
 
 	<!-- ========================= -->
-	<!-- REQUIRED PERMISSIONS -->
+	<!-- REQUIRED PERMISSIONS      -->
 	<!-- ========================= -->
 
-	<!-- Camera (image_picker, mobile_scanner) -->
+	<!-- Camera — image_picker, mobile_scanner -->
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires camera access to scan QR codes and upload images.</string>
 
-	<!-- Photo Library (image_picker, share_plus) -->
+	<!-- Photo Library read — image_picker, share_plus -->
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to your photo library to select images.</string>
 
+	<!-- Photo Library write — share_plus, image saving -->
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This app allows saving images to your photo library.</string>
 
-	<!-- Microphone (webview, youtube, scanner internal checks) -->
+	<!-- Microphone — webview, media playback -->
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone access is required for media playback features.</string>
 
-	<!-- Push Notifications (firebase_messaging) -->
-	<key>NSUserNotificationUsageDescription</key>
-	<string>Notifications are used to inform you about important updates and events.</string>
-
-
+	<!-- App Tracking Transparency — firebase_analytics, google sign-in -->
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Tracking is used to improve app analytics and enhance your experience.</string>
 
 	<!-- ========================= -->
-	<!-- NETWORK -->
+	<!-- NETWORK                   -->
 	<!-- ========================= -->
 
 	<key>NSAppTransportSecurity</key>
