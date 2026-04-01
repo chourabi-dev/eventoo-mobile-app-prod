@@ -8,7 +8,7 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 
 	<key>CFBundleDisplayName</key>
-	<string>Mobile</string>
+	<string>Eventoo</string>
 
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
@@ -20,7 +20,7 @@
 	<string>6.0</string>
 
 	<key>CFBundleName</key>
-	<string>mobile</string>
+	<string>Eventoo</string>
 
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>

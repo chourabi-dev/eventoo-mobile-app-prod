@@ -193,10 +193,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 /// APP LOGO
-                                SizedBox(
-                                  width: 250,
+                                SizedBox( 
+                                  height: 90,
                                   child: Image.asset(
                                     "assets/main-logo.png",
+                                    fit:BoxFit.fill
                                   ),
                                 ), 
                                 
