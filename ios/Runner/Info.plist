@@ -99,5 +99,18 @@
 		<false/>
 	</dict>
 
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.200852093381-7aljv8gndmuubv7mppr3l5hleimt3cg4</string>
+			</array>
+		</dict>
+	</array>
+
+
 </dict>
 </plist>

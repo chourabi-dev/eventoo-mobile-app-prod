@@ -9,11 +9,20 @@ import 'package:firebase_core/firebase_core.dart';
 
 
 void main() async {
- WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); 
 
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-  await Firebase.initializeApp();
+  //SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase init failed: $e');
+  }
+
   runApp(const MyApp());
+
+  
+
 }
 // ============================================================================
 // APP ROOT
@@ -26,8 +35,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 
   static String currentLanguage = "fr";
-
-
+ 
  
   static _MyAppState of(BuildContext context) {
     final state = context.findAncestorStateOfType<_MyAppState>();

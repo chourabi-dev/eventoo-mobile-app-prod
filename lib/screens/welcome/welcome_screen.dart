@@ -32,8 +32,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
   bool _checking = true;
 
   bool _googleSignupScreen = false;
-
-  
+ 
 
   @override
   void initState() {
