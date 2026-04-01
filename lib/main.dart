@@ -10,6 +10,8 @@ import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  
   await Firebase.initializeApp();
   runApp(MyApp());
 }
