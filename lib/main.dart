@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:mobile/app_router.dart';
-import 'package:mobile/firebase_options.dart';
+import 'package:mobile/app_router.dart'; 
 import 'package:mobile/l10n/app_localizations.dart'; 
 import 'package:mobile/theme/app_theme.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-   
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  ); 
   runApp(MyApp());
 }
 

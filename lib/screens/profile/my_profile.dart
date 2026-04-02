@@ -46,8 +46,7 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
   final AuthService _authService = AuthService();
   final EventService _eventService = EventService();
   final GeneralGervice _generalGervice = GeneralGervice();
-  FcmService fcmService = FcmService();
-  
+ 
   
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -269,22 +268,9 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
 
 
 
-  Future<void> registerUserFcm() async {
+Future<void> registerUserFcm() async {
   
-  await fcmService.requestPermission();
-
-  String? token = await fcmService.getDeviceToken();
-  if (token != null) {
-    print("FCM");
-    print(token);
-    
-    final res = await _authService.updateAccountFCM(fcm: token);
-    dynamic body = jsonDecode(res.body);
-
-    print(body);
-
-
-  }
+ 
 }
 
 

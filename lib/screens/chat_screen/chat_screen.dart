@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:firebase_messaging/firebase_messaging.dart';
+ 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/l10n/app_localizations.dart';
@@ -73,7 +72,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   dynamic targetDATA;
 
-  StreamSubscription<RemoteMessage>? _chatSubscription;
  
 
   @override
@@ -91,7 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _socket.dispose();
     _messageController.dispose();
     _scrollController.dispose();
-    _chatSubscription?.cancel();
+     
     super.dispose();
   }
 
@@ -280,13 +278,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
  void listenToChat() {
-    _chatSubscription = FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      try {
-        _fetchMessages(); // trigger your in-app update
-      } catch (e) {
-        print("Error processing message: $e");
-      }
-    });
+    
   }
 
   /// ----------------------------

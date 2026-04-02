@@ -99,57 +99,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
       //_showError = false;
     });
 
-    try {
-      final userCredential =  await GoogleAuthService().signInWithGoogle();
-
-     final user = userCredential.user;
-
-      if (user != null) {
-        // ✅ SUCCESS
-        print(user); 
-        print(user.email); 
-        print(user.photoURL);
-        print(user.displayName);
-        
-
-
-        setState(() {
-          _googleSignupScreen = false; 
-        });
-
-       if (user.email != null && user.displayName != null) {
-          Navigator.push(context, new MaterialPageRoute(builder: (context) {
-              return( ContinueGoogleSignup( email: user.email!, fullname: user.displayName!, photoURL: user.photoURL?? "/assets/img/avatar-placeholder.png",  ) );
-          },));
-          
-       } else{
-        ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Google signup failed'),
-          backgroundColor: Colors.red,
-        ),
-      );
-       } 
-        
-      }
-    } catch (e) {
-      
-      setState(() {
-        _googleSignupScreen = false; 
-      });
-
-      await GoogleAuthService().signOut();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Google signup failed'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }finally {
-      await GoogleAuthService().signOut();
-      // setState(() => _isLoading = false);
-    }
+     
   }
 
   

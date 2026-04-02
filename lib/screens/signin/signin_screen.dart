@@ -109,69 +109,7 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
 }
 
   _handleSignInWithGoogle() async{
-    final l10n = AppLocalizations.of(context);
-
-    setState(() {
-      _isLoading = true;
-      _showError = false;
-    });
-
-    try {
-      final userCredential =  await GoogleAuthService().signInWithGoogle();
-
-     final user = userCredential.user;
-
-      if (user != null) {
-        // ✅ SUCCESS
-        print(user);
-        
-        print(user.email);
-        print(user.displayName);
-        print(user.photoURL);
- 
-        // 👉 SEND user.uid or idToken to backend 
-        final res = await _authService.loginWithGoogle(email: user.email!);
-
-        if (res.success) {
-          // Store token and user
-          await _storage.write(key: 'token', value: res.token);
-          await _storage.write(key: 'user', value: jsonEncode(res.user));
-
-          print( res );
-          print('Token after login: ${res.token}');
-
-          context.go('/profile');
-  
-        }else{
-           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(
-              content: Text(l10n.googleSignInFaildNoAccount),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-        
-        
-        
-      }
-    } catch (e) {
-      
-      setState(() {
-        _isLoading = false; 
-      });
-
-      await GoogleAuthService().signOut();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(
-          content: Text(l10n.googleSignInFaild),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }finally {
-      await GoogleAuthService().signOut();
-      setState(() => _isLoading = false);
-    }
+    
   }
 
 

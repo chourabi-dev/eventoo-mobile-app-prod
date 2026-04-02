@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -48,16 +46,7 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   void listenToChat() async{
-     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-
-        try { 
-          
-            updateUnreadedMessages();
-          
-        } catch (e) {
-          print("Error processing message: $e");
-        }
-      });
+      
 
   }
 

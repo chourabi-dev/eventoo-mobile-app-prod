@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:firebase_messaging/firebase_messaging.dart';
+ 
 import 'package:flutter/material.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/models/discussion_model.dart';
@@ -26,9 +25,7 @@ class _DiscussionsScreenState extends State<DiscussionsScreen> {
   EventService eventService = EventService();
   bool loading = true;
 
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-
-  StreamSubscription<RemoteMessage>? _chatSubscription;
+ 
 
   @override
   void initState() {
@@ -41,7 +38,7 @@ class _DiscussionsScreenState extends State<DiscussionsScreen> {
   @override
   void dispose() {
     _searchController.dispose(); 
-     _chatSubscription?.cancel();
+    
     super.dispose();
   }
 
@@ -67,13 +64,7 @@ class _DiscussionsScreenState extends State<DiscussionsScreen> {
   }
 
 void listenToChat() {
-    _chatSubscription = FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      try {
-        fetchChat(); // trigger your in-app update
-      } catch (e) {
-        print("Error processing message: $e");
-      }
-    });
+    
   }
 
   void _onSearchChanged(String value) {
