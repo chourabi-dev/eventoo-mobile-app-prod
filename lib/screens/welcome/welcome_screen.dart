@@ -56,7 +56,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>  with SingleTickerProvide
 
     _controller.forward();
     _checkSession();
+    
   }
+
+
 
   /// Check session
   Future<void> _checkSession() async {

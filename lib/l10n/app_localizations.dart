@@ -224,9 +224,10 @@ class AppLocalizations {
       "videos_label":"Videos",
       "catalogue_label":"Catalogue",
       "teams_label":"Team",
-       
+      "missing_info_label":"Missing Information",
+      "missing_info_text":"You have missing information. Please complete your profile."
 
-      
+ 
 
       
       
@@ -438,12 +439,14 @@ class AppLocalizations {
       
       "products_label":"Produits",
 
-"videos_label":"Vidéos",
+      "videos_label":"Vidéos",
 
-"catalogue_label":"Catalogue",
+      "catalogue_label":"Catalogue",
 
-"teams_label":"Équipe",
-      
+      "teams_label":"Équipe",
+
+        "missing_info_label": "Informations manquantes",
+  "missing_info_text": "Certaines informations sont manquantes. Veuillez compléter votre profil."  
 
 
  
@@ -721,6 +724,14 @@ class AppLocalizations {
   String get videosLabel => translate('videos_label');
   String get catalogueLabel => translate('catalogue_label');
   String get teamsLabel => translate('teams_label');
+  String get missingInfoLabel => translate('missing_info_label');
+  String get missingInfoText => translate('missing_info_text');
+  
+
+  
+  
+  
+
   
    
   

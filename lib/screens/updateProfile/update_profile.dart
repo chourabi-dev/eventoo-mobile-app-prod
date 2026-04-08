@@ -12,6 +12,7 @@ import 'package:mobile/widgets/language_switcher.dart';
 import 'dart:ui';
 import '../../widgets/animated_button.dart';
 import '../../theme/app_theme.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
@@ -53,8 +54,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
   
   bool _emailExist = false;
 
-   String _selectedSex = "male"; 
-  
+  String _selectedSex = "male"; 
+
+  static const _storage = FlutterSecureStorage();
+
 
  List<Map<String, dynamic>> _countries = [];
 
@@ -80,6 +83,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
     _controller.forward();
     initCountriesList();
     _initForm();
+
+    saveProfileComplete();
+  }
+
+
+  Future<void> saveProfileComplete() async {
+    await _storage.write(key: 'hasCompletedProfile', value: "true");
   }
 
 
@@ -363,6 +373,94 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                           ),
                                           const SizedBox(height: 16),
 
+
+
+                                                                                Autocomplete<Map<String, dynamic>>(
+                                        initialValue: TextEditingValue(text: _selectedCountryName),
+                                        optionsBuilder: (TextEditingValue textEditingValue) {
+                                          if (textEditingValue.text.isEmpty) {
+                                            return const Iterable<Map<String, dynamic>>.empty();
+                                          }
+                                          return _countries.where((country) =>
+                                              country['name']
+                                                  .toLowerCase()
+                                                  .contains(textEditingValue.text.toLowerCase()));
+                                        },
+                                        displayStringForOption: (option) => option['name'],
+                                        onSelected: (selection) {
+                                          setState(() {
+                                            _selectedCountry = selection['id'];
+                                          });
+
+                                          
+                                        },
+                                        fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                                          controller.text = _selectedCountryName;
+
+                                          return TextFormField(
+                                            controller: controller,
+                                            
+                                            focusNode: focusNode,
+                                            decoration: InputDecoration(
+                                              labelText: l10n.country,
+                                              prefixIcon: const Icon(Icons.public),
+                                              fillColor: const Color.fromRGBO(225, 218, 203, 1), 
+                                                                                  border: OutlineInputBorder(
+                                                                                    borderRadius: BorderRadius.circular(4),
+                                                                                    borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                                                                  ),
+                                                                                  enabledBorder: OutlineInputBorder(
+                                                                                    borderRadius: BorderRadius.circular(4),
+                                                                                    borderSide: const BorderSide(color: Colors.grey, width: 0),
+                                                                                  ),
+                                                                                  focusedBorder: OutlineInputBorder(
+                                                                                    borderRadius: BorderRadius.circular(4),
+                                                                                    borderSide: const BorderSide(
+                                                                                      color: Color.fromRGBO(199, 18, 94, 1),
+                                                                                      width: 1.5,
+                                                                                    ),
+                                                                                  ),
+                                                                                  errorBorder: OutlineInputBorder(
+                                                                                    borderRadius: BorderRadius.circular(14),
+                                                                                    borderSide: const BorderSide(
+                                                                                      color: Colors.redAccent,
+                                                                                      width: 1.2,
+                                                                                    ),
+                                                                                  ),
+                                                                                  focusedErrorBorder: OutlineInputBorder(
+                                                                                    borderRadius: BorderRadius.circular(14),
+                                                                                    borderSide: const BorderSide(
+                                                                                      color: Colors.red,
+                                                                                      width: 1.5,
+                                                                                    ),
+                                                                                  ),
+                                                                                  
+                                            ),
+                                            validator: (_) =>
+                                                _selectedCountry == null ? l10n.selectCountry : null,
+                                          );
+                                        },
+                                      ),
+
+                                      const SizedBox(height: 16),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                                       // First Name
                                       TextFormField(
                                         controller: _firstNameController,
@@ -602,72 +700,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                       const SizedBox(height: 16),
  
 
-                                      Autocomplete<Map<String, dynamic>>(
-                                        initialValue: TextEditingValue(text: _selectedCountryName),
-  optionsBuilder: (TextEditingValue textEditingValue) {
-    if (textEditingValue.text.isEmpty) {
-      return const Iterable<Map<String, dynamic>>.empty();
-    }
-    return _countries.where((country) =>
-        country['name']
-            .toLowerCase()
-            .contains(textEditingValue.text.toLowerCase()));
-  },
-  displayStringForOption: (option) => option['name'],
-  onSelected: (selection) {
-    setState(() {
-      _selectedCountry = selection['id'];
-    });
 
-     
-  },
-  fieldViewBuilder: (context, controller, focusNode, onSubmit) {
-    controller.text = _selectedCountryName;
-
-    return TextFormField(
-      controller: controller,
-      
-      focusNode: focusNode,
-      decoration: InputDecoration(
-        labelText: l10n.country,
-        prefixIcon: const Icon(Icons.public),
-        fillColor: const Color.fromRGBO(225, 218, 203, 1), 
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(4),
-                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(4),
-                                              borderSide: const BorderSide(color: Colors.grey, width: 0),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(4),
-                                              borderSide: const BorderSide(
-                                                color: Color.fromRGBO(199, 18, 94, 1),
-                                                width: 1.5,
-                                              ),
-                                            ),
-                                            errorBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(14),
-                                              borderSide: const BorderSide(
-                                                color: Colors.redAccent,
-                                                width: 1.2,
-                                              ),
-                                            ),
-                                            focusedErrorBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(14),
-                                              borderSide: const BorderSide(
-                                                color: Colors.red,
-                                                width: 1.5,
-                                              ),
-                                            ),
-                                            
-      ),
-      validator: (_) =>
-          _selectedCountry == null ? l10n.selectCountry : null,
-    );
-  },
-),
 
                                       
                                       const SizedBox(height: 24),

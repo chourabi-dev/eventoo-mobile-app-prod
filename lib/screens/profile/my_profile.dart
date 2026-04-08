@@ -61,6 +61,9 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
 
   bool _clickedOnSendValidationEmailButton = false;
 
+
+  static const _storage = FlutterSecureStorage();
+
   
 
   
@@ -133,12 +136,62 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
       curve: Curves.easeInOut,
     );
     getUserInfo();
+    _checkUserInfo();
+
     getUserEvents();
     
     registerUserFcm();
     getMyContacts();
-
+   
   }
+
+
+
+  
+    Future<void> _checkUserInfo() async {
+      
+      String? value = await _storage.read(key: 'hasCompletedProfile');
+
+      // If null or not "true" → show popup
+      if (value != "true") {
+        Future.delayed(Duration.zero, () {
+          _showMissingInfoDialog();
+        });
+      }
+
+      
+    }
+
+
+    void _showMissingInfoDialog() {
+      final l10n = AppLocalizations.of(context);
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        title:  Text(  l10n.missingInfoLabel ),
+        content:  Text(
+          l10n.missingInfoText
+        ),
+        actions: [
+          
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.push('/update-profile');
+            },
+            child: const Text("Complete Now"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+
+
 
   
 
