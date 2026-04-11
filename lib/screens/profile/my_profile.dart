@@ -136,7 +136,7 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
       curve: Curves.easeInOut,
     );
     getUserInfo();
-    _checkUserInfo();
+    //_checkUserInfo();
 
     getUserEvents();
     

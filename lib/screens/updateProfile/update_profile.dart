@@ -322,10 +322,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                   child: Column(
                                     children: [
                                       
-                                       DropdownButtonFormField<String>(
+                                       /*DropdownButtonFormField<String>(
                                             value: _selectedSex,
                                             decoration: InputDecoration(
-                                              labelText: l10n.sex,           // <-- add in localization
+                                              labelText: "${l10n.sex} (facultatif)",           // <-- add in localization
                                               prefixIcon: const Icon(FontAwesomeIcons.mars),
                                               fillColor: const Color.fromRGBO(225, 218, 203, 1), 
                                             border: OutlineInputBorder(
@@ -371,11 +371,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                             validator: (_) =>
                                                 _selectedSex == null ? l10n.selectSex : null,
                                           ),
-                                          const SizedBox(height: 16),
+                                          const SizedBox(height: 16),*/
 
 
 
-                                                                                Autocomplete<Map<String, dynamic>>(
+                                      /*Autocomplete<Map<String, dynamic>>(
                                         initialValue: TextEditingValue(text: _selectedCountryName),
                                         optionsBuilder: (TextEditingValue textEditingValue) {
                                           if (textEditingValue.text.isEmpty) {
@@ -442,7 +442,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                         },
                                       ),
 
-                                      const SizedBox(height: 16),
+                                      const SizedBox(height: 16),*/
 
 
 
