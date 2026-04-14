@@ -115,7 +115,7 @@ class _SignUpScreenState extends State<SignUpScreen>
       String function = _functionController.text;
       
 
-      int countryID = _selectedCountry!;
+      // int countryID = _selectedCountry!;
       String password = _passwordController.text;
  
       _authService
@@ -123,10 +123,10 @@ class _SignUpScreenState extends State<SignUpScreen>
             firstname: firstname,
             lastname: lastname,
             phone: phone,
-            countryID: countryID,
+            countryID: 1,
             email: email,
             password: password,
-            sex: _selectedSex,
+            sex: "male", // _selectedSex,
             company: company,
             role: function
           )
@@ -272,7 +272,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                                       // First Name
 
                                       // Sex / Gender
-                                      DropdownButtonFormField<String>(
+                                     /* DropdownButtonFormField<String>(
                                         value: _selectedSex,
                                         decoration: InputDecoration(
                                           labelText: l10n.sex,
@@ -340,9 +340,12 @@ class _SignUpScreenState extends State<SignUpScreen>
                                             ? l10n.selectSex
                                             : null,
                                       ),
-                                      const SizedBox(height: 18),
+                                      const SizedBox(height: 18),*/
 
-                                      TextFormField(
+
+                                      Row(
+                                        children: [
+                                          Expanded(child: TextFormField(
                                         controller: _firstNameController,
                                         decoration: InputDecoration(
                                           labelText: l10n.firstName,
@@ -394,10 +397,14 @@ class _SignUpScreenState extends State<SignUpScreen>
                                           return null;
                                         },
                                       ),
-                                      const SizedBox(height: 18),
+                                      ),
 
-                                      // Last Name
-                                      TextFormField(
+                                      SizedBox(width: 15,),
+
+
+                                      Expanded(
+                                        child: 
+                                        TextFormField(
                                         controller: _lastNameController,
                                         decoration: InputDecoration(
                                           labelText: l10n.lastName,
@@ -449,10 +456,17 @@ class _SignUpScreenState extends State<SignUpScreen>
                                           return null;
                                         },
                                       ),
-                                      const SizedBox(height: 18),
+                                      
+                                      )
 
 
 
+
+                                        ],
+                                      ),
+
+                                      
+                                      const SizedBox(height: 18), 
                                       // company
                                       TextFormField(
                                         controller: _companyController,
@@ -523,6 +537,64 @@ class _SignUpScreenState extends State<SignUpScreen>
                                         
                                       ),
                                       const SizedBox(height: 18),
+
+
+
+                                      // Phone
+                                      IntlPhoneField(
+                                        controller: _phoneController,
+                                        decoration: InputDecoration(
+                                          labelText: l10n.phone,
+                                          hintText: l10n.enterYourPhone,
+                                          fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
+                                           border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0), // radius
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                             enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.grey,
+                                                width: 0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromRGBO(199, 18, 94, 1), // focus color
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.redAccent,
+                                                width: 1.2,
+                                              ),
+                                            ),
+
+                                            focusedErrorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                color: Colors.red,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            
+                                        ),
+                                        initialCountryCode: 'TN',
+                                        validator: (phone) {
+                                          if (phone == null ||
+                                              phone.number.isEmpty) {
+                                            return l10n.enterYourPhone;
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      
                                       
 
                                       // Email
@@ -587,63 +659,10 @@ class _SignUpScreenState extends State<SignUpScreen>
                                       ),
                                       const SizedBox(height: 18),
 
-                                      // Phone
-                                      IntlPhoneField(
-                                        controller: _phoneController,
-                                        decoration: InputDecoration(
-                                          labelText: l10n.phone,
-                                          hintText: l10n.enterYourPhone,
-                                          fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
-                                           border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(0), // radius
-                                              borderSide: const BorderSide(
-                                                color: Colors.grey,
-                                                width: 0,
-                                              ),
-                                            ),
-                                             enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(0),
-                                              borderSide: const BorderSide(
-                                                color: Colors.grey,
-                                                width: 0,
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(4),
-                                              borderSide: const BorderSide(
-                                                color: Color.fromRGBO(199, 18, 94, 1), // focus color
-                                                width: 1.5,
-                                              ),
-                                            ),
-                                            errorBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(4),
-                                              borderSide: const BorderSide(
-                                                color: Colors.redAccent,
-                                                width: 1.2,
-                                              ),
-                                            ),
-
-                                            focusedErrorBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(4),
-                                              borderSide: const BorderSide(
-                                                color: Colors.red,
-                                                width: 1.5,
-                                              ),
-                                            ),
-                                            
-                                        ),
-                                        initialCountryCode: 'TN',
-                                        validator: (phone) {
-                                          if (phone == null ||
-                                              phone.number.isEmpty) {
-                                            return l10n.enterYourPhone;
-                                          }
-                                          return null;
-                                        },
-                                      ),
+                                      
 
                                       //const SizedBox(height: 18),
-                                      Autocomplete<Map<String, dynamic>>(
+                                     /* Autocomplete<Map<String, dynamic>>(
                                         optionsBuilder:
                                             (
                                               TextEditingValue textEditingValue,
@@ -667,9 +686,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                                         displayStringForOption: (option) =>
                                             option['name'],
                                         onSelected: (selection) {
-                                          setState(() {
-                                            _selectedCountry = selection['id'];
-                                          });
+                                           print(selection['id']);
                                         },
                                         fieldViewBuilder:
                                             (
@@ -732,8 +749,10 @@ class _SignUpScreenState extends State<SignUpScreen>
                                               );
                                             },
                                       ),
-
                                       const SizedBox(height: 18),
+                                      */
+
+                                      
 
                                       // Password
                                       TextFormField(

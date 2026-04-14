@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
 import 'package:mobile/widgets/calendar_livechat.dart';
 import 'package:mobile/widgets/youtube_player.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -406,7 +407,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
       body: _loading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Color(0xFF6C63FF),
+                color: AppTheme.accentColor, 
               ),
             )
           : Container(
@@ -491,7 +492,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
               decoration: BoxDecoration(
                 gradient: isSelected
                     ? const LinearGradient(
-                        colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                        colors: [AppTheme.accentColor, AppTheme.accentColor],
                       )
                     : LinearGradient(
                         colors: [
@@ -502,7 +503,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected
-                      ? const Color(0xFF6C63FF)
+                      ? AppTheme.accentColor
                       : Colors.white.withOpacity(0.15),
                   width: 2,
                 ),
@@ -556,7 +557,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
               decoration: BoxDecoration(
                 gradient: selectedRoomId == null
                     ? const LinearGradient(
-                        colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                        colors: [AppTheme.accentColor, AppTheme.accentColor],
                       )
                     : LinearGradient(
                         colors: [
@@ -567,7 +568,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                 borderRadius: BorderRadius.circular(25),
                 border: Border.all(
                   color: selectedRoomId == null
-                      ? const Color(0xFF6C63FF)
+                      ?  AppTheme.accentColor
                       : Colors.white.withOpacity(0.15),
                   width: 2,
                 ),
@@ -603,7 +604,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                 decoration: BoxDecoration(
                   gradient: isSelected
                       ? const LinearGradient(
-                          colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                          colors: [AppTheme.accentColor, AppTheme.accentColor,],
                         )
                       : LinearGradient(
                           colors: [
@@ -614,7 +615,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                   borderRadius: BorderRadius.circular(25),
                   border: Border.all(
                     color: isSelected
-                        ? const Color(0xFF6C63FF)
+                        ? AppTheme.accentColor
                         : Colors.white.withOpacity(0.15),
                     width: 2,
                   ),
@@ -823,7 +824,7 @@ class ProgramCard extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF6C63FF).withOpacity(0.3),
+                                color: AppTheme.accentColor.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -945,7 +946,7 @@ class ProgramCard extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6C63FF).withOpacity(0.3),
+                              color: AppTheme.accentColor.withOpacity(0.3),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -1038,7 +1039,7 @@ class ProgramCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                    colors: [AppTheme.accentColor, AppTheme.accentColor,],
                   ),
                   border: Border.all(
                     color: const Color(0xFF0A0A14),
@@ -1075,7 +1076,7 @@ class ProgramCard extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF6C63FF),
+                  color: AppTheme.accentColor,
                   border: Border.all(
                     color: const Color(0xFF0A0A14),
                     width: 2,
@@ -1202,7 +1203,7 @@ class LiveProgramScreen extends StatelessWidget {
                         margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                            colors: [AppTheme.accentColor, AppTheme.accentColor,],
                           ),
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -1253,7 +1254,7 @@ class LiveProgramScreen extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF6C63FF).withOpacity(0.3),
+                            color: AppTheme.accentColor.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
@@ -1393,7 +1394,7 @@ class LiveProgramScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF6C63FF), Color(0xFF8B84FF)],
+                  colors: [AppTheme.accentColor, AppTheme.accentColor,],
                 ),
                 border: Border.all(
                   color: Colors.white.withOpacity(0.3),

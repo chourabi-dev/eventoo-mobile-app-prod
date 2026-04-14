@@ -2,47 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-
-	<!-- ========================= -->
-	<!-- APP IDENTITY              -->
-	<!-- ========================= -->
-
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
-
 	<key>CFBundleDisplayName</key>
 	<string>Eventoo</string>
-
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
-
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
-
 	<key>CFBundleName</key>
 	<string>Eventoo</string>
-
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
-
-	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
-
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-
-	<!-- ========================= -->
-	<!-- GOOGLE SIGN-IN URL SCHEME -->
-	<!-- Required for OAuth callback from Google Sign-In -->
-	<!-- REVERSED_CLIENT_ID from GoogleService-Info.plist -->
-	<!-- ========================= -->
-
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -54,24 +31,40 @@
 			</array>
 		</dict>
 	</array>
-
-	<!-- ========================= -->
-	<!-- LAUNCH & UI               -->
-	<!-- ========================= -->
-
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires camera access to scan QR codes and upload images.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is required for media playback features.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app allows saving images to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to your photo library to select images.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -79,43 +72,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-
-	<!-- ========================= -->
-	<!-- REQUIRED PERMISSIONS      -->
-	<!-- ========================= -->
-
-	<!-- Camera — image_picker, mobile_scanner -->
-	<key>NSCameraUsageDescription</key>
-	<string>This app requires camera access to scan QR codes and upload images.</string>
-
-	<!-- Photo Library read — image_picker, share_plus -->
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to your photo library to select images.</string>
-
-	<!-- Photo Library write — share_plus, image saving -->
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>This app allows saving images to your photo library.</string>
-
-	<!-- Microphone — webview, media playback -->
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone access is required for media playback features.</string>
- 
-
-	<!-- ========================= -->
-	<!-- NETWORK                   -->
-	<!-- ========================= -->
-
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-	</dict>
-
 </dict>
 </plist>

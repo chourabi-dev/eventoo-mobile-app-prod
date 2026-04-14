@@ -14,6 +14,8 @@ class NotificationsTab extends StatefulWidget {
 
 class _NotificationsTabState extends State<NotificationsTab> {
 
+  static const Color mainBackgroundColor = Color.fromRGBO(235, 232, 222, 1);
+  static const Color primaryColor = Color.fromRGBO(199, 18, 94, 1);
 
   List<NotificationItem> notifications = [];
   EventService _eventService = EventService();
@@ -91,6 +93,7 @@ class _NotificationsTabState extends State<NotificationsTab> {
     final unseenCount = notifications.where((n) => !n.seen).length;
 
     return Scaffold(
+      backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         title: const Text('Notifications'),
         actions: [

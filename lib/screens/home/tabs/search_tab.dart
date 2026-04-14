@@ -17,6 +17,10 @@ class SearchTab extends StatefulWidget {
 }
 
 class _SearchTabState extends State<SearchTab> {
+  static const Color mainBackgroundColor = Color.fromRGBO(235, 232, 222, 1);
+  static const Color primaryColor = Color.fromRGBO(199, 18, 94, 1);
+
+
   final TextEditingController _searchController = TextEditingController();
   List<Participant> _searchResults = []; 
   final List<Participant> _allParticipants = [];
@@ -64,6 +68,7 @@ class _SearchTabState extends State<SearchTab> {
  
 
     return Scaffold(
+      backgroundColor: mainBackgroundColor,
       appBar: AppBar(
         title: Text( l10n.searchParticipantsLabel ),
         bottom: PreferredSize(
