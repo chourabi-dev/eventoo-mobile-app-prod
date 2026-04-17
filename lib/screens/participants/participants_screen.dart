@@ -64,6 +64,12 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
   var _isLoading = true;
   var _showAdvancedFilters = false;
 
+
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isLoadingMore = false;
+
+
   @override
   void initState() {
     super.initState();
@@ -189,7 +195,9 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
         fullName: _nameController.text,
         profile: _selectedProfile.toString(),
         country: _selectedCountry.toString(),
-        advancedFilters: _selectedAdvancedFilters 
+        advancedFilters: _selectedAdvancedFilters ,
+        limit: 50,
+        page: _currentPage
        ).then((res){
  
         dynamic body = jsonDecode(res.body);
