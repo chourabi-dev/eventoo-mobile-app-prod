@@ -61,7 +61,7 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
 
   int? _selectedProfile;
   int? _selectedCountry;
-  var _isLoading = false;
+  var _isLoading = true;
   var _showAdvancedFilters = false;
 
   @override
@@ -171,20 +171,20 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
   }
 
   Future<void> _performSearch() async {
-    if (!mounted) return;
-
     setState(() => _isLoading = true);
 
+    if (!mounted) return;
+
+     
     try {
-      // TODO: Implement actual search with filters
+      
       await Future.delayed(const Duration(milliseconds: 300));
 
-      if (!mounted) return;
-      /*print(_selectedProfile);
-      print(_selectedCountry);
-      print(_selectedAdvancedFilters);*/
+      if (!mounted) return; 
       
-
+      
+      print("searching participants ...");
+      
       _eventService.searchParticipants( 
         fullName: _nameController.text,
         profile: _selectedProfile.toString(),
@@ -193,23 +193,36 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
        ).then((res){
  
         dynamic body = jsonDecode(res.body);
+ 
 
         setState(() {
-         _participants = (body['data'] as List)
-              .map((e) => Participant.fromJson(e))
-              .toList();
-          });
+          _participants = (body['data'] as List)
+            .map((e) {
+              try {
+                return Participant.fromJson(e);
+              } catch (err) {
+                print('❌ Bad participant skipped: $err');
+                return null;
+              }
+            })
+            .where((e) => e != null)
+            .cast<Participant>()
+            .toList();
+        });
+        setState(() => _isLoading = false);
 
 
+       }).catchError((err){
+        _showErrorSnackBar("${err.toString()}");
+        setState(() => _isLoading = false);
        });
  
       
     } catch (e) {
       _showErrorSnackBar('Search failed');
+      setState(() => _isLoading = false);
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      
     }
   }
 

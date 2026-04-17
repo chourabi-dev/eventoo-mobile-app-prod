@@ -171,18 +171,25 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
         dynamic body = jsonDecode(participantsStorage);
 
         setState(() {
-          _participants = (body['data'] as List)
-                  .map((e) => Participant.fromJson(e))
-                  .toList();
+  final rawList = body['data'] as List;
 
-        _filteredParticipants = (body['data'] as List)
-                  .map((e) => Participant.fromJson(e))
-                  .toList();
-          _recommendations = (body['data'] as List)
-                  .map((e) => Participant.fromJson(e))
-                  .toList();
-          _isLoadingData = false;
-        });
+  List<Participant> participants = rawList.map((e) {
+    try {
+      return Participant.fromJson(e);
+    } catch (err) {
+      print('❌ Skipped corrupted participant: $err');
+      return null;
+    }
+  })
+  .whereType<Participant>()
+  .toList();
+
+  _participants = participants;
+  _filteredParticipants = List.from(participants);
+  _recommendations = List.from(participants);
+
+  _isLoadingData = false;
+});
       }
     }
 
@@ -574,7 +581,7 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
                     ),
                   ),
                 ),
-                if (_isLoadingFilters) ...[
+                if (_isLoadingFilters == true) ...[
                   const SizedBox(height: 12),
                   const LinearProgressIndicator(),
                 ],
