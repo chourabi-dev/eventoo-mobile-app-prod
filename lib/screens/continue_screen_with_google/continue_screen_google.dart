@@ -412,7 +412,7 @@ class _ContinueGoogleSignupState extends State<ContinueGoogleSignup> with Single
                                         controller: _companyController,
                                         decoration: InputDecoration(
                                           labelText:  l10n.companyLabel, 
-                                          prefixIcon:  Icon(FontAwesomeIcons.building ),
+                                          prefixIcon:  FaIcon(FontAwesomeIcons.building ),
                                           fillColor: Color.fromRGBO(225, 218, 203, 1), // text color
                                            border: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(0), // radius

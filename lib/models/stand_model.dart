@@ -166,7 +166,7 @@ List<SocialLink> get links {
 class SocialLink {
   final String name;
   final String url;
-  final IconData icon;
+  final FaIconData  icon;
   final Color color;
 
   SocialLink(this.name, this.url, this.icon, this.color);

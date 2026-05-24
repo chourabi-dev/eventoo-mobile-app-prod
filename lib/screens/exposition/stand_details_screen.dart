@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/models/stand_model.dart';
 import 'package:mobile/theme/app_theme.dart';
@@ -279,7 +280,7 @@ class _StandDetailScreenState extends State<StandDetailScreen>
                                     ),
                                   ],
                                 ),
-                                child: Icon(
+                                child: FaIcon(
                                   link.icon,
                                   color: Colors.white,
                                   size: 24,

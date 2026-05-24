@@ -326,7 +326,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                             value: _selectedSex,
                                             decoration: InputDecoration(
                                               labelText: "${l10n.sex} (facultatif)",           // <-- add in localization
-                                              prefixIcon: const Icon(FontAwesomeIcons.mars),
+                                              prefixIcon: const FaIcon(FontAwesomeIcons.mars),
                                               fillColor: const Color.fromRGBO(225, 218, 203, 1), 
                                             border: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(4),
@@ -565,7 +565,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen>
                                         controller: _companyController,
                                         decoration: InputDecoration(
                                           labelText:  l10n.companyLabel, 
-                                          prefixIcon:  Icon(FontAwesomeIcons.building ),
+                                          prefixIcon:   FaIcon(FontAwesomeIcons.building),
                                           fillColor: const Color.fromRGBO(225, 218, 203, 1), 
                                             border: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(4),

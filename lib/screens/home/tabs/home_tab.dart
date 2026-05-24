@@ -363,7 +363,11 @@ class _HomeTabState extends State<HomeTab> {
 
                       });*/
                        
-                    }, icon: Icon( FontAwesomeIcons.arrowLeft ,color: AppTheme.accentColor, size: 25,)),
+                    }, icon: FaIcon(
+                      FontAwesomeIcons.arrowLeft,
+                      color: AppTheme.accentColor,
+                      size: 25,
+                    ),),
                     
 
                     GestureDetector(
