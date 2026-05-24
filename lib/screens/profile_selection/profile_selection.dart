@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/services/event_service.dart';
+import 'package:mobile/theme/app_theme.dart';
 import 'package:mobile/widgets/language_switcher.dart';
 
 /// Participant Type Selection Page
@@ -117,7 +118,7 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
 
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppTheme.mainDeepBackgroundColor,
       body: CustomScrollView(
         physics: BouncingScrollPhysics(),
         slivers: [
@@ -229,15 +230,15 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
               Container(
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Color(0xFF667eea).withOpacity(0.1),
+                  color: AppTheme.accentBackgroundColor,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Color(0xFF667eea).withOpacity(0.3),
+                    color: AppTheme.accentColor
                   ),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: Color(0xFF667eea), size: 20),
+                    Icon(Icons.info_outline, color: AppTheme.surfaceColor, size: 20),
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -245,7 +246,7 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF667eea),
+                          color: AppTheme.surfaceColor,
                         ),
                       ),
                     ),
@@ -262,7 +263,7 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
                    _handleContinue(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF667eea),
+                  backgroundColor: AppTheme.accentColor,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -299,7 +300,7 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
       expandedHeight: 20,
       pinned: true,
       stretch: true,
-      //backgroundColor: Color(0xFF667eea),
+      //backgroundColor: AppTheme.accentColor,
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: const Color.fromARGB(255, 0, 0, 0)),
         onPressed: () => Navigator.pop(context),
@@ -319,7 +320,7 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Color(0xFF667eea),
+            AppTheme.accentColor,
             Color(0xFF764ba2),
             Color(0xFFf093fb),
           ],
@@ -356,13 +357,13 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? Color(0xFF667eea) : Colors.grey[300]!,
+            color: isSelected ? AppTheme.accentColor : Colors.grey[300]!,
             width: isSelected ? 2.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
               color: isSelected
-                  ? Color(0xFF667eea).withOpacity(0.3)
+                  ? AppTheme.accentColor.withOpacity(0.3)
                   : Colors.black.withOpacity(0.05),
               blurRadius: isSelected ? 16 : 10,
               offset: Offset(0, isSelected ? 8 : 4),
@@ -413,10 +414,11 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
                       ],
                     ),
                     
-                    SizedBox(height: 6),
-                    
-                    Text(
-                      type.description,
+
+                    if( type.description != '' )
+                    SizedBox(height: 6), 
+                    if( type.description != '' )
+                    Text( '${type.description}',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -424,7 +426,7 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
                       ),
                     ),
                     
-                    if (type.price != null) ...[
+                    /*if (type.price != null) ...[
                       SizedBox(height: 12),
                       Row(
                         children: [
@@ -440,7 +442,7 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
                           ),
                         ],
                       ),
-                    ],
+                    ],*/
                     
                     if (type.benefits != null && type.benefits!.isNotEmpty) ...[
                       SizedBox(height: 12),
@@ -471,7 +473,7 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
                             '+ ${type.benefits!.length - 3} more benefits',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Color(0xFF667eea),
+                              color: AppTheme.accentColor,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -488,10 +490,10 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected ? Color(0xFF667eea) : Colors.grey[400]!,
+                    color: isSelected ? AppTheme.accentColor : Colors.grey[400]!,
                     width: 2,
                   ),
-                  color: isSelected ? Color(0xFF667eea) : Colors.transparent,
+                  color: isSelected ? AppTheme.accentColor : Colors.transparent,
                 ),
                 child: isSelected
                     ? Icon(Icons.check, size: 16, color: Colors.white)
@@ -523,7 +525,7 @@ class _ParticipantTypeSelectionState extends State<ParticipantTypeSelection>  wi
       case 'press':
         return Color(0xFFE91E63); // Pink
       default:
-        return Color(0xFF667eea); // Default purple-blue
+        return AppTheme.accentColor; // Default purple-blue
     }
   }
 

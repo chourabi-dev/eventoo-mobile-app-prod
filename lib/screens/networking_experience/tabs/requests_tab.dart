@@ -110,16 +110,19 @@ class _NetworkingInvitationsTabState extends State<NetworkingInvitationsTab>
     eventService.updateInvitationStatus(invitationId,action, null, null).then((res){
 
         dynamic body = jsonDecode(res.body);
+
+        print(body);
+
          setState(() => _isLoading = false);
 
         if( body['success'] == true ){
-          _showSuccessDialog(body['message'] ?? "Invitation accepted");
-          fetchInvitations();
-        }else{
-
-          _showErrorDialog( body['message'] ?? "Invitation accepted");
+          _showSuccessDialog(1);
+          
+        }else{ 
+          _showErrorDialog( body['message'] ?? "Something went wrong, please try again later.");
         }
 
+        fetchInvitations();
       
     });
 

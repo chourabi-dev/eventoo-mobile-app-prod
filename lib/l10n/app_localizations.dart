@@ -224,13 +224,11 @@ class AppLocalizations {
       "videos_label":"Videos",
       "catalogue_label":"Catalogue",
       "teams_label":"Team",
-       
-
-      
-
-      
-      
-   
+      "email_not_valid_desption_pop_up": "Your email address has not been verified yet. Please check your inbox before continuing.",
+      "something_went_wrong_title" : "Something went wrong",
+      "something_went_wrong_content":"We couldn't load your profile.\nPlease check your connection and try again",
+      "try_again_label":"Try again"
+  
 
  
 
@@ -438,15 +436,20 @@ class AppLocalizations {
       
       "products_label":"Produits",
 
-"videos_label":"Vidéos",
+      "videos_label":"Vidéos",
 
-"catalogue_label":"Catalogue",
+      "catalogue_label":"Catalogue",
 
-"teams_label":"Équipe",
-      
+      "teams_label":"Équipe",
+            
+      "email_not_valid_desption_pop_up": "Votre adresse email n’est pas encore vérifiée. Veuillez vérifier votre boîte de réception avant de continuer.",
 
 
- 
+      "something_went_wrong_title" : "Une erreur s'est produite",
+
+"something_went_wrong_content":"Impossible de charger votre profil.\nVeuillez vérifier votre connexion et réessayer.",
+
+"try_again_label":"Réessayer"
       
 
   
@@ -720,28 +723,21 @@ class AppLocalizations {
   String get productsLabel => translate('products_label');
   String get videosLabel => translate('videos_label');
   String get catalogueLabel => translate('catalogue_label');
-  String get teamsLabel => translate('teams_label');
+  String get teamsLabel => translate('teams_label'); 
+  String get emailNotValidDesptionPopUp => translate('email_not_valid_desption_pop_up');
+
+  String get somethingWentWrongTitle => translate('something_went_wrong_title');
+  String get somethingWentWrongContent => translate('something_went_wrong_content');
+  String get tryAgainLabel => translate('try_again_label');
+  
+  
+  
+  
+  
   
    
   
-
-  
-    
-
-
-
-
  
-  
-  
-  
-
-  
-  
-
-
-  
-  
   
   
 }

@@ -103,6 +103,17 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
       parent: _searchBarController,
       curve: Curves.easeOutCubic,
     );
+
+    _scrollController.addListener(() {
+      final pos = _scrollController.position;
+      if (pos.pixels >= pos.maxScrollExtent * 0.8 &&
+          !_isLoadingMore &&
+          _hasMore &&
+          !_isLoading) {
+        _loadMoreParticipants();
+      }
+    });
+
     
     _searchBarController.forward();
   }
@@ -147,6 +158,8 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
   Future<void> _loadAdvancedFilters(int profileId) async {
     if (!mounted) return;
 
+    print("LOADING FILTERS...");
+    
     setState(() => _isLoading = true);
 
     try {
@@ -176,7 +189,7 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
     }
   }
 
-  Future<void> _performSearch() async {
+  /*Future<void> _performSearch() async {
     setState(() => _isLoading = true);
 
     if (!mounted) return;
@@ -196,7 +209,7 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
         profile: _selectedProfile.toString(),
         country: _selectedCountry.toString(),
         advancedFilters: _selectedAdvancedFilters ,
-        limit: 50,
+        limit: 10,
         page: _currentPage
        ).then((res){
  
@@ -232,7 +245,105 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
     } finally {
       
     }
+  }*/
+
+
+  Future<void> _performSearch() async {
+  if (!mounted) return;
+  setState(() {
+    _isLoading = true;
+    _currentPage = 1;      // ← reset on every new search/filter
+    _hasMore = true;
+  });
+
+  _scrollController.animateTo(
+    0,
+    duration: const Duration(milliseconds: 400),
+    curve: Curves.easeInOut,
+  );
+
+  try {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted) return;
+
+    final res = await _eventService.searchParticipants(
+      fullName: _nameController.text,
+      profile: _selectedProfile.toString(),
+      country: _selectedCountry.toString(),
+      advancedFilters: _selectedAdvancedFilters,
+      limit: 10,
+      page: _currentPage,
+    );
+
+    final body = jsonDecode(res.body);
+   
+    final fetched = (body['data'] as List)
+        .map((e) { try { return Participant.fromJson(e); } catch (_) { return null; } })
+        .whereType<Participant>()
+        .toList();
+
+    if (!mounted) return;
+    setState(() {
+      _participants = fetched;          // ← replace, don't append
+      _hasMore = fetched.length >= 10;
+      _isLoading = false;
+    });
+  } catch (e) {
+    print(e.toString());
+
+    _showErrorSnackBar('Search failed');
+    if (mounted) setState(() => _isLoading = false);
   }
+}
+
+Future<void> _loadMoreParticipants() async {
+  if (!mounted || _isLoadingMore || !_hasMore) return;
+  setState(() => _isLoadingMore = true);
+
+  try {
+    _currentPage++;
+    final res = await _eventService.searchParticipants(
+      fullName: _nameController.text,
+      profile: _selectedProfile.toString(),
+      country: _selectedCountry.toString(),
+      advancedFilters: _selectedAdvancedFilters,
+      limit: 10,
+      page: _currentPage,
+    );
+
+    final body = jsonDecode(res.body);
+    final fetched = (body['data'] as List)
+        .map((e) { try { return Participant.fromJson(e); } catch (_) { return null; } })
+        .whereType<Participant>()
+        .toList();
+
+    /*if (!mounted) return;
+    setState(() {
+      _participants = [..._participants, ...fetched]; // ← append
+      _hasMore = fetched.length >= 10;
+      _isLoadingMore = false;
+    });*/
+
+    if (!mounted) return;
+
+    setState(() {
+      if (_participants.isNotEmpty) {
+        _participants.removeLast();
+      }
+
+      _participants = [..._participants, ...fetched];
+
+      _hasMore = fetched.length >= 10;
+      _isLoadingMore = false;
+    });
+
+
+  } catch (e) {
+    _currentPage--;  // roll back on failure
+    _showErrorSnackBar('Failed to load more');
+    if (mounted) setState(() => _isLoadingMore = false);
+  }
+}
 
   Future<void> _hideAdvancedFilters() async {
     await _filterAnimationController.reverse();
@@ -246,6 +357,9 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
   }
 
   void _applyFilters() {
+    setState(() {
+      _currentPage = 1;
+    });
     _performSearch();
     _hideAdvancedFilters();
   }
@@ -423,26 +537,7 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
             children: [
               // Search bar
               Container(
-                /*decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: MiamiColors.electricBlue.withOpacity(0.2),
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: MiamiColors.electricBlue.withOpacity(0.15),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
-                    ),
-                    BoxShadow(
-                      color: MiamiColors.hotPink.withOpacity(0.08),
-                      blurRadius: 32,
-                      offset: const Offset(0, 12),
-                    ),
-                  ],
-                ),*/
+               
                 child: TextField(
                   controller: _nameController,
                   style: const TextStyle(
@@ -506,6 +601,7 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
                       onTap: () => _showCountryPicker(),
                     ),
                   ),
+                  
                 ],
               ),
             ],
@@ -861,8 +957,18 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      itemCount: _participants.length,
+     // itemCount: _participants.length,
+      itemCount: _participants.length + (_isLoadingMore ? 1 : 0),
+        
+
       itemBuilder: (context, index) {
+          if (index == _participants.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+          
         return TweenAnimationBuilder<double>(
           tween: Tween(begin: 0.0, end: 1.0),
           duration: Duration(milliseconds: 400 + (index * 50)),
@@ -984,6 +1090,7 @@ class _AllParticipantsScreenState extends State<AllParticipantsScreen>
     );
   }
 
+  
   Widget _buildAdvancedFiltersList() {
     return ListView.separated(
       padding: const EdgeInsets.all(20),

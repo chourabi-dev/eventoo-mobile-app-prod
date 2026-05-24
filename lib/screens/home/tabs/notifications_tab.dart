@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/models/notifications_model.dart';
 import 'package:mobile/services/event_service.dart';
@@ -31,6 +32,7 @@ class _NotificationsTabState extends State<NotificationsTab> {
           message: notifications[index].message,
           seen: true,
           date: notifications[index].date,
+          type: notifications[index].type,
         );
       }
     });
@@ -184,7 +186,18 @@ class _NotificationsTabState extends State<NotificationsTab> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _markAsSeen(notification.id),
+          onTap: (){
+             _markAsSeen(notification.id);
+
+             // get notification type
+             print(notification.type);
+
+             // if 1 redirect o networking experience tab
+             if( notification.type == 1 || notification.type == 2){
+              context.push("/networking");
+             }
+
+          },
           borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.all(16),

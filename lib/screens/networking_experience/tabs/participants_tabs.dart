@@ -15,6 +15,7 @@ import 'dart:convert';
 
 import 'package:mobile/screens/chat_screen/chat_screen.dart';
 import 'package:mobile/screens/networking_experience/widgets/date_planifier.dart';
+import 'package:mobile/screens/participants/participants_screen.dart';
 import 'package:mobile/services/event_service.dart';
 import 'package:mobile/theme/app_theme.dart';
 import 'package:mobile/widgets/user_avatar.dart';
@@ -87,7 +88,7 @@ class NetworkingExperienceParticipantsTab extends StatefulWidget {
 class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperienceParticipantsTab>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
+late final ScrollController _scrollController;
   // Basic Filters
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
@@ -95,33 +96,69 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
 
   // Advanced Filters
   List<AdvancedFilter> _advancedFilters = [];
+  
   Map<int, dynamic> _advancedFilterValues = {};
+
+
   bool _isLoadingFilters = false;
 
   // Data
   List<Participant> _participants = [];
   List<Participant> _filteredParticipants = [];
   List<Participant> _recommendations = [];
+  
   bool _isLoadingData = true;
   bool _loadingNewParticipants = false;
          
 
   var _countries = <Map<String, dynamic>>[];
   var _profiles = <Map<String, dynamic>>[];
-  String _selectedCountry = ""; 
+  int? _selectedCountry; 
+   
 
   EventService _eventService = EventService();
   static const _storage = FlutterSecureStorage();
+
+
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isLoadingMore = false;
+   var _isLoading = true;
+
+
  
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadData();
-    _nameController.addListener(_applyFilters);
-    _countryController.addListener(_applyFilters);
+
+    initControllers();
+
     _loadProfilesAndCountries();
 
+  }
+
+
+  void initControllers(){
+      _scrollController = ScrollController();
+     
+    _scrollController.addListener(() {
+    if (!_scrollController.hasClients) return;
+    
+    final pos = _scrollController.position;
+    final isNearBottom = pos.pixels >= pos.maxScrollExtent - 200;
+
+    
+    if (isNearBottom && !_isLoadingMore && !_loadingNewParticipants && _hasMore) {
+      
+      _loadMoreParticipants();
+    }
+  });
+
+
+    _nameController.addListener(_applyFilters);
+    _countryController.addListener(_applyFilters);
   }
 
   @override
@@ -159,61 +196,43 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
     }
   }
 
-  Future<void> _loadData() async {
-    String? participantsStorage = await _storage.read(key: "networking_participants");
-    if( participantsStorage != null ){
-      if( participantsStorage.isNotEmpty ){
+  Future<void> _loadData() async {  
+    setState(() {
+        _loadingNewParticipants = true;
+        _hasMore = true;   // ← reset on fresh load
+        _isLoading = true; // ← scroll guard needs this
+      });
+    _eventService.networkingExperienceParticipants(
+      fullName: _nameController.text,
+      profile: _selectedProfile.toString(),
+      country: _selectedCountry.toString(),
+      advancedFilters: _advancedFilterValues,
+      limit: 15,
+      page: _currentPage,
 
-        setState(() {
-          _loadingNewParticipants = true;
-        });
-
-        dynamic body = jsonDecode(participantsStorage);
-
-        setState(() {
-  final rawList = body['data'] as List;
-
-  List<Participant> participants = rawList.map((e) {
-    try {
-      return Participant.fromJson(e);
-    } catch (err) {
-      print('❌ Skipped corrupted participant: $err');
-      return null;
-    }
-  })
-  .whereType<Participant>()
-  .toList();
-
-  _participants = participants;
-  _filteredParticipants = List.from(participants);
-  _recommendations = List.from(participants);
-
-  _isLoadingData = false;
-});
-      }
-    }
-
-
-    print("FETCHING NETWORKING EXPERINCE PARTICIPANTS...");
-    
-
-    _eventService.networkingExperienceParticipants().then((res) async {
+    ).then((res) async {
+      
+      
       dynamic body = jsonDecode(res.body);
+ 
 
-      await _storage.write(key: "networking_participants", value: res.body );
-
-
+ 
        setState(() {
-        _participants = (body['data'] as List)
-                  .map((e) => Participant.fromJson(e))
-                  .toList();
+       List<Participant> safeParticipants = [];
 
-        _filteredParticipants = (body['data'] as List)
-                  .map((e) => Participant.fromJson(e))
-                  .toList();
-          _recommendations = (body['data'] as List)
-                  .map((e) => Participant.fromJson(e))
-                  .toList(); 
+        for (final e in (body['data'] as List)) {
+          try {
+            safeParticipants.add(Participant.fromJson(e));
+          } catch (err) {
+            debugPrint("Participant parse error: $err");
+          }
+        }
+
+        _participants = List.from(safeParticipants);
+        _filteredParticipants = List.from(safeParticipants);
+        _recommendations = List.from(safeParticipants);
+
+ 
          _isLoadingData = false; 
          _loadingNewParticipants = false;
 
@@ -230,35 +249,194 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
      
   }
 
-  Future<void> _loadAdvancedFilters(String profile) async {
 
-   _eventService
-    .getNetworkingExperienceAdvancedFilters(int.parse(profile))
-    .then((res) {
-  final body = jsonDecode(res.body);
-  
 
-  print(body);
+  Future<void> _loadMoreParticipants() async {
+
+  if (!mounted || _isLoadingMore || !_hasMore) return;
+  setState(() => _isLoadingMore = true);
+   
+  _currentPage++;
+
+  print("NEW PAGE ${_currentPage}");
+
 
   setState(() {
-    _isLoadingFilters = true;
-
-    _advancedFilters = (body['filters'] as List)
-        .map((e) => AdvancedFilter.fromJson(e))
-        .toList();
-
-    _advancedFilterValues.clear();
-    _isLoadingFilters = false;
+    _isLoadingMore = true;
   });
-});
+
+  try {
+    
+
+    final res = await _eventService.networkingExperienceParticipants(
+      fullName: _nameController.text,
+      profile: _selectedProfile.toString(),
+      country: _selectedCountry.toString(),
+      advancedFilters: null,
+      limit: 15,
+      page: _currentPage,
+    );
+
+    final body = jsonDecode(res.body);
+    final List<Participant> newParticipants = [];
+
+    for (final e in (body['data'] as List)) {
+      try {
+        newParticipants.add(Participant.fromJson(e));
+      } catch (err) {
+        debugPrint("Participant parse error: $err");
+      }
+    }
+
+    try {
+      newParticipants.removeAt(0);
+    } catch (e) {
+      
+    }
+
+    if (!mounted) return;
+    setState(() {
+      if (newParticipants.isEmpty) {
+        _hasMore = false;          // ← stop future fetches
+      } else {
+        _participants.addAll(newParticipants);          // ← APPEND
+        _filteredParticipants.addAll(newParticipants); // ← APPEND
+      }
+      _isLoadingMore = false; // ← was never reset on success
+    });
+
+  } catch (e) {
+    _currentPage--;
+    _showErrorSnackBar('Failed to load more');
+    if (mounted) setState(() => _isLoadingMore = false);
+  }
+}
+
+
+ 
+
+  /*Future<void> _loadMoreParticipants() async { 
+    if (!mounted || _isLoadingMore || !_hasMore) return;
+    setState(() => _isLoadingMore = true); 
+
+    try {
+      _currentPage++;
+      
+      _eventService.networkingExperienceParticipants(
+        fullName: _nameController.text,
+        profile: _selectedProfile.toString(),
+        country: _selectedCountry.toString(),
+        advancedFilters: null,
+        limit: 15,
+        page: _currentPage,
+
+      ).then((res) async {
+        
+        
+        dynamic body = jsonDecode(res.body);
+
+  
+        setState(() {
+        List<Participant> safeParticipants = [];
+
+          for (final e in (body['data'] as List)) {
+            try {
+              safeParticipants.add(Participant.fromJson(e));
+            } catch (err) {
+              debugPrint("Participant parse error: $err");
+            }
+          }
+
+          _participants = List.from(safeParticipants);
+          _filteredParticipants = List.from(safeParticipants);
+          _recommendations = List.from(safeParticipants);
+
+  
+          _isLoadingData = false; 
+          _loadingNewParticipants = false;
+
+        });
+          
+        }).catchError((err){
+          print(err.toString());
+          setState(() {
+            _isLoadingData = false;
+            _loadingNewParticipants = false;
+          
+          });
+        });
+
+    }catch(e){
+      _currentPage--;  // roll back on failure
+      _showErrorSnackBar('Failed to load more');
+      if (mounted) setState(() => _isLoadingMore = false);
+    }
+
+      
+  }*/
+    
+
+
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: MiamiColors.hotPink,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    );
+  }
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+  Future<void> _loadAdvancedFilters(String profile) async {
+
+      _eventService
+        .getNetworkingExperienceAdvancedFilters(int.parse(profile))
+        .then((res) {
+      final body = jsonDecode(res.body);
+      
+
+      print(body);
+
+      setState(() {
+        _isLoadingFilters = true;
+
+        _advancedFilters = (body['filters'] as List)
+            .map((e) => AdvancedFilter.fromJson(e))
+            .toList();
+
+        _advancedFilterValues.clear();
+        _isLoadingFilters = false;
+      });
+    });
  
   }
 
   void _applyFilters() {
-      
-       print("SEARCHING...");
+        setState(() {
+          _currentPage = 1;
+        });
 
-      setState(() {
+
+       _loadData();
+
+      /*setState(() {
       _filteredParticipants = _participants.where((p) {
         // Basic filters
         final nameMatch = p.fullName.toLowerCase().contains(
@@ -337,7 +515,10 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
 
         return nameMatch && countryMatch && profileMatch && advancedMatch;
       }).toList();
-    });
+    });*/
+
+ 
+
   }
 
   void _clearFilters() {
@@ -360,6 +541,8 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
         filters: _advancedFilters,
         initialValues: _advancedFilterValues,
         onApply: (values) {
+          print(values);
+
           setState(() {
             _advancedFilterValues = values;
           });
@@ -368,6 +551,113 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
       ),
     );
   }
+
+
+ void _showProfileBottomSheet() {
+  final l10n = AppLocalizations.of(context);
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) {
+      return DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) {
+          return Column(
+            children: [
+              const SizedBox(height: 10),
+
+              /// Drag handle
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Text(
+                      l10n.selectProfile,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  children: [
+                    /// Reset option
+                    ListTile(
+                      title: Text(l10n.profile),
+                      trailing: _selectedProfile == null
+                          ? const Icon(Icons.check)
+                          : null,
+                      onTap: () {
+                        Navigator.pop(context);
+
+                        setState(() {
+                          _selectedProfile = null;
+                          _advancedFilters = [];
+                          _advancedFilterValues.clear();
+                        });
+
+                        _applyFilters();
+                      },
+                    ),
+
+                    /// Profiles
+                    ..._profiles.map((profile) {
+                      final value = '${profile['id']}';
+
+                      return ListTile(
+                        title: Text(profile['label']),
+                        trailing: _selectedProfile == value
+                            ? const Icon(Icons.check)
+                            : null,
+                        onTap: () {
+                          Navigator.pop(context);
+
+                          setState(() {
+                            _selectedProfile = value;
+                          });
+
+                          _loadAdvancedFilters(value);
+                          _applyFilters();
+                        },
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -485,8 +775,9 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
                         },
                         displayStringForOption: (option) => option['label'].toString(),
                         onSelected: (selection) {
+                          print("SELECTED COUNTRY ${selection['id']}");
                           setState(() {
-                            _selectedCountry = selection['label'];
+                            _selectedCountry = selection['id'];
                           });
                           _applyFilters();
                         },
@@ -495,7 +786,7 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
                             controller: controller,
                             focusNode: focusNode,
                             decoration:  InputDecoration(
-                              labelText: l10n.country ,
+                              labelText: '${l10n.country }',
                               prefixIcon: Icon(Icons.public),
                               fillColor: AppTheme.mainDeepBackgroundColor,
 
@@ -538,7 +829,39 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
                   ],
                 ),
                 const SizedBox(height: 12),
-                Container(
+
+                GestureDetector(
+  onTap: _showProfileBottomSheet,
+  child: Container(
+    padding: const EdgeInsets.symmetric(
+      horizontal: 12,
+      vertical: 14,
+    ),
+    decoration: BoxDecoration(
+      color: AppTheme.mainDeepBackgroundColor,
+      borderRadius: BorderRadius.circular(4),
+      border: Border.all(
+        color: const Color.fromARGB(255, 198, 198, 198),
+      ),
+    ),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(
+            _selectedProfile == null
+                ? l10n.selectProfile
+                : _profiles.firstWhere(
+                    (p) => '${p['id']}' == _selectedProfile,
+                  )['label'],
+            style: const TextStyle(fontSize: 14),
+          ),
+        ),
+        const Icon(Icons.keyboard_arrow_down),
+      ],
+    ),
+  ),
+),
+                /*xxxxxxxContainer(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     color: AppTheme.mainDeepBackgroundColor,
@@ -580,7 +903,9 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
                       },
                     ),
                   ),
-                ),
+                ),*/
+
+
                 if (_isLoadingFilters == true) ...[
                   const SizedBox(height: 12),
                   const LinearProgressIndicator(),
@@ -598,7 +923,7 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
           Expanded(
             child: _isLoadingData
                 ? const Center(child: CircularProgressIndicator())
-                : _buildParticipantsList(_filteredParticipants),
+                : _buildParticipantsList(),
                 
                   /*TabBarView(
                     controller: _tabController,
@@ -613,9 +938,9 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
     );
   }
 
-  Widget _buildParticipantsList(List<Participant> participants) {
+  Widget _buildParticipantsList( ) {
     final l10n = AppLocalizations.of(context);
-    if (participants.isEmpty) {
+    if (_filteredParticipants.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -631,15 +956,42 @@ class _NetworkingExperienceParticipantsTabState extends State<NetworkingExperien
       );
     }
 
+
+     
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(16),
-      itemCount: participants.length,
+      
+      itemCount: _filteredParticipants.length,
+      
       itemBuilder: (context, index) {
-        return ParticipantCard(
-          participant: participants[index],
-          onTap: () => _showParticipantActions(participants[index]),
+        if ( index ==( _filteredParticipants.length -1) ) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+          
+        return TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0.0, end: 1.0),
+          duration: Duration(milliseconds: 400 + (index * 50)),
+          curve: Curves.easeOutCubic,
+           builder: (context, value, child) {
+            return Opacity(
+              opacity: value,
+              child: Transform.translate(
+                offset: Offset(0, 20 * (1 - value)),
+                child: child,
+              ),
+            );
+          },
+
+          child: ParticipantCard(
+          participant: _filteredParticipants[index],
+          onTap: () => _showParticipantActions(_filteredParticipants[index]),
+          )
         );
-      },
+      }
     );
   }
 
@@ -1014,9 +1366,16 @@ class ParticipantCard extends StatelessWidget {
     );
   }
 }
-// ============================================================================
-// ADVANCED FILTERS SHEET
-// ============================================================================
+
+
+
+
+
+
+
+
+
+
 
 class AdvancedFiltersSheet extends StatefulWidget {
   final List<AdvancedFilter> filters;
@@ -1042,6 +1401,10 @@ class _AdvancedFiltersSheetState extends State<AdvancedFiltersSheet> {
     super.initState();
     _values = Map.from(widget.initialValues);
   }
+
+
+  
+
 
   @override
   Widget build(BuildContext context) {

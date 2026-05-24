@@ -80,26 +80,40 @@ class ParticipantCard extends StatelessWidget {
                       const SizedBox(height: 4),
 
 
-
                       /// Dynamic fields
-                      ...participant.feilds
-                          .where((f) =>
-                              f.showOnParticipantListPage == true && f.value != "" &&
-                              ((f.value != null && f.value!.isNotEmpty) ||
-                                  f.multipleValuesSelected.isNotEmpty))
-                          .map(
-                            (f) => Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Text(
-                                f.value ??
-                                    f.multipleValuesSelected.join(', '),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: true,
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ),
-                          ),
+...participant.feilds
+    .where((f) {
+      if (f.showOnParticipantListPage != true) return false;
+
+      // Multi checkbox values
+      if (f.type == 'multiCheckbox') {
+        return f.multipleValuesSelected != null &&
+            f.multipleValuesSelected
+                .where((e) => e.trim().isNotEmpty)
+                .isNotEmpty;
+      }
+
+      // Normal value
+      final value = f.value?.trim();
+      return value != null && value.isNotEmpty;
+    })
+    .map(
+      (f) => Padding(
+        padding: const EdgeInsets.only(bottom: 2),
+        child: Text(
+          f.type == 'multiCheckbox'
+              ? f.multipleValuesSelected
+                  .map((e) => e.trim())
+                  .where((e) => e.isNotEmpty)
+                  .join(', ')
+              : f.value!.trim(),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          softWrap: true,
+          style: const TextStyle(fontSize: 14),
+        ),
+      ),
+    ),
 
                           const SizedBox(height: 4),
                       Container( 

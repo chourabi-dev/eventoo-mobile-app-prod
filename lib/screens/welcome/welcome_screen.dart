@@ -1,18 +1,15 @@
-import 'dart:io';
+ 
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart'; 
 import 'package:go_router/go_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/screens/continue_screen_with_google/continue_screen_google.dart';
 import 'package:mobile/services/google_auth_service.dart';
 import 'package:mobile/theme/app_theme.dart';
-import 'package:mobile/widgets/auth_separator.dart';
-import 'package:mobile/widgets/google_auth_button.dart';
-import 'package:mobile/widgets/language_switcher.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:mobile/widgets/auth_separator.dart'; 
+import 'package:mobile/widgets/language_switcher.dart'; 
 
 import '../../widgets/animated_button.dart';
 

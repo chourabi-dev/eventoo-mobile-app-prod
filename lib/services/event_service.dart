@@ -58,6 +58,7 @@ class EventService {
     return request.send();
  
   }
+  
 
 
 
@@ -621,7 +622,7 @@ class EventService {
     /************************************* NETWORKING EXPERIECNE********************************************** */
 
 
-    Future<Response> networkingExperienceProfiles( ) async {
+    Future<Response> networkingExperienceProfiles() async {
       String? participantID = await _storage.read(key: 'participantId');
 
       final lang = MyApp.currentLanguage;   
@@ -668,14 +669,58 @@ class EventService {
 
     
 
-    Future<Response> networkingExperienceParticipants( ) async {
+    Future<Response> networkingExperienceParticipants(
+    {
+      String? fullName,
+      String? profile,
+      String? country,
+      int page = 1,
+      int limit = 10, 
+      Map<int, dynamic>? advancedFilters,
+    }
+    ) async {
+
+
+      final queryParams = <String, dynamic>{
+        'page': page.toString(),
+        'limit': limit.toString(),
+      };
+
+      if (fullName != null && fullName.isNotEmpty) {
+        queryParams['fullName'] = fullName;
+      }
+
+      if (profile != null && profile.isNotEmpty) {
+        queryParams['profile'] = profile;
+      }
+
+      if (country != null && country.isNotEmpty) {
+        queryParams['country'] = country;
+      }
+
+      // Add advanced filters
+      if (advancedFilters != null && advancedFilters.isNotEmpty) {
+        advancedFilters.forEach((fieldId, value) {
+          if (value != null) {
+            if (value is List) {
+              queryParams['filter_$fieldId'] = jsonEncode(value);
+            } else {
+              queryParams['filter_$fieldId'] = value.toString();
+            }
+          }
+        });
+      }
+      
+
+
       String? participantID = await _storage.read(key: 'participantId');
 
       final lang = MyApp.currentLanguage;   
       
-      final url = Uri.parse('${_env.endpoint}/api/networking/participants/${participantID}');
-      String? token = await _storage.read(key: 'token');
+      final url = Uri.parse('${_env.endpoint}/api/networking/participants/${participantID}').replace(queryParameters: queryParams);;
       
+      print(url); 
+      String? token = await _storage.read(key: 'token'); 
       return get(
         url,
         headers: {

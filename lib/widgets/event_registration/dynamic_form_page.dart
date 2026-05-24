@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/l10n/app_localizations.dart';
+import 'package:mobile/theme/app_theme.dart';
 import 'form_models.dart';
 import 'field_validators.dart';
 
@@ -181,7 +182,7 @@ class _DynamicFormPageState extends State<DynamicFormPage> {
           Container(
             padding: EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppTheme.mainDeepBackgroundColor,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
@@ -198,7 +199,7 @@ class _DynamicFormPageState extends State<DynamicFormPage> {
                       onPressed: widget.onPrevious,
                       style: OutlinedButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 16),
-                        side: BorderSide(color: Color(0xFF667eea)),
+                        side: BorderSide(color: AppTheme.accentColor),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -208,7 +209,7 @@ class _DynamicFormPageState extends State<DynamicFormPage> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF667eea),
+                          color: AppTheme.accentColor
                         ),
                       ),
                     ),
@@ -219,7 +220,7 @@ class _DynamicFormPageState extends State<DynamicFormPage> {
                   child: ElevatedButton(
                     onPressed: _handleNext,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF667eea),
+                      backgroundColor: AppTheme.accentBackgroundColor,
                       foregroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(

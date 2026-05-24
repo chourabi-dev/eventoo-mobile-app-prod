@@ -4,6 +4,8 @@ class NotificationItem {
   final String message;
   final bool seen;
   final DateTime date;
+  final int type;
+  
 
   NotificationItem({
     required this.id,
@@ -11,6 +13,8 @@ class NotificationItem {
     required this.message,
     required this.seen,
     required this.date,
+    required this.type,
+    
   });
 
   factory NotificationItem.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,8 @@ class NotificationItem {
       message: json['message'],
       seen: json['seen'] ?? false,
       date: DateTime.parse(json['date']),
+      type: json['type'],
+      
     );
   }
 }

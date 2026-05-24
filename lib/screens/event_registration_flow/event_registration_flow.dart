@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/services/event_service.dart'; 
 import 'package:mobile/services/general_service.dart';
+import 'package:mobile/theme/app_theme.dart';
 import 'package:mobile/widgets/event_registration/dynamic_form_page.dart';
 import 'package:mobile/widgets/event_registration/form_models.dart';
 import 'package:mobile/widgets/event_registration/registration_success.dart';
@@ -175,7 +176,7 @@ class _EventRegistrationFlowState extends State<EventRegistrationFlow> {
 
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.grey[50],
+        backgroundColor: AppTheme.mainDeepBackgroundColor,
         appBar: AppBar(
           title: Text( l10n.eventRegistration ),
           backgroundColor: Colors.white,
@@ -199,7 +200,7 @@ class _EventRegistrationFlowState extends State<EventRegistrationFlow> {
 
     if (_error != null && _pages.isEmpty) {
       return Scaffold(
-        backgroundColor: Colors.grey[50],
+       backgroundColor: AppTheme.mainDeepBackgroundColor,
         appBar: AppBar(
           title: Text(l10n.eventRegistration),
           backgroundColor: Colors.white,
@@ -231,10 +232,10 @@ class _EventRegistrationFlowState extends State<EventRegistrationFlow> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+   backgroundColor: AppTheme.mainDeepBackgroundColor,
       appBar: AppBar(
         title: Text(l10n.eventRegistration),
-        backgroundColor: Colors.white,
+      backgroundColor: AppTheme.mainDeepBackgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -246,7 +247,7 @@ class _EventRegistrationFlowState extends State<EventRegistrationFlow> {
           // Progress Indicator
           Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      color: Colors.white,
+      color: AppTheme.mainDeepBackgroundColor,
       child: Column(
         children: [
           Row(
@@ -259,7 +260,7 @@ class _EventRegistrationFlowState extends State<EventRegistrationFlow> {
                         height: 4,
                         decoration: BoxDecoration(
                           color: index <= _currentPage
-                              ? Color(0xFF667eea)
+                              ? AppTheme.accentColor
                               : Colors.grey[300],
                           borderRadius: BorderRadius.circular(2),
                         ),
@@ -287,7 +288,7 @@ class _EventRegistrationFlowState extends State<EventRegistrationFlow> {
                 '${(((_currentPage + 1) / _pages.length) * 100).toInt()}%',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF667eea),
+                  color: AppTheme.accentColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),

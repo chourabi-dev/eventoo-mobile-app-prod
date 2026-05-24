@@ -402,24 +402,38 @@ class _ParticipantDetailScreenState extends State<ParticipantDetailScreen> {
     );
   }
 
-  Widget _buildExtraCard() {
-    final l10n = AppLocalizations.of(context);
-    return _card(
-      title: l10n.additonalDetails,
-      children: participant.feilds
-          .where((e) => e.showOnParticipantPage == true)
-          .map(
-            (e) => _infoRow(
-              Icons.info_outline,
-              e.label,
-              e.type == 'multiCheckbox'
-                  ? (e.multipleValuesSelected?.join(', ') ?? '')
-                  : (e.value?.toString() ?? ''),
-            ),
-          )
-          .toList(),
-    );
-  }
+Widget _buildExtraCard() {
+  final l10n = AppLocalizations.of(context);
+
+  final visibleFields = participant.feilds.where((e) {
+    if (e.showOnParticipantPage != true) return false;
+
+    // Handle multiCheckbox
+    if (e.type == 'multiCheckbox') {
+      return e.multipleValuesSelected != null &&
+          e.multipleValuesSelected!.isNotEmpty;
+    }
+
+    // Handle normal values
+    final value = e.value?.toString().trim();
+    return value != null && value.isNotEmpty;
+  }).toList();
+
+  return _card(
+    title: l10n.additonalDetails,
+    children: visibleFields
+        .map(
+          (e) => _infoRow(
+            Icons.info_outline,
+            e.label,
+            e.type == 'multiCheckbox'
+                ? e.multipleValuesSelected!.join(', ')
+                : e.value.toString(),
+          ),
+        )
+        .toList(),
+  );
+}
 
   // ================= REUSABLE =================
 
